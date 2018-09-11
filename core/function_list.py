@@ -1,0 +1,1 @@
+#tut voobshe vsyakiye razniye funkcii kotoriye 

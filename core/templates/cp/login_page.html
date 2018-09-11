@@ -1,0 +1,9 @@
+        <form id="login_form" method="post" action="/dengji?action=logmein">
+            {% csrf_token %}
+            Логин:<br> <input type="text" name="username" value="" size="50" />
+            <br />
+            Пароль:<br> <input type="password" name="password" value="" size="50" />
+            <br />
+
+            <input type="submit" value="Войти" />
+        </form>

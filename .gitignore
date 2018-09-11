@@ -1,0 +1,12 @@
+*.pyc
+*~
+__pycache__
+my_env
+db.sqlite3
+/static
+.DS_Store
+data.py
+teletr.rar
+test_tele.py
+test_tele2.py
+

@@ -1,0 +1,27 @@
+<a href="{% url 'main'%}">Главная</a>
+<hr>
+{%if page == 'main'%}
+<a href="#">история сообщений</a>
+<hr>
+<a href="?q=raion">районы</a>
+<hr>
+<a href="?q=product_type">виды товара</a>
+<hr>
+<a href="?q=product">товары</a>
+<hr>
+<a href="?q=abonent">абоненты</a>
+<hr>
+<a href="?q=user">работники</a>
+<hr>
+<a href="/dengji?action=logmeout">Выход</a>
+<hr>
+{%endif%}
+
+{%if page == 'object_list'%}
+<a href="{% url 'formpage'%}?q={{obj}}">Создать</a>
+<hr>
+{%for i in obj_list%}
+<a href="{% url 'formpage'%}?q={{obj}}&que={{i.pk}}">{{i.name}}</a>
+<br>
+{%endfor%}
+{%endif%}

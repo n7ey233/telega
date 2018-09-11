@@ -1,0 +1,13 @@
+    <form method="POST" class="post-form">
+
+    {{form.instance}} 
+    <hr>
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+    <hr/>
+        <button type="submit" class="save btn btn-default pull-right">{%if page_type == 'create'%}Создать{%else%}Сохранить{%endif%}</button>
+              {%if page_title_prefix != 'Создание'%}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
+
+    </form>
