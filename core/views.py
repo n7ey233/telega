@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.contrib.auth import logout, authenticate, login
 from .models import *
 from .forms import *
@@ -79,7 +79,7 @@ def formpage(request):
 @csrf_exempt
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
-    raise Http404
+    return HttpResponse('')
 
 #logika dlya raboti s qiwi
 def qiwi_api(request):
