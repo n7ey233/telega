@@ -89,6 +89,11 @@ def telegram_api(request):
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = '405347178'
     return_dict["text"] = 'sosi_pisos'
+    return_dict["InlineKeyboardMarkup"] = list()
+    smth = dict()
+    smth["text"] = 'shishki'
+    smth["callback_data"] = 'shishkipo'
+    return_dict["InlineKeyboardMarkup"].append(smth)
     #tele_token
     return JsonResponse(return_dict)
     #return HttpResponse('')
