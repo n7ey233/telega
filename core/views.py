@@ -79,7 +79,7 @@ def formpage(request):
 @csrf_exempt
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
-    print(json.loads(request.body))
+    print(request.body)
     return HttpResponse('')
 
 #logika dlya raboti s qiwi
