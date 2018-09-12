@@ -5,6 +5,8 @@ from .models import *
 from .forms import *
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.http import JsonResponse
+from .data_settings import tele_token
 
 
 #login
@@ -79,8 +81,17 @@ def formpage(request):
 @csrf_exempt
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
-    print(json.loads(request.body))
-    return HttpResponse('')
+    try:
+        print(json.loads(request.body))
+    except:
+        None
+    return_dict = dict()
+    return_dict["method"] = 'sendmessage'
+    return_dict["chat_id"] = '405347178'
+    return_dict["text"] = 'sosi_pisos'
+    #tele_token
+    return JsonResponse(return_dict)
+    #return HttpResponse('')
 
 #logika dlya raboti s qiwi
 def qiwi_api(request):
