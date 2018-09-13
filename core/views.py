@@ -6,7 +6,8 @@ from .forms import *
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
-from .data_settings import tele_token, help_msg
+#import kakih-to peremennykh
+from .data_settings import tele_token, help_msg, support_apply_msg
 
 
 #login
@@ -97,6 +98,13 @@ def reply(method):
         somelist1.append(inline_keyboard('Помощь', 'helpme'))
         buttons = dict()
         buttons["inline_keyboard"]= somelist1
+    elif method == 'helpme':
+        somelist1 = list()
+        return_dict["text"] = help_msg
+        somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
+        somelist1.append(inline_keyboard('Назад', 'main'))
+        buttons = dict()
+        buttons["inline_keyboard"]= somelist1
     return text, buttons
 #reply
 @csrf_exempt
@@ -132,11 +140,14 @@ def telegram_api(request):
         user_info = fulljson["message"]
         reply_type = 'message'
     reciever_id = user_info["from"]["id"]
+    #ignore bot
     if user_info["from"]["is_bot"] == 'true':
         return HttpResponse('')
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
+    somelist1 = list()
+    #esli eto soobsheniye
     if reply_type == 'message':
         recieve_text = fulljson["message"]["text"]
         if recieve_text == '/privet':
@@ -146,16 +157,29 @@ def telegram_api(request):
             None
         else:
             return_dict["text"] = 'Попробуй написать:\n\n /privet'
+    #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
-        if query == 'helpme':
-            return_dict["text"] = help_msg
-            somelist1 = list()
-            somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
-            somelist1.append(inline_keyboard('Назад', 'main'))
+        if query == 'main':
+            return_dict["text"], return_dict["reply_markup"] = reply(query)
+        elif query == 'helpme':
+            return_dict["text"], return_dict["reply_markup"] = reply(query)            
+        elif query == 'support':
+            return_dict["text"] = support_apply_msg
+        #razvetvleniye na vsyakoe der'mo tovar, gorod raion
+        elif query == 'choosetown':
+            return_dict["text"] = 'Выберите город:'
+            ##########po horoshemu dobav' spisok gorodov v baze ili uberi nahui
+            somelist1.append(inline_keyboard('Владивосток', 'town_vlad'))
+            somelist1.append(inline_keyboard('Находка', 'town_nakh'))
+            somelist1.append(inline_keyboard('Уссурийск', 'town_ussu'))
+        if len(somelist1)!=0:
             dict2 = dict()
             dict2["inline_keyboard"]= somelist1
             return_dict["reply_markup"] = dict2
+    #if len(somelist1) != 0:
+        #dict2 = dict()
+        #dict2["inline_keyboard"]= somelist1
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
