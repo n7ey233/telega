@@ -90,14 +90,14 @@ def inline_keyboard(a, b):
 
 def reply(method):
     if method == 'main':
-        text = 'Привет! В наличии есть:'
+        text = ''
         somelist1 = list()
         somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
         somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
         somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
         somelist1.append(inline_keyboard('Помощь', 'helpme'))
         buttons = dict()
-        buttons["inline_keyboard"]= somelist1
+        buttons["inline_keyboard"]= somelist1   
     return text, buttons
 #reply
 @csrf_exempt
@@ -153,6 +153,8 @@ def telegram_api(request):
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
+        #po horoshemu, na etot query nado otvechat'
+        query_id = user_info["id"]
         if query == 'main':
             return_dict["text"], return_dict["reply_markup"] = reply(query)
         elif query == 'helpme':
@@ -161,6 +163,7 @@ def telegram_api(request):
             somelist1.append(inline_keyboard('Назад', 'main'))            
         elif query == 'support':
             return_dict["text"] = support_apply_msg
+            somelist1.append(inline_keyboard('На главную', 'main'))
         elif query == 'choosetown':
             return_dict["text"] = 'Выберите город:'
             ##########po horoshemu dobav' spisok gorodov v baze ili uberi nahui
