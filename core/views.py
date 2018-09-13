@@ -6,7 +6,7 @@ from .forms import *
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
-from .data_settings import tele_token
+from .data_settings import tele_token, help_msg
 
 
 #login
@@ -93,8 +93,8 @@ def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
         ##dlya raboti s jsonom
-        #print(json.loads(request.body))
-        print(request.body)
+        print(json.loads(request.body))
+        #print(request.body)
         ###v sluchae esli eto message
         ##id poluchatelya
         #print(json.loads(request.body)["message"]["from"]["id"])
@@ -133,6 +133,7 @@ def telegram_api(request):
             #array(v nem uzhe vse knopki)
             somelist1 = list()
             somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
+            somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
             somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
             somelist1.append(inline_keyboard('Помощь', 'helpme'))
             dict2 = dict()
@@ -144,7 +145,9 @@ def telegram_api(request):
         else:
             return_dict["text"] = 'Попробуй написать:\n\n /privet'
     elif reply_type == 'callback_query':
-        None
+        query = user_info["data"]
+        if query == 'helpme':
+            return_dict["text"] = help_msg
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
