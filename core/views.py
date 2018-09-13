@@ -93,7 +93,6 @@ def telegram_api(request):
 
 
     dict2 = dict()
-    dict2["Inline_Keyboard"] = list()
     #eto object
     smth = dict()
     smth["text"] = 'shishki'
