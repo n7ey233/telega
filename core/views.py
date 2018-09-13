@@ -142,7 +142,7 @@ def telegram_api(request):
             dict2["inline_keyboard"]= somelist1
             return_dict["reply_markup"] = dict2
         #v sluchae otpravki transakcii, chekai instance abonenta
-        elif userinfo == 'smthsas':
+        elif False:
             None
         else:
             return_dict["text"] = 'Попробуй написать /privet'
