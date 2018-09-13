@@ -87,13 +87,14 @@ def inline_keyboard(a, b):
     somelist1.append(smth)
     return somelist1
 
-
+#reply
 @csrf_exempt
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
         ##dlya raboti s jsonom
         #print(json.loads(request.body))
+        print(request.body)
         ###v sluchae esli eto message
         ##id poluchatelya
         #print(json.loads(request.body)["message"]["from"]["id"])
@@ -112,21 +113,21 @@ def telegram_api(request):
     reciever_id = None
     recieve_text = None
     user_info = None
+    reply_type = None
     try:
         user_info = fulljson["callback_query"]
+        reply_type = 'callback_query'
     except:
         user_info = fulljson["message"]
-    try:
-        recieve_text = fulljson["message"]["text"]
-    except:
-        None
+        reply_type = 'message'
     reciever_id = user_info["from"]["id"]
     if user_info["from"]["is_bot"] == 'true':
         return HttpResponse('')
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
-    if recieve_text:
+    if reply_type == 'message':
+        recieve_text = fulljson["message"]["text"]
         if recieve_text == '/privet':
             return_dict["text"] = 'Привет! В наличии есть:'
             #array(v nem uzhe vse knopki)
@@ -141,7 +142,9 @@ def telegram_api(request):
         elif False:
             None
         else:
-            return_dict["text"] = 'Попробуй написать:\n /privet'
+            return_dict["text"] = 'Попробуй написать:\n\n /privet'
+    elif reply_type == 'callback_query':
+        None
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
