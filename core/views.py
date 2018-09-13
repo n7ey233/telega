@@ -82,11 +82,11 @@ def formpage(request):
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
-        #print(json.loads(request.body))
+        print(json.loads(request.body))
         ##id poluchatelya
         #print(json.loads(request.body)["message"]["from"]["id"])
         ##text
-        print(json.loads(request.body)["message"]["text"])
+        #print(json.loads(request.body)["message"]["text"])
     except:
         None
     fulljson = json.loads(request.body)
