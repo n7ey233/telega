@@ -91,27 +91,31 @@ def telegram_api(request):
         None
     fulljson = json.loads(request.body)
     reciever_id = fulljson["message"]["from"]["id"]
-    recieve_text = fulljson["message"]["text"]
-
+    recieve_text = None
+    try:
+        recieve_text = fulljson["message"]["text"]
+    except:
+        None
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
-    if recieve_text == '/privet':
-        return_dict["text"] = 'Привет! В наличии есть:'
-        dict2 = dict()
-        #eto object
-        smth = dict()
-        smth["text"] = 'shishki'
-        smth["callback_data"] = 'shiska'
-        somelist1 = list()
-        somelist1.append(smth)
-        somelist2 = list()
-        somelist2.append(somelist1)
-        dict2["inline_keyboard"]= somelist2
+    if recieve_text:
+        if recieve_text == '/privet':
+            return_dict["text"] = 'Привет! В наличии есть:'
+            dict2 = dict()
+            #eto object
+            smth = dict()
+            smth["text"] = 'shishki'
+            smth["callback_data"] = 'shiska'
+            somelist1 = list()
+            somelist1.append(smth)
+            somelist2 = list()
+            somelist2.append(somelist1)
+            dict2["inline_keyboard"]= somelist2
 
-        return_dict["reply_markup"] = dict2
-    else:
-        return_dict["text"] = 'Попробуй написать /privet'
+            return_dict["reply_markup"] = dict2
+        else:
+            return_dict["text"] = 'Попробуй написать /privet'
     #tele_token
     return JsonResponse(return_dict)
     #return HttpResponse('')
