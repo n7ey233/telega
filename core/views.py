@@ -87,6 +87,7 @@ def inline_keyboard(a, b):
     somelist1.append(smth)
     return somelist1
 
+
 @csrf_exempt
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
@@ -104,38 +105,47 @@ def telegram_api(request):
         None
     except:
         None
-    fulljson = json.loads(request.body)
+    try:
+        fulljson = json.loads(request.body)
+    except:
+        raise Http404
     reciever_id = None
     recieve_text = None
+    user_info = None
+    try:
+        user_info = fulljson["callback_query"]
+    except:
+        user_info = fulljson["message"]
     try:
         recieve_text = fulljson["message"]["text"]
     except:
         None
-    try:
-        reciever_id = fulljson["message"]["from"]["id"]
-    except:
-        reciever_id = fulljson["callback_query"]["from"]["id"]  
+    reciever_id = user_info["from"]["id"]
+    if  user_info["from"]["is_bot"] == 'true':
+        return HttpResponse('')
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
     if recieve_text:
         if recieve_text == '/privet':
             return_dict["text"] = 'Привет! В наличии есть:'
-            #array s knopkami
-            somelist2 = list()
-            #eto object
+            #array(v nem uzhe vse knopki)
             somelist1 = list()
-            for obj in product_type.objects.all():
-                somelist1.append(inline_keyboard(obj.name, obj.pk))
-            #2nd array(v nem uzhe vse knopki)
-            if True:    
-                somelist2.append(somelist1)
-                dict2 = dict()
-                dict2["inline_keyboard"]= somelist1
-                return_dict["reply_markup"] = dict2
+            ##eto dlya togo chtobi vizivat' menushki
+            #for obj in product_type.objects.all():
+                #somelist1.append(inline_keyboard(obj.name, obj.pk))
+            somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
+            somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
+            somelist1.append(inline_keyboard('Помощь', 'helpme'))
+
+            dict2 = dict()
+            dict2["inline_keyboard"]= somelist1
+            return_dict["reply_markup"] = dict2
+        #v sluchae otpravki transakcii, chekai instance abonenta
+        elif somevar:
+            None
         else:
             return_dict["text"] = 'Попробуй написать /privet'
-    #tele_token
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
