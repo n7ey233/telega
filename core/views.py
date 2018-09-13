@@ -98,13 +98,6 @@ def reply(method):
         somelist1.append(inline_keyboard('Помощь', 'helpme'))
         buttons = dict()
         buttons["inline_keyboard"]= somelist1
-    elif method == 'helpme':
-        somelist1 = list()
-        return_dict["text"] = help_msg
-        somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
-        somelist1.append(inline_keyboard('Назад', 'main'))
-        buttons = dict()
-        buttons["inline_keyboard"]= somelist1
     return text, buttons
 #reply
 @csrf_exempt
@@ -163,10 +156,11 @@ def telegram_api(request):
         if query == 'main':
             return_dict["text"], return_dict["reply_markup"] = reply(query)
         elif query == 'helpme':
-            return_dict["text"], return_dict["reply_markup"] = reply(query)            
+            return_dict["text"] = help_msg
+            somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
+            somelist1.append(inline_keyboard('Назад', 'main'))            
         elif query == 'support':
             return_dict["text"] = support_apply_msg
-        #razvetvleniye na vsyakoe der'mo tovar, gorod raion
         elif query == 'choosetown':
             return_dict["text"] = 'Выберите город:'
             ##########po horoshemu dobav' spisok gorodov v baze ili uberi nahui
