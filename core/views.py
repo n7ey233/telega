@@ -110,6 +110,8 @@ def telegram_api(request):
         dict2["inline_keyboard"]= somelist2
 
         return_dict["reply_markup"] = dict2
+    else:
+        return_dict["text"] = 'Попробуй написать /privet'
     #tele_token
     return JsonResponse(return_dict)
     #return HttpResponse('')
