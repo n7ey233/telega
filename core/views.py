@@ -89,15 +89,21 @@ def inline_keyboard(a, b):
     return somelist1
 
 def reply(method):
+    somelist1 = list()
     if method == 'main':
-        text = ''
+        text = 'Привет!'
         somelist1 = list()
         somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
         somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
         somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
         somelist1.append(inline_keyboard('Помощь', 'helpme'))
+    elif method == 'helpme':
+        text = help_msg
+        somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
+        somelist1.append(inline_keyboard('Назад', 'main'))  
+    if len(somelist1) != 0:
         buttons = dict()
-        buttons["inline_keyboard"]= somelist1   
+        buttons["inline_keyboard"]= somelist1    
     return text, buttons
 #reply
 @csrf_exempt
@@ -153,14 +159,12 @@ def telegram_api(request):
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
-        #po horoshemu, na etot query nado otvechat'
-        query_id = user_info["id"]
+        ##po horoshemu, na etot query nado otvechat'
+        #query_id = user_info["id"]
         if query == 'main':
             return_dict["text"], return_dict["reply_markup"] = reply(query)
         elif query == 'helpme':
-            return_dict["text"] = help_msg
-            somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
-            somelist1.append(inline_keyboard('Назад', 'main'))            
+            return_dict["text"], return_dict["reply_markup"] = reply(query)         
         elif query == 'support':
             return_dict["text"] = support_apply_msg
             somelist1.append(inline_keyboard('На главную', 'main'))
@@ -174,9 +178,6 @@ def telegram_api(request):
             dict2 = dict()
             dict2["inline_keyboard"]= somelist1
             return_dict["reply_markup"] = dict2
-    #if len(somelist1) != 0:
-        #dict2 = dict()
-        #dict2["inline_keyboard"]= somelist1
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
