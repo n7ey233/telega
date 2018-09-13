@@ -87,6 +87,17 @@ def inline_keyboard(a, b):
     somelist1.append(smth)
     return somelist1
 
+def reply(method):
+    if method == 'main':
+        text = 'Привет! В наличии есть:'
+        somelist1 = list()
+        somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
+        somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
+        somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
+        somelist1.append(inline_keyboard('Помощь', 'helpme'))
+        buttons = dict()
+        buttons["inline_keyboard"]= somelist1
+    return text, buttons
 #reply
 @csrf_exempt
 def telegram_api(request):
@@ -129,16 +140,7 @@ def telegram_api(request):
     if reply_type == 'message':
         recieve_text = fulljson["message"]["text"]
         if recieve_text == '/privet':
-            return_dict["text"] = 'Привет! В наличии есть:'
-            #array(v nem uzhe vse knopki)
-            somelist1 = list()
-            somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
-            somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
-            somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
-            somelist1.append(inline_keyboard('Помощь', 'helpme'))
-            dict2 = dict()
-            dict2["inline_keyboard"]= somelist1
-            return_dict["reply_markup"] = dict2
+            return_dict["text"], return_dict["reply_markup"] = reply('main')
         #v sluchae otpravki transakcii, chekai instance abonenta
         elif False:
             None
@@ -148,6 +150,12 @@ def telegram_api(request):
         query = user_info["data"]
         if query == 'helpme':
             return_dict["text"] = help_msg
+            somelist1 = list()
+            somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
+            somelist1.append(inline_keyboard('Назад', 'main'))
+            dict2 = dict()
+            dict2["inline_keyboard"]= somelist1
+            return_dict["reply_markup"] = dict2
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
