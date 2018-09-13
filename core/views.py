@@ -78,16 +78,30 @@ def formpage(request):
 
 
 #logika dlya raboti s api telegrama
+def inline_keyboard(a, b):
+    smth = dict()
+    smth["text"] = a
+    smth["callback_data"] = b
+    #1st array(v nem oborachivaem otdel'nuyu liniyu knopok)
+    somelist1 = list()
+    somelist1.append(smth)
+    return somelist1
+
 @csrf_exempt
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
-        print(json.loads(request.body))
-        ###v sluchae message
+        ##dlya raboti s jsonom
+        #print(json.loads(request.body))
+        ###v sluchae esli eto message
         ##id poluchatelya
         #print(json.loads(request.body)["message"]["from"]["id"])
         ##text
         #print(json.loads(request.body)["message"]["text"])
+        ###esli callback query
+        ##id poluchatelya
+        #
+        None
     except:
         None
     fulljson = json.loads(request.body)
@@ -100,25 +114,25 @@ def telegram_api(request):
     try:
         reciever_id = fulljson["message"]["from"]["id"]
     except:
-        reciever_id = fulljson["callback_query"]["from"]["id"]
+        reciever_id = fulljson["callback_query"]["from"]["id"]  
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
     if recieve_text:
         if recieve_text == '/privet':
             return_dict["text"] = 'Привет! В наличии есть:'
-            dict2 = dict()
-            #eto object
-            smth = dict()
-            smth["text"] = 'shishki'
-            smth["callback_data"] = 'shiska'
-            somelist1 = list()
-            somelist1.append(smth)
+            #array s knopkami
             somelist2 = list()
-            somelist2.append(somelist1)
-            dict2["inline_keyboard"]= somelist2
-
-            return_dict["reply_markup"] = dict2
+            #eto object
+            somelist1 = list()
+            for obj in product_type.objects.all():
+                somelist1.append(inline_keyboard(obj.name, obj.pk))
+            #2nd array(v nem uzhe vse knopki)
+            if True:    
+                somelist2.append(somelist1)
+                dict2 = dict()
+                dict2["inline_keyboard"]= somelist2
+                return_dict["reply_markup"] = dict2
         else:
             return_dict["text"] = 'Попробуй написать /privet'
     #tele_token
@@ -126,7 +140,7 @@ def telegram_api(request):
     #return HttpResponse('')
 
 #logika dlya raboti s qiwi
-def qiwi_api(request):
+def qiwi_api():
     None
 
 # Create your views here.
