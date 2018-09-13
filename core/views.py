@@ -131,13 +131,9 @@ def telegram_api(request):
             return_dict["text"] = 'Привет! В наличии есть:'
             #array(v nem uzhe vse knopki)
             somelist1 = list()
-            ##eto dlya togo chtobi vizivat' menushki
-            #for obj in product_type.objects.all():
-                #somelist1.append(inline_keyboard(obj.name, obj.pk))
             somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
             somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
             somelist1.append(inline_keyboard('Помощь', 'helpme'))
-
             dict2 = dict()
             dict2["inline_keyboard"]= somelist1
             return_dict["reply_markup"] = dict2
@@ -145,7 +141,7 @@ def telegram_api(request):
         elif False:
             None
         else:
-            return_dict["text"] = 'Попробуй написать /privet'
+            return_dict["text"] = 'Попробуй написать:\n /privet'
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
