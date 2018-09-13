@@ -131,7 +131,7 @@ def telegram_api(request):
             if True:    
                 somelist2.append(somelist1)
                 dict2 = dict()
-                dict2["inline_keyboard"]= somelist2
+                dict2["inline_keyboard"]= somelist1
                 return_dict["reply_markup"] = dict2
         else:
             return_dict["text"] = 'Попробуй написать /privet'
