@@ -121,7 +121,7 @@ def telegram_api(request):
     except:
         None
     reciever_id = user_info["from"]["id"]
-    if  user_info["from"]["is_bot"] == 'true':
+    if user_info["from"]["is_bot"] == 'true':
         return HttpResponse('')
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
@@ -142,7 +142,7 @@ def telegram_api(request):
             dict2["inline_keyboard"]= somelist1
             return_dict["reply_markup"] = dict2
         #v sluchae otpravki transakcii, chekai instance abonenta
-        elif somevar:
+        elif userinfo == 'smthsas':
             None
         else:
             return_dict["text"] = 'Попробуй написать /privet'
