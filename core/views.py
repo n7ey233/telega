@@ -91,7 +91,7 @@ def telegram_api(request):
     except:
         None
     fulljson = json.loads(request.body)
-    reciever_id = fulljson["message"]["from"]["id"]
+    reciever_id = None
     recieve_text = None
     try:
         recieve_text = fulljson["message"]["text"]
