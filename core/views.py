@@ -82,28 +82,34 @@ def formpage(request):
 def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
-        print(json.loads(request.body))
+        #print(json.loads(request.body))
+        ##id poluchatelya
+        #print(json.loads(request.body)["message"]["from"]["id"])
+        ##text
+        print(json.loads(request.body)["message"]["text"])
     except:
         None
+    fulljson = json.loads(request.body)
+    reciever_id = fulljson["message"]["from"]["id"]
+    recieve_text = fulljson["message"]["text"]
+
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
-    return_dict["chat_id"] = '405347178'
-    return_dict["text"] = 'sosi_pisos'
-    
+    return_dict["chat_id"] = reciever_id
+    if recieve_text == '/privet':
+        return_dict["text"] = 'Привет! В наличии есть:'
+        dict2 = dict()
+        #eto object
+        smth = dict()
+        smth["text"] = 'shishki'
+        smth["callback_data"] = 'shiska'
+        somelist1 = list()
+        somelist1.append(smth)
+        somelist2 = list()
+        somelist2.append(somelist1)
+        dict2["inline_keyboard"]= somelist2
 
-
-    dict2 = dict()
-    #eto object
-    smth = dict()
-    smth["text"] = 'shishki'
-    smth["callback_data"] = 'shiska'
-    somelist1 = list()
-    somelist1.append(smth)
-    somelist2 = list()
-    somelist2.append(somelist1)
-    dict2["inline_keyboard"]= somelist2
-
-    return_dict["reply_markup"] = dict2
+        return_dict["reply_markup"] = dict2
     #tele_token
     return JsonResponse(return_dict)
     #return HttpResponse('')
