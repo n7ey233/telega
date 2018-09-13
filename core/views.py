@@ -102,7 +102,7 @@ def telegram_api(request):
     somelist1.append(smth)
     somelist2 = list()
     somelist2.append(somelist1)
-    dict2["Inline_Keyboard"]= somelist2
+    dict2["inline_keyboard"]= somelist2
 
     return_dict["reply_markup"] = dict2
     #tele_token
