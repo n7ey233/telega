@@ -83,6 +83,7 @@ def telegram_api(request):
     #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
         print(json.loads(request.body))
+        ###v sluchae message
         ##id poluchatelya
         #print(json.loads(request.body)["message"]["from"]["id"])
         ##text
@@ -96,6 +97,10 @@ def telegram_api(request):
         recieve_text = fulljson["message"]["text"]
     except:
         None
+    try:
+        reciever_id = fulljson["message"]["from"]["id"]
+    except:
+        reciever_id = fulljson["callback_query"]["from"]["id"]
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
