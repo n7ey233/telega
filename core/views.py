@@ -84,13 +84,8 @@ def formpage(request):
 
 ####logika dlya raboti s api telegrama
 def inline_keyboard(a, b):
-    smth = dict()
-    smth["text"], smth["callback_data"] = a, b
-    #smth["callback_data"] = b
-    #1st array(v nem oborachivaem otdel'nuyu liniyu knopok)
-    somelist1 = list()
-    somelist1.append(smth)
-    return somelist1
+    
+    return [{'text': a, 'callback_data': b}]
 #formiruyet dict knopok dlya otveta iz spiska @a
 def form_reply_markup(a):
 
