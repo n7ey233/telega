@@ -20,7 +20,7 @@ class abonent(models.Model):
     class Meta:
         ordering = ['telega_id']
     def __str__(self):
-        return self.telega_id
+        return str(self.telega_id)
 ##produkciya bivaet raznih tipov
 class product_type(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
