@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec, start_msg
+from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg
 
 
 #login
@@ -97,9 +97,10 @@ def form_reply_markup(a):
     z["inline_keyboard"] = a
     return z
 #reply func dlya manual'nogo formirovaniya otvetov
-def reply(method, q1 = None):
+def reply(method, q1 = None, q2 = None):
     l1 = list()
-    # /privet, helpme, support, main_cat
+    text = None
+    # /privet, helpme, support, main_cat cashbalance
     #/privet
     if method == '/privet':
         text = start_msg
@@ -113,7 +114,32 @@ def reply(method, q1 = None):
         l1.append(inline_keyboard('Связь с оператором', 'support'))
         l1.append(inline_keyboard('Ищу работу', 'seekjob'))
         l1.append(inline_keyboard('Назад', '/privet'))
-    #otpravka obrasheniya
+    elif method == 'cashbalance':
+        text = 'Ваш баланс: '+q1.balance+'.'
+        l1.append(inline_keyboard('Пополнить', 'replenish'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'replenish':
+        text = replenish_msg
+        l1.append(inline_keyboard('Отправил', 'replenish_check'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'replenish_check':
+        text = 'Введите номер транзакции.\n\n//тестовый вариант, введи *123654789*, это типо номер успешной транзакции на 500 рублей,\n введи *987654321*, это номер уже проведённой транзакции, получишь сообщение о неудаче платежа, мол типо транзакция уже зарегестрирована,\n другие цифры или значения или я неебу чё означают несуществующую транзакцию.\n\n мне нужно 2 киви кошелька для тестов'
+        #тут меняется инстанс абонента на 1(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста)
+        q1.payment_instance = 1
+        q1.save()
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'replenish_success':
+        text = 'Ваш баланс был успешно пополнен на сумму:'+q2+'.\nВаш баланс составляет:'+q1.balance+'.'
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'replenish_exists':
+        text = 'Данная транзакция уже была проведена.'
+        l1.append(inline_keyboard('Помощь', 'helpme'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'replenish_fail':
+        text = 'Данная транзакция отсутствует.'
+        l1.append(inline_keyboard('Помощь', 'helpme'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #otpravki obrasheniya
     elif method == 'support':
         text = support_apply_msg
         q1.support_seeker=True
@@ -198,8 +224,20 @@ def telegram_api(request):
         if recieve_text == '/privet':
             return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
         #v sluchae otpravki transakcii, chekai instance abonenta
-        elif False:
-            None
+        elif user_a.payment_instance == 1:
+            #payment is real and not used
+            user_a.payment_instance = 0
+            a1, a2 = qiwi_api(recieve_text)
+            if a1 == True:
+                user_a.balance=+ float(a2)
+                user_a.save()
+                return_dict["text"], return_dict["reply_markup"] = reply('replenish_success', user_a, a2)
+            #payment is real but already used
+            elif a1 == False:
+                return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
+            #payment does'nt exists
+            else:
+                return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
         #missunderstood msg
         else:
             return_dict["text"] = 'Попробуйте написать: /privet'
@@ -212,7 +250,12 @@ def telegram_api(request):
     return JsonResponse(return_dict)
 
 #logika dlya raboti s qiwi
-def qiwi_api():
-    None
+def qiwi_api(a):
+    if a == '123654789':
+        return True, '500'
+    elif a == '987654321':
+        return False
+    else:
+        return None
 
 # Create your views here.
