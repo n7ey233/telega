@@ -217,7 +217,6 @@ def telegram_api(request):
     #tut hranitsya id abonenta
     return_dict["chat_id"] = reciever_id
     user_a, created = abonent.objects.get_or_create(telega_id = reciever_id)
-    print(user_a.balance)
     ##redirect on func
     #esli eto soobsheniye
     if reply_type == 'message':
@@ -230,8 +229,7 @@ def telegram_api(request):
             user_a.payment_instance = 0
             a1, a2 = qiwi_api(recieve_text)
             if a1 == True:
-                user_a.balance=+ float(a2)
-                print(user_a.balance)
+                user_a.balance=user_a.balance+ float(a2)
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_success', user_a, a2)
             #payment is real but already used
             elif a1 == False:
