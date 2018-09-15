@@ -200,6 +200,10 @@ def reply(method, q1 = None, q2 = None):
                 ##tut uzhe vibor product_type
                 for j in u2:
                     l1.append(inline_keyboard(j.name, 'f'+str(j.pk)+'r'+str(g0.pk)))
+                if g0.subcategory_of:
+                    l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+                else:
+                    l1.append(inline_keyboard('Назад', 'main_cat'))
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor tovara
     elif method[0] == 'f':
