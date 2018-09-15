@@ -255,7 +255,7 @@ def telegram_api(request):
         reply_type = 'message'
     reciever_id = user_info["from"]["id"]
     #ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
-    if user_info["from"]["is_bot"] != 'False':
+    if user_info["from"]["is_bot"] == 'true':
         raise Http404
     #eto otvet json
     return_dict = dict()
