@@ -93,7 +93,7 @@ def form_reply_markup(a):
     z["inline_keyboard"] = a
     return z
 #reply func dlya manual'nogo formirovaniya otvetov
-def reply(method):
+def reply(method, q1 = None):
     l1 = list()
     # /privet, helpme, support, main_cat
     #/privet
@@ -107,10 +107,20 @@ def reply(method):
     elif method == 'helpme':
         text = help_msg
         l1.append(inline_keyboard('Связь с оператором', 'support'))
+        l1.append(inline_keyboard('Ищу работу', 'seekjob'))
         l1.append(inline_keyboard('Назад', '/privet'))
     #otpravka obrasheniya
     elif method == 'support':
         text = support_apply_msg
+        print(q1.support_seeker)
+        q1.support_seeker=True
+        q1.save()
+        print(q1.support_seeker)
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'seekjob':
+        text = support_apply_msg
+        q1.job_seeker=True
+        q1.save()
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor kategorii
     elif method == 'main_cat':
@@ -178,6 +188,7 @@ def telegram_api(request):
     return_dict["method"] = 'sendmessage'
     #tut hranitsya id abonenta
     return_dict["chat_id"] = reciever_id
+    user_a, created = abonent.objects.get_or_create(telega_id = reciever_id)
     ##redirect on func
     #esli eto soobsheniye
     if reply_type == 'message':
@@ -193,7 +204,7 @@ def telegram_api(request):
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
-        return_dict["text"], return_dict["reply_markup"] = reply(query)
+        return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
         ##po horoshemu, na etot query nado otvechat'
         #query_id = user_info["id"]
     return JsonResponse(return_dict)

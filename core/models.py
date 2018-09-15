@@ -11,13 +11,16 @@ class abonent(models.Model):
     ####
     #balance(dlya kur'yeznikh sluchaev, kogda zakinul chutka bolshe chem nuzhno или когда закинули недостаточно для оплаты)
     #ego id dlya telegi
-    telega_id = models.IntegerField(default = 0, verbose_name='ID')
+    telega_id = models.IntegerField(blank = False, verbose_name='ID')
+    balance = models.FloatField(default = 0)
     #oborot(dlya skidok mb?)
-    name = models.CharField(max_length=128, blank = True)
+    name = models.CharField(max_length=128, blank = True, verbose_name='名称为啥')
+    job_seeker = models.BooleanField(default=False, verbose_name='Ищет работу')
+    support_seeker = models.BooleanField(default=False, verbose_name='Ждет связи с оператором')
     class Meta:
-        ordering = ['name']
+        ordering = ['telega_id']
     def __str__(self):
-        return self.name
+        return self.telega_id
 ##produkciya bivaet raznih tipov
 class product_type(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
