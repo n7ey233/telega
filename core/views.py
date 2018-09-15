@@ -196,7 +196,7 @@ def reply(method, q1 = None, q2 = None):
                 ##eto 
                 u2 = set()
                 for i in g2:
-                    u2.add(i.product.type)
+                    u2.add(i.product_type)
                 ##tut uzhe vibor product_type
                 for j in u2:
                     l1.append(inline_keyboard(j.name, 'f'+str(j.pk)+'r'+str(g0.pk)))
