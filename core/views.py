@@ -188,9 +188,8 @@ def reply(method, q1 = None, q2 = None):
                 ##tut uzhe vibor product_type
                 for j in u2:
                     l1.append(inline_keyboard(j.name, 'f'+str(j.pk)))
-            None
         l1.append(inline_keyboard('На главную', '/privet'))
-    #vibor raiona
+    #vibor tovara
     elif False:
         None
     else:
