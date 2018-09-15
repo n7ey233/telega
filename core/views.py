@@ -29,7 +29,7 @@ def sign(request):
         return redirect('main')
     return render(request, 'cp/login_page.html',{})
 
-#tut vsya logika paneli upravleniya dlya admina i dlya rabotyagi
+#tut vsya logika paneli upravleniya dlya admina, dlya rabotnikov luchshe napisat' otdel'nuyu i dlya rabotyagi
 def main(request):
     if request.user.is_superuser:
         page = 'main'
@@ -78,7 +78,7 @@ def formpage(request):
         })
 
 
-#logika dlya raboti s api telegrama
+####logika dlya raboti s api telegrama
 def inline_keyboard(a, b):
     smth = dict()
     smth["text"] = a
@@ -95,23 +95,36 @@ def form_reply_markup(a):
 #reply func dlya manual'nogo formirovaniya otvetov
 def reply(method):
     somelist1 = list()
-    if method == 'main':
+    if method == '/privet':
         text = start_msg
         somelist1 = list()
-        somelist1.append(inline_keyboard('Выбрать '+product_main_spec, 'choosetown'))
-        somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
+        somelist1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
+        somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
         somelist1.append(inline_keyboard('Помощь', 'helpme'))
     elif method == 'helpme':
         text = help_msg
-        somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
-        somelist1.append(inline_keyboard('Назад', 'main'))  
-    if len(somelist1) != 0:
+        somelist1.append(inline_keyboard('Связь с оператором', 'support'))
+        somelist1.append(inline_keyboard('Назад', 'main'))
+    elif method == 'support':
+        text = support_apply_msg
+        somelist1.append(inline_keyboard('На главную', 'main'))
+    elif method == 'main_cat':
+        text = 'Выберите город:'
+        ##########po horoshemu dobav' spisok gorodov v bazu ili uberi nahui, voobshe, kak variant, sdelat' eto s podkategoriyami
+        ##########tipo kak category s subctegory na FK, no hz? 
+        somelist1.append(inline_keyboard('Владивосток', 'town_vlad'))
+        somelist1.append(inline_keyboard('Находка', 'town_nakh'))
+        somelist1.append(inline_keyboard('Уссурийск', 'town_ussu'))
+    if len(somelist1) > 0:
         buttons = form_reply_markup(somelist1)
+    else:
+        buttons = None
     return text, buttons
 #reply
 @csrf_exempt
 def telegram_api(request):
+    #testing purpose
     try:
         ##dlya raboti s jsonom
         print(json.loads(request.body))
@@ -127,14 +140,17 @@ def telegram_api(request):
         None
     except:
         None
+    #check if json, ignore ussual requests
     try:
         fulljson = json.loads(request.body)
     except:
         raise Http404
+    #main logic
     reciever_id = None
     recieve_text = None
     user_info = None
     reply_type = None
+    #check request type, msg or callback query
     try:
         user_info = fulljson["callback_query"]
         reply_type = 'callback_query'
@@ -145,44 +161,45 @@ def telegram_api(request):
     #ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
     if user_info["from"]["is_bot"] == 'true':
         raise Http404
+    #eto otvet json
     return_dict = dict()
+    #然后就可以改变发信的方式
     return_dict["method"] = 'sendmessage'
+    #tut hranitsya id abonenta
     return_dict["chat_id"] = reciever_id
+    #做完后这个100%没有用
     somelist1 = list()
     #esli eto soobsheniye
     if reply_type == 'message':
         recieve_text = fulljson["message"]["text"]
         if recieve_text == '/privet':
-            return_dict["text"], return_dict["reply_markup"] = reply('main')
+            return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
         #v sluchae otpravki transakcii, chekai instance abonenta
         elif False:
             None
+        #missunderstood msg
         else:
-            return_dict["text"] = 'Попробуй написать:\n\n /privet'
+            return_dict["text"] = 'Попробуйте написать: /privet'
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
         ##po horoshemu, na etot query nado otvechat'
         #query_id = user_info["id"]
-        if query == 'main':
-            return_dict["text"], return_dict["reply_markup"] = reply(query)
-        elif query == 'helpme':
+        #reply
+        return_dict["text"], return_dict["reply_markup"] = reply(query)
+        if False:
             return_dict["text"], return_dict["reply_markup"] = reply(query)         
         elif query == 'support':
-            return_dict["text"] = support_apply_msg
-            somelist1.append(inline_keyboard('На главную', 'main'))
-        elif query == 'choosetown':
-            return_dict["text"] = 'Выберите город:'
-            ##########po horoshemu dobav' spisok gorodov v bazu ili uberi nahui, voobshe, kak variant, sdelat' eto s podkategoriyami
-            ##########tipo kak category s subctegory na FK, no hz? 
-            somelist1.append(inline_keyboard('Владивосток', 'town_vlad'))
-            somelist1.append(inline_keyboard('Находка', 'town_nakh'))
-            somelist1.append(inline_keyboard('Уссурийск', 'town_ussu'))
+            return_dict["text"], return_dict["reply_markup"] = reply(query) 
+        elif query == 'main_cat':
+            return_dict["text"], return_dict["reply_markup"] = reply(query) 
         #gavno i palki:D
         if len(somelist1)!=0:
             return_dict["reply_markup"] = form_reply_markup(somelist1)
+        ##做完后可以改到:
+        # #$return_dict["text"], return_dict["reply_markup"] = reply(query)
+        #if query == 'main':
     return JsonResponse(return_dict)
-    #return HttpResponse('')
 
 #logika dlya raboti s qiwi
 def qiwi_api():

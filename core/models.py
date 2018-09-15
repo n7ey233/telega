@@ -57,4 +57,9 @@ class chat_msg(models.Model):
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Вид')
     #text
     text = models.TextField(blank = True, verbose_name='Текст')
+    #datetime
+
+class site_settings(models.Model):
+    product_main_spec = models.TextField(blank = True, verbose_name='Название первой категории')
+    shop_name = models.TextField(blank = True, verbose_name='Название магазина')
 # Create your models here.
