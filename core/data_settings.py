@@ -3,6 +3,7 @@
 
 ##potom mojno izmenit' poisk s mesto-->>tovar, na poisk po mestu i tovaru
 
+##eshe nuzhno proveryat' 
 ##eto vse v settings saita
 #token telegi
 tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'

@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg
+from .data_settings import help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg
 
 
 #login
@@ -101,19 +101,14 @@ def reply(method, q1 = None, q2 = None):
     l1 = list()
     text = None
     # /privet, helpme, support, main_cat cashbalance
-    #/privet
+    #main menu /privet
     if method == '/privet':
         text = start_msg
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
         l1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
-    #/pomosh
-    elif method == 'helpme':
-        text = help_msg
-        l1.append(inline_keyboard('Связь с оператором', 'support'))
-        l1.append(inline_keyboard('Ищу работу', 'seekjob'))
-        l1.append(inline_keyboard('Назад', '/privet'))
+    #balance itd
     elif method == 'cashbalance':
         text = 'Ваш баланс: '+str(q1.balance)+'.'
         l1.append(inline_keyboard('Пополнить', 'replenish'))
@@ -139,6 +134,12 @@ def reply(method, q1 = None, q2 = None):
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('На главную', '/privet'))
+    #/pomosh
+    elif method == 'helpme':
+        text = help_msg
+        l1.append(inline_keyboard('Связь с оператором', 'support'))
+        l1.append(inline_keyboard('Ищу работу', 'seekjob'))
+        l1.append(inline_keyboard('На главную', '/privet'))
     #otpravki obrasheniya
     elif method == 'support':
         text = support_apply_msg
@@ -150,13 +151,42 @@ def reply(method, q1 = None, q2 = None):
         q1.job_seeker=True
         q1.save()
         l1.append(inline_keyboard('На главную', '/privet'))
-    #vibor kategorii
+    #vibor glavnoi kategorii
     elif method == 'main_cat':
-        text = 'Выберите '+product_main_spec+':'
-        ##########po horoshemu dobav' spisok gorodov v bazu ili uberi nahui, voobshe, kak variant, sdelat' eto s podkategoriyami
-        ##########tipo kak category s subctegory na FK, no hz? 
+        text = 'Выберите '+product_main_spec+':' 
         for i in raion.objects.filter(subcategory_of = None):
-            l1.append(inline_keyboard(i.name, i.pk))
+            l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #vibor raiona
+    elif method[0] == 'r':
+        #berem object
+        g0 = raion.objects.get(pk=method[1:])
+        g1 = raion.objects.filter(subcategory_of = g0)
+        #check esli eto kategoriya bez podkategoriy, to prodolzhaem vibor
+        if len(g1)>0:
+            text = 'Выберите товар в '+g0.pre_full_name+'.'
+            for i in g1:
+                l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
+        #inache predlagaem product_type
+        else:
+            ##berem spisok tovarov v dannom raione
+            g2 = product.objects.filter(raion = g0)
+            ##chekaem est' li tovar v dannom raione
+            if len(g2)==0:
+                text = 'К сожалению,на данный момент товаров в данном месте не имеется, попробуйте выбрать другое место.'
+                l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))
+            ##predlagaem product_type v dannom raione
+            else:
+                text = 'Выберите товар в '+g0.pre_full_name+'.'
+                ##eto 
+                u2 = set()
+                for i in g2:
+                    u2.add(i.product.type)
+                ##tut uzhe vibor product_type
+                for j in u2:
+                    l1.append(inline_keyboard(j.name, 'f'+str(j.pk)))
+            None
+        l1.append(inline_keyboard('На главную', '/privet'))
     #vibor raiona
     elif False:
         None
@@ -188,7 +218,6 @@ def telegram_api(request):
         None
     #utils##
 
-
     #check if json, ignore ussual requests
     try:
         fulljson = json.loads(request.body)
@@ -196,7 +225,6 @@ def telegram_api(request):
         raise Http404
     #collecting data
     reciever_id = None
-    recieve_text = None
     user_info = None
     reply_type = None
     #check request type, msg or callback query
@@ -221,10 +249,7 @@ def telegram_api(request):
     #esli eto soobsheniye
     if reply_type == 'message':
         recieve_text = fulljson["message"]["text"]
-        if recieve_text == '/privet':
-            return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
-        #v sluchae otpravki transakcii, chekai instance abonenta
-        elif user_a.payment_instance == 1:
+        if user_a.payment_instance == 1:
             #payment is real and not used
             user_a.payment_instance = 0
             a1, a2 = qiwi_api(recieve_text)
@@ -238,6 +263,12 @@ def telegram_api(request):
             else:
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
             user_a.save()
+        #v sluchae podtverjdeniya oplati za zakaz
+        elif user_a.payment_instance == 2:
+            None
+        elif recieve_text == '/privet':
+            return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
+        #v sluchae otpravki transakcii, chekai instance abonenta
         #missunderstood msg
         else:
             return_dict["text"] = 'Попробуйте написать: /privet'

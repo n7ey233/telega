@@ -31,7 +31,7 @@ class product_type(models.Model):
         return self.name
 ##ispol'zuyetsa dlya razdeleniya produkcii na raioni
 class raion(models.Model):
-    pre_full_name = models.TextField(blank = True, verbose_name='Название' )
+    pre_full_name = models.TextField(blank = True, verbose_name='префикс, используется для отображения' )
     name = models.CharField(max_length=128, blank = False, verbose_name='Название' )
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
     class Meta:
@@ -41,7 +41,7 @@ class raion(models.Model):
     def save(self, *args, **kwargs):
         if self == self.subcategory_of:
             return None
-        full_path = []
+        full_path = [self.name]
         k = self.subcategory_of 
         while k is not None:
             full_path.append(k.name)
@@ -53,6 +53,7 @@ class raion(models.Model):
 class product(models.Model):
     #fk na product_type
     #fk na raion(tipo mesto v kakom raione prychetsya)
+    subcategory_of = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='район хранения')
     #kolichestvo
     #cena v chem-to
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)
