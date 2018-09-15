@@ -47,6 +47,10 @@ def main(request):
             obj = 'abonent'
             page = 'object_list'
             obj_list = abonent.objects.all()
+        elif request.GET.get('q', '') == 'product':
+            obj = 'product'
+            page = 'object_list'
+            obj_list = product.objects.all()
         return render(request, 'cp/main.html',{
         'page': page,
         'obj': obj,
@@ -64,16 +68,24 @@ def formpage(request):
             if request.GET.get('que', '') != '':
                 object = raion.objects.get(pk=request.GET.get('que'))
             form = raionForm(instance = object)
+        #product_type
         elif request.GET.get('q', '') == 'product_type':
             if request.GET.get('que', '') != '':
                 object = product_type.objects.get(pk=request.GET.get('que'))
             form = product_typeForm(instance = object)
+        #product
+        elif request.GET.get('q', '') == 'product':
+            if request.GET.get('que', '') != '':
+                object = product.objects.get(pk=request.GET.get('que'))
+            form = productForm(instance = object)
         #elif request.GET.get('q', '') == 'product_type':
         if request.method == "POST":
             if request.GET.get('q', '') == 'raion':
                 form = raionForm(request.POST, instance=object)
             elif request.GET.get('q', '') == 'product_type':
                 form = product_typeForm(request.POST, instance=object)
+            elif request.GET.get('q', '') == 'product':
+                form = productForm(request.POST, instance=object)
             if form.is_valid():
                 i = form.save()
                 return redirect('/main_page/cp'+ '?q=%s'%(request.GET.get('q'))) 
@@ -95,7 +107,8 @@ def reply(method, q1 = None, q2 = None):
     l1 = list()
     text = None
     # /privet, helpme, support, main_cat cashbalance
-    ###NAIDI OPERATOR switch() v pythone, etot "elif" metod - ebala pzdc
+    ###NAIDI OPERATOR switch() v pythone, etot "elif" metod - ebala pzdc,
+    # ili kak variant, sdelai razdeleniye po prefiksam, sikonomit vremya
     #main menu /privet
     if method == '/privet':
         text = start_msg
@@ -114,7 +127,7 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_check':
         text = 'Введите номер транзакции.\n\n//тестовый вариант, введи *123456789*, это типо номер успешной транзакции на 500 рублей,\n введи *987654321*, это номер уже проведённой транзакции, получишь сообщение о неудаче платежа, мол типо транзакция уже зарегестрирована,\n другие цифры или значения или я неебу чё означают несуществующую транзакцию.\n\n мне нужно 2 киви кошелька для тестов'
-        #тут меняется инстанс абонента на 1(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста)
+        #тут меняется инстанс абонента на 1(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста(а именно проверка транзакции через киви апи))
         q1.payment_instance = 1
         q1.save()
         l1.append(inline_keyboard('На главную', '/privet'))
@@ -186,10 +199,23 @@ def reply(method, q1 = None, q2 = None):
                     u2.add(i.product.type)
                 ##tut uzhe vibor product_type
                 for j in u2:
-                    l1.append(inline_keyboard(j.name, 'f'+str(j.pk)))
+                    l1.append(inline_keyboard(j.name, 'f'+str(j.pk)+'r'+str(g0.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor tovara
-    elif False:
+    elif method[0] == 'f':
+        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
+        #get object from products(raion = r, product_type = f) u kotorogo data sozdaniya samaya poslednyaya
+        #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
+        #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
+        #product pomechaetsa kak 1(ojidaet oplati)
+        #и абоненту предлагается выбор, оплатить с баланса, либо сделать транзакцию напрямую
+        #при оплате с баланса (надо писать логику)
+        #при оплате транзакцией, 
+        #да пробуй заебал, иди покури кофейка налей, глицин сожри и пробуй, нехуй сидеть
+        #
+        #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
+        #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
+        #да нихуя не снимается, он просто удаляется
         None
     else:
         None
@@ -204,16 +230,8 @@ def telegram_api(request):
     #testing purpose
     try:
         ##dlya raboti s jsonom
-        print(json.loads(request.body))
-        #print(request.body)
-        ###v sluchae esli eto message
-        ##id poluchatelya
-        #print(json.loads(request.body)["message"]["from"]["id"])
-        ##text
-        #print(json.loads(request.body)["message"]["text"])
-        ###esli callback query
-        ##id poluchatelya
-        #
+        #print(json.loads(request.body))
+        print(request.body)
         None
     except:
         None
@@ -237,7 +255,7 @@ def telegram_api(request):
         reply_type = 'message'
     reciever_id = user_info["from"]["id"]
     #ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
-    if user_info["from"]["is_bot"] == 'true':
+    if user_info["from"]["is_bot"] != 'False':
         raise Http404
     #eto otvet json
     return_dict = dict()

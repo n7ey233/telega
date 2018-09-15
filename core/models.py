@@ -52,8 +52,9 @@ class raion(models.Model):
 #voobshe, ya bi nazval eto product_instance, hotya kto suda polezet?
 class product(models.Model):
     #fk na product_type
+    placing = models.ForeignKey(product_type, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Вид товара')
     #fk na raion(tipo mesto v kakom raione prychetsya)
-    placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='район хранения')
+    placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
     #kolichestvo
     #cena v chem-to
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)
