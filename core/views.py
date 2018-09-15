@@ -84,7 +84,7 @@ def formpage(request):
 
 ####logika dlya raboti s api telegrama
 def inline_keyboard(a, b):
-    
+
     return [{'text': a, 'callback_data': b}]
 #formiruyet dict knopok dlya otveta iz spiska @a
 def form_reply_markup(a):
@@ -95,6 +95,7 @@ def reply(method, q1 = None, q2 = None):
     l1 = list()
     text = None
     # /privet, helpme, support, main_cat cashbalance
+    ###NAIDI OPERATOR switch() v pythone, etot "elif" metod - ebala pzdc
     #main menu /privet
     if method == '/privet':
         text = start_msg
@@ -161,6 +162,10 @@ def reply(method, q1 = None, q2 = None):
             text = 'Уточните местоположение в '+g0.pre_full_name+'.'
             for i in g1:
                 l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
+        if g0.subcategory_of:
+            l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+        else:
+            l1.append(inline_keyboard('Назад', 'main_cat'))
         #inache predlagaem product_type
         else:
             ##berem spisok tovarov v dannom raione
