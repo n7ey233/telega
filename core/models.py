@@ -25,6 +25,7 @@ class abonent(models.Model):
 ##produkciya bivaet raznih tipov
 class product_type(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
+    price = models.FloatField(blank = False, default = 500, verbose_name='Цена за ед. продукта, по дефолту с неё берется ценник на товары')
     class Meta:
         ordering = ['name']
     def __str__(self):
@@ -57,16 +58,22 @@ class product(models.Model):
     placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
     #kolichestvo
     #cena v chem-to
+    price = models.FloatField(blank=True, null = True,verbose_name='Цена, если пусто, то ценник берется с вида продукции')
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)
     #dop komentariy (hz zachem, vozmozhno opisaniye mesta zakladki?)
     #geolokaciya
     #ssilka na foto
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
-    name = models.CharField(max_length=128, blank = False)
+    #fk na rabotnika(tipo kto delaet zakladku)
+    name = models.CharField(max_length=128, blank = True)
     class Meta:
         ordering = ['name']
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        if self.price == None:
+            self.price = self.type_of_product.price
+        super().save()
 
 class chat_msg(models.Model):
     #abonent

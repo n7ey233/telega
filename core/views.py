@@ -95,6 +95,7 @@ def formpage(request):
 
 
 ####logika dlya raboti s api telegrama
+#eboshim knopki
 def inline_keyboard(a, b):
 
     return [{'text': a, 'callback_data': b}]
@@ -108,8 +109,9 @@ def reply(method, q1 = None, q2 = None):
     text = None
     # /privet, helpme, support, main_cat cashbalance
     ###NAIDI OPERATOR switch() v pythone, etot "elif" metod - ebala pzdc,
-    # ili kak variant, sdelai razdeleniye po prefiksam, sikonomit vremya
+    # ili kak variant, sdelai razdeleniye po prefiksam, sekonomit vremya
     #main menu /privet
+    #'r...' - raion, 'f...r...' - product, 'b...f...r...' - oplata s balansa
     if method == '/privet':
         text = start_msg
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
@@ -142,6 +144,9 @@ def reply(method, q1 = None, q2 = None):
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('На главную', '/privet'))
+    elif method[0] == 'b':
+        
+        None
     #/pomosh
     elif method == 'helpme':
         text = help_msg
@@ -209,12 +214,9 @@ def reply(method, q1 = None, q2 = None):
     elif method[0] == 'f':
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
-        #get object from products(raion = r, product_type = f) u kotorogo data sozdaniya samaya poslednyaya
-        zyn = product_type.objects.get(pk=method[0][1:])
-        dey = raion.objects.get(pk=method[1][1:])
-        asd = product.objects.filter(type_of_product = zyn, raion = dey)[0]
-        text = str(asd.name)
-        print(asd)
+        #get object from products(raion = r, product_type = f), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
+        asd = product.objects.filter(type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
+        text = str(asd.name)+' цена: 500'
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
         #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
         #product pomechaetsa kak 1(ojidaet oplati)
@@ -226,6 +228,10 @@ def reply(method, q1 = None, q2 = None):
         #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
         #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
         #да нихуя не снимается, он просто удаляется
+        l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.type_of_product.pk)+'r'+str(asd.placing.pk)))
+        l1.append(inline_keyboard('Оплата по транзакции', '/privet'))
+        l1.append(inline_keyboard('Назад', 'r'+str(asd.placing.pk)))
+        l1.append(inline_keyboard('На главную', '/privet'))
         None
     else:
         None
