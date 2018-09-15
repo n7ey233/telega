@@ -162,10 +162,10 @@ def reply(method, q1 = None, q2 = None):
             text = 'Уточните местоположение в '+g0.pre_full_name+'.'
             for i in g1:
                 l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
-        if g0.subcategory_of:
-            l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-        else:
-            l1.append(inline_keyboard('Назад', 'main_cat'))
+            if g0.subcategory_of:
+                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+            else:
+                l1.append(inline_keyboard('Назад', 'main_cat'))
         #inache predlagaem product_type
         else:
             ##berem spisok tovarov v dannom raione
