@@ -173,7 +173,7 @@ def reply(method, q1 = None, q2 = None):
             g2 = product.objects.filter(placing = g0)
             ##chekaem est' li tovar v dannom raione
             if len(g2)==0:
-                text = 'К сожалению,на данный момент товаров в данном месте не имеется, попробуйте выбрать другое место.'
+                text = 'К сожалению,на данный момент товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
                 if g0.subcategory_of:
                     l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
                 else:
