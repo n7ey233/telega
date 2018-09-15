@@ -43,6 +43,10 @@ def main(request):
             obj = 'product_type'
             page = 'object_list'
             obj_list = product_type.objects.all()
+        elif request.GET.get('q', '') == 'abonent':
+            obj = 'abonent'
+            page = 'object_list'
+            obj_list = abonent.objects.all()
         return render(request, 'cp/main.html',{
         'page': page,
         'obj': obj,
@@ -112,10 +116,8 @@ def reply(method, q1 = None):
     #otpravka obrasheniya
     elif method == 'support':
         text = support_apply_msg
-        print(q1.support_seeker)
         q1.support_seeker=True
         q1.save()
-        print(q1.support_seeker)
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'seekjob':
         text = support_apply_msg
