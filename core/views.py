@@ -230,7 +230,6 @@ def telegram_api(request):
             a1, a2 = qiwi_api(recieve_text)
             if a1 == True:
                 user_a.balance=+ float(a2)
-                user_a.save()
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_success', user_a, a2)
             #payment is real but already used
             elif a1 == False:
