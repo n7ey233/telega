@@ -238,6 +238,7 @@ def telegram_api(request):
             #payment does'nt exists
             else:
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
+            user_a.save()
         #missunderstood msg
         else:
             return_dict["text"] = 'Попробуйте написать: /privet'
@@ -254,8 +255,8 @@ def qiwi_api(a):
     if a == '123654789':
         return True, '500'
     elif a == '987654321':
-        return False
+        return False, None
     else:
-        return None
+        return None, None
 
 # Create your views here.
