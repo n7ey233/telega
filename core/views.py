@@ -210,7 +210,9 @@ def reply(method, q1 = None, q2 = None):
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
         #get object from products(raion = r, product_type = f) u kotorogo data sozdaniya samaya poslednyaya
-        asd = product.objects.filter(type_of_product = product.type.objects.get(pk=method[0][1:]), raion = raion.objects.get(pk=method[1][1:]))
+        zyn = product.type.objects.get(pk=method[0][1:])
+        dey = raion.objects.get(pk=method[1][1:])
+        asd = product.objects.filter(type_of_product = zyn, raion = dey)
         text = str(asd.name)
         print(asd)
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
