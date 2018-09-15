@@ -85,17 +85,16 @@ def formpage(request):
 ####logika dlya raboti s api telegrama
 def inline_keyboard(a, b):
     smth = dict()
-    smth["text"] = a
-    smth["callback_data"] = b
+    smth["text"], smth["callback_data"] = a, b
+    #smth["callback_data"] = b
     #1st array(v nem oborachivaem otdel'nuyu liniyu knopok)
     somelist1 = list()
     somelist1.append(smth)
     return somelist1
 #formiruyet dict knopok dlya otveta iz spiska @a
 def form_reply_markup(a):
-    z = dict()
-    z["inline_keyboard"] = a
-    return z
+
+    return {'inline_keyboard': a}
 #reply func dlya manual'nogo formirovaniya otvetov
 def reply(method, q1 = None, q2 = None):
     l1 = list()
@@ -251,6 +250,7 @@ def telegram_api(request):
     #esli eto soobsheniye
     if reply_type == 'message':
         recieve_text = fulljson["message"]["text"]
+        #v sluchae esli ojidaet popolneniya balansa
         if user_a.payment_instance == 1:
             #payment is real and not used
             user_a.payment_instance = 0
@@ -268,10 +268,10 @@ def telegram_api(request):
         #v sluchae podtverjdeniya oplati za zakaz
         elif user_a.payment_instance == 2:
             None
+        #v sluchae esli init fraza
         elif recieve_text == '/privet':
             return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
-        #v sluchae otpravki transakcii, chekai instance abonenta
-        #missunderstood msg
+        #missunderstood msg na obichnuyu otpravku soobsheniya
         else:
             return_dict["text"] = 'Попробуйте написать: /privet'
     #esli eto nazhatiye na knopki
