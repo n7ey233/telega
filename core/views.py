@@ -174,7 +174,7 @@ def reply(method, q1 = None, q2 = None):
             ##chekaem est' li tovar v dannom raione
             if len(g2)==0:
                 text = 'К сожалению,на данный момент товаров в данном месте не имеется, попробуйте выбрать другое место.'
-                l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))
+                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
             ##predlagaem product_type v dannom raione
             else:
                 text = 'Выберите товар в '+g0.pre_full_name+'.'
