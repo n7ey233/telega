@@ -117,7 +117,7 @@ def reply(method):
         text = 'Выберите '+product_main_spec+':'
         ##########po horoshemu dobav' spisok gorodov v bazu ili uberi nahui, voobshe, kak variant, sdelat' eto s podkategoriyami
         ##########tipo kak category s subctegory na FK, no hz? 
-        for i in raion.objects.filter(subcategory_of = None)
+        for i in raion.objects.filter(subcategory_of = None):
             l1.append(inline_keyboard(i.name, i.pk))
     #vibor raiona
     elif False:
