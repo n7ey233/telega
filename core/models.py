@@ -53,7 +53,7 @@ class raion(models.Model):
 class product(models.Model):
     #fk na product_type
     #fk na raion(tipo mesto v kakom raione prychetsya)
-    subcategory_of = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='район хранения')
+    placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='район хранения')
     #kolichestvo
     #cena v chem-to
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)

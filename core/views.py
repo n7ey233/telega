@@ -159,7 +159,7 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor raiona
     elif method[0] == 'r':
-        #berem object
+        #uznaem voobshe chto eto za raion
         g0 = raion.objects.get(pk=method[1:])
         g1 = raion.objects.filter(subcategory_of = g0)
         #check esli eto kategoriya bez podkategoriy, to prodolzhaem vibor
@@ -170,7 +170,7 @@ def reply(method, q1 = None, q2 = None):
         #inache predlagaem product_type
         else:
             ##berem spisok tovarov v dannom raione
-            g2 = product.objects.filter(raion = g0)
+            g2 = product.objects.filter(placing = g0)
             ##chekaem est' li tovar v dannom raione
             if len(g2)==0:
                 text = 'К сожалению,на данный момент товаров в данном месте не имеется, попробуйте выбрать другое место.'
