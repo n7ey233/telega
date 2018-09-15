@@ -94,30 +94,38 @@ def form_reply_markup(a):
     return z
 #reply func dlya manual'nogo formirovaniya otvetov
 def reply(method):
-    somelist1 = list()
+    l1 = list()
+    # /privet, helpme, support, main_cat
+    #/privet
     if method == '/privet':
         text = start_msg
-        somelist1 = list()
-        somelist1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
-        somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
-        somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
-        somelist1.append(inline_keyboard('Помощь', 'helpme'))
+        l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
+        l1.append(inline_keyboard('Баланс', 'cashbalance'))
+        l1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
+        l1.append(inline_keyboard('Помощь', 'helpme'))
+    #/pomosh
     elif method == 'helpme':
         text = help_msg
-        somelist1.append(inline_keyboard('Связь с оператором', 'support'))
-        somelist1.append(inline_keyboard('Назад', 'main'))
+        l1.append(inline_keyboard('Связь с оператором', 'support'))
+        l1.append(inline_keyboard('Назад', '/privet'))
+    #otpravka obrasheniya
     elif method == 'support':
         text = support_apply_msg
-        somelist1.append(inline_keyboard('На главную', 'main'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #vibor kategorii
     elif method == 'main_cat':
-        text = 'Выберите город:'
+        text = 'Выберите '+product_main_spec+':'
         ##########po horoshemu dobav' spisok gorodov v bazu ili uberi nahui, voobshe, kak variant, sdelat' eto s podkategoriyami
         ##########tipo kak category s subctegory na FK, no hz? 
-        somelist1.append(inline_keyboard('Владивосток', 'town_vlad'))
-        somelist1.append(inline_keyboard('Находка', 'town_nakh'))
-        somelist1.append(inline_keyboard('Уссурийск', 'town_ussu'))
-    if len(somelist1) > 0:
-        buttons = form_reply_markup(somelist1)
+        for i in raion.objects.filter(subcategory_of = None)
+            l1.append(inline_keyboard(i.name, i.pk))
+    #vibor raiona
+    elif False:
+        None
+    else:
+        None
+    if len(l1) > 0:
+        buttons = form_reply_markup(l1)
     else:
         buttons = None
     return text, buttons
@@ -140,12 +148,15 @@ def telegram_api(request):
         None
     except:
         None
+    #utils##
+
+
     #check if json, ignore ussual requests
     try:
         fulljson = json.loads(request.body)
     except:
         raise Http404
-    #main logic
+    #collecting data
     reciever_id = None
     recieve_text = None
     user_info = None
@@ -167,8 +178,7 @@ def telegram_api(request):
     return_dict["method"] = 'sendmessage'
     #tut hranitsya id abonenta
     return_dict["chat_id"] = reciever_id
-    #做完后这个100%没有用
-    somelist1 = list()
+    ##redirect on func
     #esli eto soobsheniye
     if reply_type == 'message':
         recieve_text = fulljson["message"]["text"]
@@ -183,22 +193,9 @@ def telegram_api(request):
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
+        return_dict["text"], return_dict["reply_markup"] = reply(query)
         ##po horoshemu, na etot query nado otvechat'
         #query_id = user_info["id"]
-        #reply
-        return_dict["text"], return_dict["reply_markup"] = reply(query)
-        if False:
-            return_dict["text"], return_dict["reply_markup"] = reply(query)         
-        elif query == 'support':
-            return_dict["text"], return_dict["reply_markup"] = reply(query) 
-        elif query == 'main_cat':
-            return_dict["text"], return_dict["reply_markup"] = reply(query) 
-        #gavno i palki:D
-        if len(somelist1)!=0:
-            return_dict["reply_markup"] = form_reply_markup(somelist1)
-        ##做完后可以改到:
-        # #$return_dict["text"], return_dict["reply_markup"] = reply(query)
-        #if query == 'main':
     return JsonResponse(return_dict)
 
 #logika dlya raboti s qiwi

@@ -4,14 +4,12 @@ from django.db import models
 #i otslezhivat' sostoyaniye obsheniya s botom
 class abonent(models.Model):
     #instance obsheniya (
-    #0- hello
-    #1- tovar vibran
-    #2- vibran raion
-    #3- soglasiye na oplatu
-    #4- redirect na 0, t.k. sdelka provedena
+    #0- default (nikakoi operacii)
+    #1- (podgotovka oplati, ozhidaniye nomera transakcii)
+    #2- 付款成功, redirect na 0
     #)
     ####
-    #balance(dlya kur'yeznikh sluchaev, kogda zakinul chutka bolshe chem nuzhno)
+    #balance(dlya kur'yeznikh sluchaev, kogda zakinul chutka bolshe chem nuzhno или когда закинули недостаточно для оплаты)
     #ego id dlya telegi
     telega_id = models.IntegerField(default = 0, verbose_name='ID')
     #oborot(dlya skidok mb?)
@@ -22,18 +20,30 @@ class abonent(models.Model):
         return self.name
 ##produkciya bivaet raznih tipov
 class product_type(models.Model):
-    name = models.CharField(max_length=128, blank = False)
+    name = models.CharField(max_length=128, blank = False, verbose_name='Название')
     class Meta:
         ordering = ['name']
     def __str__(self):
         return self.name
 ##ispol'zuyetsa dlya razdeleniya produkcii na raioni
 class raion(models.Model):
-    name = models.CharField(max_length=128, blank = False)
+    pre_full_name = models.TextField(blank = True, verbose_name='Название' )
+    name = models.CharField(max_length=128, blank = False, verbose_name='Название' )
+    subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
     class Meta:
         ordering = ['name']
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        if self == self.subcategory_of:
+            return None
+        full_path = []
+        k = self.subcategory_of 
+        while k is not None:
+            full_path.append(k.name)
+            k = k.subcategory_of
+        self.pre_full_name = '/'.join(full_path[::-1])
+        super().save()
 ##eto instance sdelki, hotyaaa
 #voobshe, ya bi nazval eto product_instance, hotya kto suda polezet?
 class product(models.Model):
