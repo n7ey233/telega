@@ -35,7 +35,7 @@ class raion(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название' )
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
     class Meta:
-        ordering = ['name']
+        ordering = ['pre_full_name']
     def __str__(self):
         return self.name
     def save(self, *args, **kwargs):
