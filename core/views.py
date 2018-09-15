@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec, shop_name
+from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec, start_msg
 
 
 #login
@@ -96,7 +96,7 @@ def form_reply_markup(a):
 def reply(method):
     somelist1 = list()
     if method == 'main':
-        text = 'Привет!'
+        text = start_msg
         somelist1 = list()
         somelist1.append(inline_keyboard('Выбрать '+product_main_spec, 'choosetown'))
         somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
