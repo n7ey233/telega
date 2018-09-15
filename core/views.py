@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import tele_token, help_msg, support_apply_msg
+from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec
 
 
 #login
@@ -87,13 +87,18 @@ def inline_keyboard(a, b):
     somelist1 = list()
     somelist1.append(smth)
     return somelist1
-
+#formiruyet dict knopok dlya otveta iz spiska @a
+def form_reply_markup(a):
+    z = dict()
+    z["inline_keyboard"] = a
+    return z
+#reply func dlya manual'nogo formirovaniya otvetov
 def reply(method):
     somelist1 = list()
     if method == 'main':
         text = 'Привет!'
         somelist1 = list()
-        somelist1.append(inline_keyboard('Выбрать город', 'choosetown'))
+        somelist1.append(inline_keyboard('Выбрать '+product_main_spec, 'choosetown'))
         somelist1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
         somelist1.append(inline_keyboard('Баланс', 'cashbalance'))
         somelist1.append(inline_keyboard('Помощь', 'helpme'))
@@ -108,7 +113,6 @@ def reply(method):
 #reply
 @csrf_exempt
 def telegram_api(request):
-    #print(json.loads(request.body)["result"][0]["message"]["from"]["id"])
     try:
         ##dlya raboti s jsonom
         print(json.loads(request.body))
@@ -139,9 +143,9 @@ def telegram_api(request):
         user_info = fulljson["message"]
         reply_type = 'message'
     reciever_id = user_info["from"]["id"]
-    #ignore bot
+    #ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
     if user_info["from"]["is_bot"] == 'true':
-        return HttpResponse('')
+        raise Http404
     return_dict = dict()
     return_dict["method"] = 'sendmessage'
     return_dict["chat_id"] = reciever_id
@@ -170,14 +174,14 @@ def telegram_api(request):
             somelist1.append(inline_keyboard('На главную', 'main'))
         elif query == 'choosetown':
             return_dict["text"] = 'Выберите город:'
-            ##########po horoshemu dobav' spisok gorodov v baze ili uberi nahui
+            ##########po horoshemu dobav' spisok gorodov v bazu ili uberi nahui, voobshe, kak variant, sdelat' eto s podkategoriyami
+            ##########tipo kak category s subctegory na FK, no hz? 
             somelist1.append(inline_keyboard('Владивосток', 'town_vlad'))
             somelist1.append(inline_keyboard('Находка', 'town_nakh'))
             somelist1.append(inline_keyboard('Уссурийск', 'town_ussu'))
+        #gavno i palki:D
         if len(somelist1)!=0:
-            dict2 = dict()
-            dict2["inline_keyboard"]= somelist1
-            return_dict["reply_markup"] = dict2
+            return_dict["reply_markup"] = form_reply_markup(somelist1)
     return JsonResponse(return_dict)
     #return HttpResponse('')
 
