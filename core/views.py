@@ -164,7 +164,7 @@ def reply(method, q1 = None, q2 = None):
         g1 = raion.objects.filter(subcategory_of = g0)
         #check esli eto kategoriya bez podkategoriy, to prodolzhaem vibor
         if len(g1)>0:
-            text = 'Выберите товар в '+g0.pre_full_name+'.'
+            text = 'Уточните местоположение в '+g0.pre_full_name+'.'
             for i in g1:
                 l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
         #inache predlagaem product_type
