@@ -115,7 +115,7 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('Ищу работу', 'seekjob'))
         l1.append(inline_keyboard('Назад', '/privet'))
     elif method == 'cashbalance':
-        text = 'Ваш баланс: '+q1.balance+'.'
+        text = 'Ваш баланс: '+str(q1.balance)+'.'
         l1.append(inline_keyboard('Пополнить', 'replenish'))
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish':
@@ -129,7 +129,7 @@ def reply(method, q1 = None, q2 = None):
         q1.save()
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_success':
-        text = 'Ваш баланс был успешно пополнен на сумму:'+q2+'.\nВаш баланс составляет:'+q1.balance+'.'
+        text = 'Ваш баланс был успешно пополнен на сумму:'+q2+'.\nВаш баланс составляет:'+str(q1.balance)+'.'
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_exists':
         text = 'Данная транзакция уже была проведена.'
