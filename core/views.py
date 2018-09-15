@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec
+from .data_settings import tele_token, help_msg, support_apply_msg, product_main_spec, shop_name
 
 
 #login
@@ -107,8 +107,7 @@ def reply(method):
         somelist1.append(inline_keyboard('Связь с поддержкой', 'support'))
         somelist1.append(inline_keyboard('Назад', 'main'))  
     if len(somelist1) != 0:
-        buttons = dict()
-        buttons["inline_keyboard"]= somelist1    
+        buttons = form_reply_markup(somelist1)
     return text, buttons
 #reply
 @csrf_exempt
