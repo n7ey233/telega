@@ -158,7 +158,7 @@ def reply(method, q1 = None, q2 = None):
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
         if dsa.buyer:
-            text = 'Увы, заказ был зарезервирован или куплен, попробуйте выбрать снова.'
+            text = 'Увы, товар был только-что зарезервирован или куплен, попробуйте выбрать снова.'
         else:
             text = 'Ваш баланс: '+str(q1.balance)+'.\nСтоимость '+dsa.type_of_product.name+' в '+ dsa.placing.pre_full_name+': '+str(dsa.price)
             #proveryaem est' li vozmozhnost' oplatit'
