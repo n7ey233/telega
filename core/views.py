@@ -139,7 +139,7 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('Отправил', 'replenish_check'))
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_check':
-        text = 'Введите номер транзакции.\n\n//тестовый вариант, введи *123456789*, это типо номер успешной транзакции на 500 рублей,\n введи *987654321*, это номер уже проведённой транзакции, получишь сообщение о неудаче платежа, мол типо транзакция уже зарегестрирована,\n другие цифры или значения или я неебу чё означают несуществующую транзакцию.\n\n мне нужно 2 киви кошелька для тестов'
+        text = 'Введите номер транзакции.\n\n//тестовый вариант, введи *123456789*, это типо номер успешной транзакции на 1500 рублей,\n введи *987654321*, это номер уже проведённой транзакции, получишь сообщение о неудаче платежа, мол типо транзакция уже зарегестрирована,\n другие цифры или значения или я неебу чё означают несуществующую транзакцию.\n\n мне нужно 2 киви кошелька для тестов'
         #тут меняется инстанс абонента на 1(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста(а именно проверка транзакции через киви апи))
         q1.payment_instance = 1
         q1.save()
@@ -178,20 +178,21 @@ def reply(method, q1 = None, q2 = None):
     #oplata s balansa
     elif method[0] == 'v':
         #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan cherez try except
-        qua = product.objects.get(pk=method[1:])
-        if True:
-            q1.balance-=qua.price
-            q1.save()
-            qua.buyer = q1
-            qua.save()
-            text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
-            l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
-        else:
+        try:
+            qua = product.objects.get(pk=method[1:] ,buyer = None)
+            if q1.balance >= qua.price:
+                q1.balance-=qua.price
+                q1.save()
+                qua.buyer = q1
+                qua.save()
+                text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
+                l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
+            else:
+                text = 'К сожалению, на вашем балансе не хватает средств для оплаты.'
+        except:
             #tut soobsheniye ob oshibke, ili tovar prodan, ili deneg na balance ne hvataet, ili eshe kakayato ebala, zameni
             #na try except
-            text = 'К сожалению произошла какая-то ошибка//перепиши логику ошибок, что-бы понять что случилось'
-            None
-
+            text = 'К сожалению, данный товар был только-что куплен или зарезервирован,попробуйте выбрать ещё раз.'
         l1.append(inline_keyboard('На главную', '/privet'))
     #pokaz info o tovare
     elif method[0] == 'j':
@@ -202,9 +203,9 @@ def reply(method, q1 = None, q2 = None):
         dsa = product.objects.get(pk=method[1:])
         #proverka buyera
         if dsa.buyer == q1:
-            text = 'dsa.product_type.name + mestopolojeniye i prochaya poebota, ya svoe delo sdelal, \n\n nuzhno 2 kiwi koshelka dlya testov + babos, a to eto parojnyak'
+            text = dsa.product_type.name + ' +mestopolojeniye i prochaya poebota, ya svoe delo sdelal, \n\n nuzhno 2 kiwi koshelka dlya testov + babos, a to eto parojnyak'
         else:
-            text= 'Возможно это не ваш товар'
+            text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
             l1.append(inline_keyboard('Помощь', 'support'))
         l1.append(inline_keyboard('На главную', '/privet'))
         None
@@ -276,16 +277,13 @@ def reply(method, q1 = None, q2 = None):
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
         #get object from products(raion = r, product_type = f), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
-        asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
-        #
-        #
-        #broken, nuzhno uznat' kak chekat'
-        if asd.type_of_product:
+        try:
+            asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
             l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
             l1.append(inline_keyboard('Оплата по транзакции', '/privet')) 
-        else:
-            text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар'
+        except:
+            text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар.'
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
         #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
         #product pomechaetsa kak 1(ojidaet oplati)
@@ -297,7 +295,7 @@ def reply(method, q1 = None, q2 = None):
         #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
         #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
         #да нихуя не снимается, он просто удаляется
-        l1.append(inline_keyboard('Назад', 'r'+str(asd.placing.pk)))
+        l1.append(inline_keyboard('Назад', 'r'+method[1]))
         l1.append(inline_keyboard('На главную', '/privet'))
         None
     else:
