@@ -56,14 +56,16 @@ class product(models.Model):
     type_of_product = models.ForeignKey(product_type, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Вид товара')
     #fk na raion(tipo mesto v kakom raione prychetsya)
     placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
-    #kolichestvo
-    #cena v chem-to
+    #data
+    ##kolichestvo
+    ##cena v chem-to
     price = models.FloatField(blank=True, null = True,verbose_name='Цена, если пусто, то ценник берется с вида продукции')
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)
     #dop komentariy (hz zachem, vozmozhno opisaniye mesta zakladki?)
     #geolokaciya
     #ssilka na foto
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
+    buyer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
     #fk na rabotnika(tipo kto delaet zakladku)
     name = models.CharField(max_length=128, blank = True)
     class Meta:
