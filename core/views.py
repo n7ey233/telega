@@ -277,12 +277,15 @@ def reply(method, q1 = None, q2 = None):
         method = method.split('r')
         #get object from products(raion = r, product_type = f), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
         asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
-        if asd.count() == 0:
-            text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар'
-        else:
+        #
+        #
+        #broken, nuzhno uznat' kak chekat'
+        if asd.product_type:
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
             l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
-            l1.append(inline_keyboard('Оплата по транзакции', '/privet'))
+            l1.append(inline_keyboard('Оплата по транзакции', '/privet')) 
+        else:
+            text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар'
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
         #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
         #product pomechaetsa kak 1(ojidaet oplati)
