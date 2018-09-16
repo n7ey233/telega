@@ -112,13 +112,23 @@ def reply(method, q1 = None, q2 = None):
     # ili kak variant, sdelai razdeleniye po prefiksam, sekonomit vremya
     #main menu /privet
     #'r...' - raion, 'f...r...' - product, 'b...f...r...' - oplata s balansa, 'j...nomer producta' - pokaz informacii o tovare
-    #'v...nomerproducta' - metod snyatiya deneg s balansa 
+    #'v...nomerproducta' - metod snyatiya deneg s balansa, 'j...nomerproducta' - prosmotr zakladki
     if method == '/privet':
         text = start_msg
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
         l1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
+        l1.append(inline_keyboard('История', 'history'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
+    #istoriya
+    elif method == 'history':
+        text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
+        asdf = product.objects.filter(buyer = q1)
+        if len(asdf) == 0:
+            text+='\nУвы, с вашего аккаунта ещё не было покупок'
+        else:
+            for i in asdf:
+                l1.append(inline_keyboard(i.type_of_product.name, 'j'+str(i.pk)))
     #balance itd
     elif method == 'cashbalance':
         text = 'Ваш баланс: '+str(q1.balance)+'.'
@@ -238,7 +248,7 @@ def reply(method, q1 = None, q2 = None):
         #inache predlagaem product_type
         else:
             ##berem spisok tovarov v dannom raione
-            g2 = product.objects.filter(placing = g0)
+            g2 = product.objects.filter(placing = g0, buyer = None)
             ##chekaem est' li tovar v dannom raione
             if len(g2)==0:
                 text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
@@ -266,8 +276,13 @@ def reply(method, q1 = None, q2 = None):
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
         #get object from products(raion = r, product_type = f), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
-        asd = product.objects.filter(type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
-        text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
+        asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
+        if len(asd) == 0:
+            text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар'
+        else:
+            text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
+            l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
+            l1.append(inline_keyboard('Оплата по транзакции', '/privet'))
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
         #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
         #product pomechaetsa kak 1(ojidaet oplati)
@@ -279,8 +294,6 @@ def reply(method, q1 = None, q2 = None):
         #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
         #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
         #да нихуя не снимается, он просто удаляется
-        l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
-        l1.append(inline_keyboard('Оплата по транзакции', '/privet'))
         l1.append(inline_keyboard('Назад', 'r'+str(asd.placing.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
         None
