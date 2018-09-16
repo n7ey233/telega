@@ -145,7 +145,26 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method[0] == 'b':
-
+        dsa = product.objects.get(pk=method[1:])
+        #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan
+        text = 'Ваш баланс: '+str(q1.balance)+'.\nСтоимость '+dsa.type_of_product.name+' в '+ dsa.placing.pre_full_name+': '+str(dsa.price)
+        #proveryaem est' li vozmozhnost' oplatit'
+        if q1.balance >= dsa.price:
+            text+='\nУ вас хватает денежных средств для оплты, нажмите "Оплатить с баланса" для получения подробной информации о местоположении товара.'
+            #dodelai
+            #
+            #
+            l1.append(inline_keyboard('Оплатить с баланса', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
+        #esli net, to predlagaem popolnit; balans
+        else:
+            text+='\nНа вашем балансе недостаточно средств для оплаты.\nПополните баланс для дальнейшей оплаты или оплатите используя транзакцию.'
+            l1.append(inline_keyboard('Пополнить баланс', 'replenish'))
+            ###
+            ###
+            ###dodelai
+            l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
+        l1.append(inline_keyboard('Назад', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
+        l1.append(inline_keyboard('На главную', '/privet'))
         None
     #/pomosh
     elif method == 'helpme':
