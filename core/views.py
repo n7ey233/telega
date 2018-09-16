@@ -280,7 +280,7 @@ def reply(method, q1 = None, q2 = None):
         #
         #
         #broken, nuzhno uznat' kak chekat'
-        if asd.product_type:
+        if asd.type_of_product:
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
             l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
             l1.append(inline_keyboard('Оплата по транзакции', '/privet')) 
