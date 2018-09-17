@@ -146,7 +146,7 @@ def reply(method, q1 = None, q2 = None):
         q1.save()
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_success':
-        text = 'Ваш баланс был успешно пополнен на сумму:'+q2+'.\nВаш баланс составляет:'+str(q1.balance)+'.'
+        text = 'Ваш баланс был успешно пополнен на сумму:'+q2+'.\nВаш баланс составляет:'+str(q1.balance)+''
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_exists':
         text = 'Данная транзакция уже была проведена.'
@@ -174,6 +174,7 @@ def reply(method, q1 = None, q2 = None):
                 ###
                 ###dodelai
                 l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
+                #vverhu broken
         l1.append(inline_keyboard('Назад', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
     #oplata s balansa
@@ -355,13 +356,24 @@ def telegram_api(request):
             #payment is real and not used
             user_a.payment_instance = 0
             a1, a2 = qiwi_api(recieve_text)
+            #esli uspeh
             if a1 == True:
                 user_a.balance=user_a.balance+ float(a2)
+                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = a2)
+                #
+                #
+                #TUT
+                #OTPRAVLYAI OTCHET NA MOE OBLAKO ONO MNE NUZHNO
+                #CHTOBI SCHITAT' PRIBIL', PRIBIL' BUDET SCHTITASYA
+                #от сумм пополнения баланса или выполнения транзакций
+                #
+                #
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_success', user_a, a2)
             #payment is real but already used
             elif a1 == False:
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
             #payment does'nt exists
+            #tipo void? ili kak v pythone eto der'mo?
             else:
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
             user_a.save()
@@ -415,13 +427,13 @@ def qiwi_api(a):
 
 
     #uspeshno
-    if a == '123456789':
-        return True, '1500'
+    #if a == '123456789':
+        #return True, '1500'
     #payment is real but already used
-    elif a == '987654321':
-        return False, None
+    #elif a == '987654321':
+        #return False, None
     #payment does'nt exists ili ne prenadlejit etomu qiwi
-    else:
-        return None, None
+    #else:
+        #return None, None
 
 # Create your views here.

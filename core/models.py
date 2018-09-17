@@ -95,5 +95,5 @@ class finished_transaction(models.Model):
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Пополнитель(из телеги)')
     #text
     txnId = models.CharField(blank = True, max_length=128, verbose_name='Номер транзакции')
-    total_amount = models.FloatField(blank = True, verbose_name='Сумма')
+    cash = models.FloatField(blank = True, verbose_name='Сумма')
 # Create your models here.
