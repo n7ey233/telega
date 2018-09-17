@@ -8,7 +8,7 @@ import json
 import requests
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg, qiwi_headers
+from .data_settings import help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg, qiwi_headers, qiwi_wallet_num
 
 
 #login
@@ -384,32 +384,32 @@ def telegram_api(request):
 
 #logika dlya raboti s qiwi
 def qiwi_api(a):
-    #try:
-        #finished_transaction.objects.get(txnId=a)
+    try:
+        finished_transaction.objects.get(txnId=a)
         #transakciya ispol'zovana
-        #return False, None
+        return False, None
     #proveryaem transakciyu
-    #except:
-    check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
-    r = requests.get(check_transaction_url, headers=qiwi_headers)
-    transaction_json = json.loads(r.text)
-    #nomer poluchatelya
-    print(transaction_json["personId"])
-    #check if num is your's
-    if str(transaction_json["personId"])==qiwi_wallet_num:
-        #check status
-        print(transaction_json["status"])
-        if transaction_json["status"] == 'SUCCESS':
-            #check total currency
-            print(transaction_json["total"]["currency"])
-            #print(type(transaction_json["total"]["currency"]))
-            if transaction_json["total"]["currency"] == 643:
-                #get amount
-                print(transaction_json["total"]["amount"])
-                print(str(transaction_json["total"]["amount"]))
-                return True, str(transaction_json["total"]["amount"])
-    ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal mb qiwi upal, yaneebu
-    return None, None
+    except:
+        check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
+        r = requests.get(check_transaction_url, headers=qiwi_headers)
+        transaction_json = json.loads(r.text)
+        #nomer poluchatelya
+        print(transaction_json["personId"])
+        #check if num is your's
+        if str(transaction_json["personId"])==qiwi_wallet_num:
+            #check status
+            print(transaction_json["status"])
+            if transaction_json["status"] == 'SUCCESS':
+                #check total currency
+                print(transaction_json["total"]["currency"])
+                #print(type(transaction_json["total"]["currency"]))
+                if transaction_json["total"]["currency"] == 643:
+                    #get amount
+                    print(transaction_json["total"]["amount"])
+                    print(str(transaction_json["total"]["amount"]))
+                    return True, str(transaction_json["total"]["amount"])
+        ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal mb qiwi upal, yaneebu
+        return None, None
 
 
     #uspeshno
