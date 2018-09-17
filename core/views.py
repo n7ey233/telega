@@ -132,7 +132,7 @@ def reply(method, q1 = None, q2 = None):
                 l1.append(inline_keyboard(i.type_of_product.name, 'j'+str(i.pk)))
     #balance itd
     elif method == 'cashbalance':
-        text = 'Ваш баланс: '+str(q1.balance)+'.'
+        text = 'Ваш баланс: '+str(q1.balance)+''
         l1.append(inline_keyboard('Пополнить', 'replenish'))
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish':
@@ -140,7 +140,7 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('Отправил', 'replenish_check'))
         l1.append(inline_keyboard('На главную', '/privet'))
     elif method == 'replenish_check':
-        text = 'Введите номер транзакции.\n\n//тестовый вариант, введи *123456789*, это типо номер успешной транзакции на 1500 рублей,\n введи *987654321*, это номер уже проведённой транзакции, получишь сообщение о неудаче платежа, мол типо транзакция уже зарегестрирована,\n другие цифры или значения или я неебу чё означают несуществующую транзакцию.\n\n мне нужно 2 киви кошелька для тестов'
+        text = 'Введите номер транзакции.'
         #тут меняется инстанс абонента на 1(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста(а именно проверка транзакции через киви апи))
         q1.payment_instance = 1
         q1.save()
@@ -386,30 +386,32 @@ def telegram_api(request):
 def qiwi_api(a):
     try:
         finished_transaction.objects.get(txnId=a)
-        #transakciya ispol'zovana
         return False, None
+        #transakciya ispol'zovana
     #proveryaem transakciyu
     except:
-        check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
-        r = requests.get(check_transaction_url, headers=qiwi_headers)
-        transaction_json = json.loads(r.text)
-        #nomer poluchatelya
-        print(transaction_json["personId"])
-        #check if num is your's
-        if str(transaction_json["personId"])==qiwi_wallet_num:
-            #check status
-            print(transaction_json["status"])
-            if transaction_json["status"] == 'SUCCESS':
-                #check total currency
-                print(transaction_json["total"]["currency"])
-                #print(type(transaction_json["total"]["currency"]))
-                if transaction_json["total"]["currency"] == 643:
-                    #get amount
-                    print(transaction_json["total"]["amount"])
-                    print(str(transaction_json["total"]["amount"]))
-                    return True, str(transaction_json["total"]["amount"])
+        try:
+            check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
+            r = requests.get(check_transaction_url, headers=qiwi_headers)
+            transaction_json = json.loads(r.text)
+            #nomer poluchatelya
+            print(transaction_json["personId"])
+            #check if num is your's
+            if str(transaction_json["personId"])==qiwi_wallet_num:
+                #check status
+                print(transaction_json["status"])
+                if transaction_json["status"] == 'SUCCESS':
+                    #check total currency
+                    print(transaction_json["total"]["currency"])
+                    #print(type(transaction_json["total"]["currency"]))
+                    if transaction_json["total"]["currency"] == 643:
+                        #get amount
+                        print(transaction_json["total"]["amount"])
+                        print(str(transaction_json["total"]["amount"]))
+                        return True, str(transaction_json["total"]["amount"])
+        except:
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal mb qiwi upal, yaneebu
-        return None, None
+            return None, None
 
 
     #uspeshno
