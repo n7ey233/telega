@@ -396,7 +396,7 @@ def qiwi_api(a):
     #nomer poluchatelya
     print(transaction_json["personId"])
     #check if num is your's
-    if str(transaction_json["personId"]==qiwi_wallet_num):
+    if str(transaction_json["personId"])==qiwi_wallet_num:
         #check status
         print(transaction_json["status"])
         if transaction_json["status"] == 'SUCCESS':
