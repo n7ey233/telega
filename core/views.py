@@ -205,7 +205,7 @@ def reply(method, q1 = None, q2 = None):
         dsa = product.objects.get(pk=method[1:])
         #proverka buyera
         if dsa.buyer == q1:
-            text = dsa.product_type.name + ' +mestopolojeniye i prochaya poebota, ya svoe delo sdelal, \n\n nuzhno babos, a to eto parojnyak'
+            text = dsa.type_of_product.name + ' +mestopolojeniye i prochaya poebota, ya svoe delo sdelal, nuzhna informaciya o tom kakiye danniye budut o zakladke\n\n k primeru: geolokaciya, foto,  \n\n nuzhno babos, a to eto parojnyak'
         else:
             text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
             l1.append(inline_keyboard('Помощь', 'support'))
