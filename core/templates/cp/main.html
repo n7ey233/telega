@@ -25,7 +25,7 @@
 <a href="{% url 'formpage'%}?q={{obj}}">Создать</a>
 <hr>
 {%for i in obj_list%}
-<a href="{% url 'formpage'%}?q={{obj}}&que={{i.pk}}">{%if i.pre_full_name%}{{i.pre_full_name}}{%else%}{{i.name}}{%endif%}{{i.telega_id}}</a>
+<a href="{% url 'formpage'%}?q={{obj}}&que={{i.pk}}">{%if i.pre_full_name%}{{i.pre_full_name}}{%elif i.type_of_product %}{{i.type_of_product}}{%else%}{{i.name}}{%endif%}{{i.telega_id}}</a>
 <br>
 {%endfor%}
 {%endif%}

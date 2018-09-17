@@ -65,8 +65,11 @@ class product(models.Model):
     #geolokaciya
     #ssilka na foto
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
-    buyer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
+    buyer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
     #fk na rabotnika(tipo kto delaet zakladku)
+    
+    #placer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
+    #utils, delete before deploy
     name = models.CharField(max_length=128, blank = True)
     class Meta:
         ordering = ['name']
@@ -87,4 +90,10 @@ class chat_msg(models.Model):
 class site_settings(models.Model):
     product_main_spec = models.TextField(blank = True, verbose_name='Название первой категории')
     shop_name = models.TextField(blank = True, verbose_name='Название магазина')
+
+class finished_transaction(models.Model):
+    abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Пополнитель(из телеги)')
+    #text
+    txnId = models.CharField(blank = True, max_length=128, verbose_name='Номер транзакции')
+    total_amount = models.FloatField(blank = True, verbose_name='Сумма')
 # Create your models here.
