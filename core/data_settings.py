@@ -7,13 +7,14 @@
 ##eto vse v settings saita
 #token telegi
 tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
+telebot_name = 'n7ebot'
 #token qiwi
 qiwi_token = '8d38b50d9a69ca2a2b2dea48ac7d4461'
 qiwi_wallet_num = '79841543923'
 qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
 
 #display bot settings
-product_main_spec = 'Город'
+product_main_spec = 'Место'
 shop_name = 'nqieyersansan'
 #some masseges
 support_apply_msg = 'Спасибо за обращение, в близжайшее время с вами свяжется наш оператор.'

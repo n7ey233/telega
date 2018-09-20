@@ -62,8 +62,10 @@ class product(models.Model):
     price = models.FloatField(blank=True, null = True,verbose_name='Цена, если пусто, то ценник берется с вида продукции')
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)
     #dop komentariy (hz zachem, vozmozhno opisaniye mesta zakladki?)
+    commentary = models.TextField(blank = False, null = True, verbose_name='Дополнительное описание')
     #geolokaciya
     #ssilka na foto
+    foto_link = models.URLField(max_length = 256,blank=False, null= True, verbose_name='ссылка на фото' )
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
     buyer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
     #fk na rabotnika(tipo kto delaet zakladku)
@@ -90,6 +92,11 @@ class chat_msg(models.Model):
 class site_settings(models.Model):
     product_main_spec = models.TextField(blank = True, verbose_name='Название первой категории')
     shop_name = models.TextField(blank = True, verbose_name='Название магазина')
+    #tele_token
+    #telebot_name
+    #qiwi_token
+    ##used in replenish balance
+    #qiwi_wallet_num
 
 class finished_transaction(models.Model):
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Пополнитель(из телеги)')

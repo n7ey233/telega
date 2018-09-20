@@ -36,6 +36,7 @@ def main(request):
         page = 'main'
         obj_list = None
         obj = None
+        #product settings
         if request.GET.get('q', '') == 'raion':
             obj = 'raion'
             page = 'object_list'
@@ -44,10 +45,22 @@ def main(request):
             obj = 'product_type'
             page = 'object_list'
             obj_list = product_type.objects.all()
+        #abonent 
         elif request.GET.get('q', '') == 'abonent':
             obj = 'abonent'
             page = 'object_list'
             obj_list = abonent.objects.all()
+        #ishut rabotu
+        elif request.GET.get('q', '') == 'abonentsj':
+            obj = 'abonent'
+            page = 'object_list'
+            obj_list = abonent.objects.filter(job_seeker=True)
+        #ishut support
+        elif request.GET.get('q', '') == 'abonentss':
+            obj = 'abonent'
+            page = 'object_list'
+            obj_list = abonent.objects.filter(job_seeker=True)
+        #product
         elif request.GET.get('q', '') == 'product':
             obj = 'product'
             page = 'object_list'
@@ -65,7 +78,12 @@ def formpage(request):
     if request.user.is_superuser:
         form = None
         object = None
-        if request.GET.get('q', '') == 'raion':
+        #site settings
+        if request.GET.get('q', '') == 'site_settings':
+            object, created = site_settings.objects.get_or_create(pk=1)
+            form = site_settingsForm(instance = object)
+        #raion
+        elif request.GET.get('q', '') == 'raion':
             if request.GET.get('que', '') != '':
                 object = raion.objects.get(pk=request.GET.get('que'))
             form = raionForm(instance = object)
@@ -79,14 +97,26 @@ def formpage(request):
             if request.GET.get('que', '') != '':
                 object = product.objects.get(pk=request.GET.get('que'))
             form = productForm(instance = object)
+        elif request.GET.get('q', '') == 'abonent':
+            if request.GET.get('que', '') != '':
+                object = abonent.objects.get(pk=request.GET.get('que'))
+            form = abonentForm(instance = object)
+        #
         #elif request.GET.get('q', '') == 'product_type':
         if request.method == "POST":
+            if request.POST.get('deleteit') == 'true':
+                object.delete()
+                #redirect na main
+                return redirect('main')
+                #
             if request.GET.get('q', '') == 'raion':
                 form = raionForm(request.POST, instance=object)
             elif request.GET.get('q', '') == 'product_type':
                 form = product_typeForm(request.POST, instance=object)
             elif request.GET.get('q', '') == 'product':
                 form = productForm(request.POST, instance=object)
+            elif request.GET.get('q', '') == 'abonent':
+                form = productForm(request.POST, instance=object)            
             if form.is_valid():
                 i = form.save()
                 return redirect('/main_page/cp'+ '?q=%s'%(request.GET.get('q'))) 
