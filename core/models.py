@@ -15,7 +15,7 @@ class abonent(models.Model):
     telega_id = models.IntegerField(blank = False, verbose_name='ID')
     balance = models.FloatField(default = 0)
     #oborot(dlya skidok mb?)
-    name = models.CharField(max_length=128, blank = True, verbose_name='名称为啥')
+    name = models.CharField(max_length=128, blank = True, verbose_name='名称为啥，用不用呢？')
     job_seeker = models.BooleanField(default=False, verbose_name='Ищет работу')
     support_seeker = models.BooleanField(default=False, verbose_name='Ждет связи с оператором')
     class Meta:
@@ -25,7 +25,7 @@ class abonent(models.Model):
 ##produkciya bivaet raznih tipov
 class product_type(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
-    price = models.FloatField(blank = False, default = 500, verbose_name='Цена за ед. продукта, по дефолту с неё берется ценник на товары')
+    price = models.FloatField(blank = False, default = 500, verbose_name='Цена за ед. продукта, если пусто, то дефолту с неё берется ценник на товар')
     class Meta:
         ordering = ['name']
     def __str__(self):
@@ -67,16 +67,16 @@ class product(models.Model):
     #ssilka na foto
     foto_link = models.URLField(max_length = 256,blank=False, null= True, verbose_name='ссылка на фото' )
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
-    buyer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
+    buyer = models.ForeignKey(abonent, blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
     #fk na rabotnika(tipo kto delaet zakladku)
     
     #placer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
     #utils, delete before deploy
-    name = models.CharField(max_length=128, blank = True)
+    #name = models.CharField(max_length=128, blank = True)
     class Meta:
-        ordering = ['name']
+        ordering = ['type_of_product']
     def __str__(self):
-        return self.name
+        return self.type_of_product.name
     def save(self, *args, **kwargs):
         if self.price == None:
             self.price = self.type_of_product.price
@@ -97,6 +97,8 @@ class site_settings(models.Model):
     #qiwi_token
     ##used in replenish balance
     #qiwi_wallet_num
+    def __str__(self):
+        return ('Настройки сайта')
 
 class finished_transaction(models.Model):
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Пополнитель(из телеги)')

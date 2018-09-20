@@ -1,9 +1,16 @@
-        <form id="login_form" method="post" action="/dengji?action=logmein">
-            {% csrf_token %}
-            Логин:<br> <input type="text" name="username" value="" size="50" />
-            <br />
-            Пароль:<br> <input type="password" name="password" value="" size="50" />
-            <br />
-
-            <input type="submit" value="Войти" />
-        </form>
+{% extends 'cp/base.html' %}
+{% block content %}
+<h3>Логин</h3>
+<hr>
+<form id="login_form" method="post" action="/dengji?action=logmein">  <div class="form-group">
+     {% csrf_token %}
+    <label for="inputEmail">Логин:</label>
+    <input input type="text" name="username" class="form-control"  placeholder="Введите Логин">
+  </div>
+  <div class="form-group">
+    <label for="inputPassword">Пароль:</label>
+    <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Введите пароль">
+  </div>
+  <button type="submit" class="save btn btn-default">Войти</button>
+</form>
+{% endblock %}

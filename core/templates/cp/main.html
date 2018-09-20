@@ -1,25 +1,19 @@
+{% extends 'cp/base.html' %}
+{% block content %}
+<hr>
 <a href="{% url 'main'%}">Главная</a>
 <hr>
 {%if page == 'main'%}
-<a href="#">история сообщений</a>
-<hr>
-<a href="?q=raion">районы</a>
-<hr>
-<a href="?q=product_type">виды товара</a>
-<hr>
-<a href="?q=product">товары</a>
-<hr>
-<a href="?q=abonent">абоненты</a>
-<hr>
-<a href="?q=abonentss">абоненты требующие связи с оператором</a>
-<hr>
-<a href="?q=abonentsj">абоненты ищущие работу</a>
-<hr>
-<a href="?q=user">работники</a>
-<hr>
-<a href="#">Настройки сайта</a>
-<hr>
-<a href="#">Помощь</a>
+<li><a href="#">История сообщений</a></li>
+<li><a href="?q=raion">Районы</a></li>
+<li><a href="?q=product_type">Виды товара</a></li>
+<li><a href="?q=product">Товары</a></li>
+<li><a href="?q=abonent">Абоненты</a></li>
+<li><a href="?q=abonentss">Абоненты требующие связи с оператором</a></li>
+<li><a href="?q=abonentsj">Абоненты ищущие работу</a></li>
+<li><a href="?q=user">Работники</a></li>
+<li><a href="{% url 'formpage'%}?q=site_settings">Настройки сайта</a></li>
+<li><a href="#">Помощь</a></li>
 <hr>
 <a href="/dengji?action=logmeout">Выход</a>
 <hr>
@@ -33,3 +27,4 @@
 <br>
 {%endfor%}
 {%endif%}
+{% endblock %}

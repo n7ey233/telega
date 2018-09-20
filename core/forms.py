@@ -5,13 +5,18 @@ class raionForm(forms.ModelForm):
     class Meta:
         model = raion
         fields = '__all__'
+        exclude = ['pre_full_name']
         widgets = {}
 
 class product_typeForm(forms.ModelForm):
     class Meta:
         model = product_type
         fields = '__all__'
-        widgets = {}
+        widgets = {
+        'name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название'}),
+        'price': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Цена за ед. продукта, если пусто, то дефолту с неё берется ценник на товары'}),
+        }
+
 
 class productForm(forms.ModelForm):
     class Meta:

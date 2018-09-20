@@ -78,8 +78,10 @@ def formpage(request):
     if request.user.is_superuser:
         form = None
         object = None
+        delete_button = None
         #site settings
         if request.GET.get('q', '') == 'site_settings':
+            delete_button = True
             object, created = site_settings.objects.get_or_create(pk=1)
             form = site_settingsForm(instance = object)
         #raion
@@ -121,6 +123,8 @@ def formpage(request):
                 i = form.save()
                 return redirect('/main_page/cp'+ '?q=%s'%(request.GET.get('q'))) 
         return render(request, 'cp/formpage.html',{
+        'delete_button': delete_button,
+        'object':object,
         'form':form,
         })
 
