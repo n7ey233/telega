@@ -365,7 +365,7 @@ def reply(method, q1 = None, q2 = None):
         if len(set0) > 0:
             text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
             for i in set0:
-                l1.append(inline_keyboard(i.name, 'u'+g2.name+'r'+str(i.pk))) 
+                l1.append(inline_keyboard(i.name, 'u'+str(g2.pk)+'r'+str(i.pk))) 
         else:
             text = 'Увы, товар был только-что продан или зарезервирован.'
         l1.append(inline_keyboard('Назад', 'r'+method[1]))
