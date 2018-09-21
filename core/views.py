@@ -361,7 +361,7 @@ def reply(method, q1 = None, q2 = None):
         for o in g1:
             #esli budet chtoto, to
             for i in product.objects.filter(buyer= None ,type_of_product = g2, placing = o):
-                set0.add(i.raion)
+                set0.add(i.placing)
         if len(set0) > 0:
             text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
             for i in set0:
