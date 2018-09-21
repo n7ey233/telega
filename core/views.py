@@ -382,7 +382,7 @@ def reply(method, q1 = None, q2 = None):
             l1.append(inline_keyboard('Оплата по транзакции', '/privet')) 
         except:
             text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар.'
-        l1.append(inline_keyboard('Назад', 'f'+method[1]+'r'+str(raion.objects.get(pk=method[1]).subcategory_of.pk)))
+        l1.append(inline_keyboard('Назад', 'f'+method[0][1:]+'r'+str(raion.objects.get(pk=method[1]).pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
         #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
