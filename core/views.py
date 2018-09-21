@@ -575,7 +575,7 @@ def telegram_api(request):
 def qiwi_api(a):
     #uspeshno
     if a == '123456789':
-        #return True, '1500'
+        return True, '1500'
     #payment is real but already used
     elif a == '987654321':
         return False, None
