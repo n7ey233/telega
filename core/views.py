@@ -198,10 +198,11 @@ def reply(method, q1 = None, q2 = None):
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('На главную', '/privet'))
+    #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
         if dsa.buyer:
-            text = 'Увы, товар был только-что зарезервирован или куплен, попробуйте выбрать снова.'
+            text = 'К сожалению, данный товар был только-что куплен или зарезервирован, попробуйте выбрать снова.'
         else:
             text = 'Ваш баланс: '+str(q1.balance)+'.\nСтоимость '+dsa.type_of_product.name+' в '+ dsa.placing.pre_full_name+': '+str(dsa.price)
             #proveryaem est' li vozmozhnost' oplatit'
@@ -232,11 +233,52 @@ def reply(method, q1 = None, q2 = None):
                 text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
                 l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
             else:
-                text = 'К сожалению, на вашем балансе не хватает средств для оплаты.'
+                text = 'К сожалению, на вашем балансе недостаточно средств для оплаты.'
         except:
             #tut soobsheniye ob oshibke, ili tovar prodan, ili deneg na balance ne hvataet, ili eshe kakayato ebala, zameni
             #na try except
             text = 'К сожалению, данный товар был только-что куплен или зарезервирован,попробуйте выбрать ещё раз.'
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #oplata transakciyei
+    elif method[0] == 'h':
+        dsa = product.objects.get(pk=method[1:])
+        if dsa.buyer:
+            text = 'К сожалению, данный товар был только-что куплен или зарезервирован, попробуйте выбрать снова.'
+        else:
+            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price)+'\n\nОтправьте платёж на сумму'+str(dsa.price)+' на киви кошелёк: ' +qiwi_wallet_num+', после оплаты нажмите *Продолжить*.'
+            l1.append(inline_keyboard('Продолжить', 'x'+str(dsa.pk)))
+            l1.append(inline_keyboard('Обновить', method))
+        l1.append(inline_keyboard('Назад', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #podtverjdeniye transakcii
+    elif method[0] == 'x':
+        dsa = product.objects.get(pk=method[1:])
+        if dsa.buyer:
+            text = 'К сожалению, данный товар был только-что куплен или зарезервирован, попробуйте выбрать снова. \n\nЕсли вы уже произвели перевод денежных средств, вы можете зачислить их себе на баланс и выбрать другой товар.'
+            l1.append(inline_keyboard('Пополнить', 'replenish'))
+        else:
+            text = 'Введите номер транзакции для оплаты:\n\nТовар: '+dsa.type_of_product.name+'\nМестоположение:'+dsa.placing.pre_full_name+'\nСтоимость: '+str(dsa.price)
+            #тут меняется инстанс абонента на 2(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста(а именно проверка транзакции через киви апи))
+            q1.payment_instance = 2
+            #i zahooyachim suda instance, dlya togo chtobi znat' o kakom imenno tovare idet rech
+            q1.transaction_instance = dsa
+            q1.save()
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #rabota s transakciyami
+    elif method == 'transaction_success':
+        text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
+        l1.append(inline_keyboard('Подробнее', 'j'+str(q1.transaction_instance.pk)))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #esli ne hvataet deneg dlya oplati transakcii
+    elif method == 'transaction_nem':
+        text= 'К сожалению, сумма вашей транзакции меньше стоимости товара, денежные средства были зачислены на ваш баланс.'
+        l1.append(inline_keyboard('Помощь', 'helpme'))
+        l1.append(inline_keyboard('Баланс', 'cashbalance'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    elif method == 'transaction_bought':
+        text= 'К сожалению, товар был оплачен раньше чем подтвердился ваш платёж, денежные средства были зачислены на ваш баланс.'
+        l1.append(inline_keyboard('Помощь', 'helpme'))
+        l1.append(inline_keyboard('Баланс', 'cashbalance'))
         l1.append(inline_keyboard('На главную', '/privet'))
     #pokaz info o tovare
     elif method[0] == 'j':
@@ -380,7 +422,7 @@ def reply(method, q1 = None, q2 = None):
             asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
             l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
-            l1.append(inline_keyboard('Оплата по транзакции', '/privet')) 
+            l1.append(inline_keyboard('Оплата по транзакции', 'h'+str(asd.pk))) 
         except:
             text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар.'
         l1.append(inline_keyboard('Назад', 'f'+method[0][1:]+'r'+str(raion.objects.get(pk=method[1]).subcategory_of.pk)))
@@ -473,9 +515,49 @@ def telegram_api(request):
             else:
                 return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
             user_a.save()
-        #v sluchae podtverjdeniya oplati za zakaz
+        #v sluchae podtverjdeniya oplati za zakaz(т.е. проведения транзакции)
         elif user_a.payment_instance == 2:
-            None
+            user_a.payment_instance = 0
+            a1, a2 = qiwi_api(recieve_text)
+            if a1 == True:
+                user_a.balance=user_a.balance+ float(a2)
+                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = a2)
+                #esli deneg hvataet na transakciyu
+                if user_a.balance >= user_a.transaction_instance.price:
+                    #tut chekai est' li u obiekta pokupki pokupatel' dabi ne perepisivat' istoriyu
+                    #esli ne norm, to:
+                    if user_a.transaction_instance.buyer:
+                        return_dict["text"], return_dict["reply_markup"] = reply('transaction_bought', user_a)
+                    #esli norm, to:
+                    else:
+                        #eshe zakidivay izlishki na balans pol'zovatelya
+                        user_a.balance = user_a.balance - user_a.transaction_instance.price
+                        user_a.balance = user_a.balance + (float(a2)-user_a.transaction_instance.price)
+                        user_a.transaction_instance.buyer = user_a
+                        user_a.transaction_instance.save()
+                        return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
+                #esli deneg ne hvataet, to
+                else:
+                    return_dict["text"], return_dict["reply_markup"] = reply('transaction_nem', user_a)
+                user_a.transaction_instance = None
+                #
+                #
+                #TUT
+                #OTPRAVLYAI OTCHET NA MOE OBLAKO ONO MNE NUZHNO
+                #CHTOBI SCHITAT' PRIBIL', PRIBIL' BUDET SCHTITASYA
+                #от сумм пополнения баланса или выполнения транзакций
+                #
+                #
+            #payment is real but already used
+            elif a1 == False:
+                user_a.transaction_instance = None
+                return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
+            #payment does'nt exists
+            #tipo void? ili kak v pythone eto der'mo?
+            else:
+                user_a.transaction_instance = None
+                return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
+            user_a.save()
         #v sluchae esli init fraza
         elif recieve_text == '/privet':
             return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
@@ -518,7 +600,7 @@ def qiwi_api(a):
                         print(str(transaction_json["total"]["amount"]))
                         return True, str(transaction_json["total"]["amount"])
         except:
-        ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal mb qiwi upal, yaneebu
+        ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
             return None, None
 
 

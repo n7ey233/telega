@@ -18,6 +18,7 @@ class abonent(models.Model):
     name = models.CharField(max_length=128, blank = True, verbose_name='名称为啥，用不用呢？')
     job_seeker = models.BooleanField(default=False, verbose_name='Ищет работу')
     support_seeker = models.BooleanField(default=False, verbose_name='Ждет связи с оператором')
+    transaction_instance = models.ForeignKey('product', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='используется для назначения инстанса при оплате транзакцией')
     class Meta:
         ordering = ['telega_id']
     def __str__(self):
@@ -56,7 +57,7 @@ class product(models.Model):
     type_of_product = models.ForeignKey(product_type, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Вид товара')
     #fk na raion(tipo mesto v kakom raione prychetsya)
     placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
-    #data
+    #data pukupki
     ##kolichestvo
     ##cena v chem-to
     price = models.FloatField(blank=True, null = True,verbose_name='Цена, если пусто, то ценник берется с вида продукции')
@@ -68,8 +69,7 @@ class product(models.Model):
     foto_link = models.URLField(max_length = 256,blank=False, null= True, verbose_name='ссылка на фото' )
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
     buyer = models.ForeignKey(abonent, blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
-    #fk na rabotnika(tipo kto delaet zakladku)
-    
+    #fk na rabotnika(tipo kto delal zakladku)    
     #placer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
     #utils, delete before deploy
     #name = models.CharField(max_length=128, blank = True)
