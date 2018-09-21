@@ -247,7 +247,7 @@ def reply(method, q1 = None, q2 = None):
         dsa = product.objects.get(pk=method[1:])
         #proverka buyera
         if dsa.buyer == q1:
-            text = dsa.type_of_product.name+'\n\nГеолокация: гугл яндекс 2гис?' + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
+            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nГеолокация: гугл яндекс 2гис?' + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
         else:
             text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
             l1.append(inline_keyboard('Помощь', 'support'))
