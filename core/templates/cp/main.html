@@ -20,7 +20,11 @@
 {%endif%}
 
 {%if page == 'object_list'%}
-<a href="{% url 'formpage'%}?q={{obj}}">Создать</a>
+<h4>{{page_naming}}</h4>
+<div class="btn-group">
+
+    <a href="{% url 'formpage'%}?q={{obj}}" class="btn btn-default">Создать</a>
+</div>
 <hr>
 {%for i in obj_list%}
 <a href="{% url 'formpage'%}?q={{obj}}&que={{i.pk}}">{%if i.pre_full_name%}{{i.pre_full_name}}{%elif i.type_of_product %}{{i.type_of_product}}{%else%}{{i.name}}{%endif%}{{i.telega_id}}</a>

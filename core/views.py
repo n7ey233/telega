@@ -36,39 +36,47 @@ def main(request):
         page = 'main'
         obj_list = None
         obj = None
+        page_naming = None
         #product settings
         if request.GET.get('q', '') == 'raion':
             obj = 'raion'
             page = 'object_list'
             obj_list = raion.objects.all()
+            page_naming = 'Районы'
         elif request.GET.get('q', '') == 'product_type':
             obj = 'product_type'
             page = 'object_list'
             obj_list = product_type.objects.all()
+            page_naming = 'Виды товара'
         #abonent 
         elif request.GET.get('q', '') == 'abonent':
             obj = 'abonent'
             page = 'object_list'
             obj_list = abonent.objects.all()
+            page_naming = 'Абоненты'
         #ishut rabotu
         elif request.GET.get('q', '') == 'abonentsj':
             obj = 'abonent'
             page = 'object_list'
             obj_list = abonent.objects.filter(job_seeker=True)
+            page_naming = 'Абоненты ищущие работу'
         #ishut support
         elif request.GET.get('q', '') == 'abonentss':
             obj = 'abonent'
             page = 'object_list'
             obj_list = abonent.objects.filter(job_seeker=True)
+            page_naming = 'Абоненты требующие связи с оператором'
         #product
         elif request.GET.get('q', '') == 'product':
             obj = 'product'
             page = 'object_list'
             obj_list = product.objects.all()
+            page_naming = 'Товары'
         return render(request, 'cp/main.html',{
         'page': page,
         'obj': obj,
         'obj_list': obj_list,
+        'page_naming':page_naming,
         })
     else:
         raise Http404
@@ -270,49 +278,103 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor raiona
     elif method[0] == 'r':
+        ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
+        #, то требуется рефакторинг
         #uznaem voobshe chto eto za raion
         g0 = raion.objects.get(pk=method[1:])
         g1 = raion.objects.filter(subcategory_of = g0)
-        #check esli eto kategoriya bez podkategoriy, to prodolzhaem vibor
-        if len(g1)>0:
-            text = 'Уточните местоположение в '+g0.pre_full_name+'.'
-            for i in g1:
-                l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
-            if g0.subcategory_of:
-                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-            else:
-                l1.append(inline_keyboard('Назад', 'main_cat'))
-        #inache predlagaem product_type
+        #delaem spisok teh vidov tovara dostupnykh v dannom main_raione
+        
+        ##new
+        k1 = set()
+        for i in g1:
+            for m in product.objects.filter(placing = i, buyer = None):
+                k1.add(m.type_of_product)
+        #esli est' tovar
+        if len(k1) > 0:
+            text = 'Выберите товар в '+g0.pre_full_name+'.'
+            for i in k1:
+                l1.append(inline_keyboard(i.name, 'f'+str(i.pk)+'r'+str(g0.pk)))
+        #esli netu, to
         else:
-            ##berem spisok tovarov v dannom raione
-            g2 = product.objects.filter(placing = g0, buyer = None)
-            ##chekaem est' li tovar v dannom raione
-            if len(g2)==0:
-                text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
+            text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
+        #add back button
+        if g0.subcategory_of:
+            l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+        else:
+            l1.append(inline_keyboard('Назад', 'main_cat'))
+
+        ##new
+
+        ##utils
+        #check esli eto kategoriya bez podkategoriy, to prodolzhaem vibor
+        if False:
+            if len(g1)>0:
+                text = 'Уточните местоположение в '+g0.pre_full_name+'.'
+                for i in g1:
+                    l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
                 if g0.subcategory_of:
                     l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
                 else:
                     l1.append(inline_keyboard('Назад', 'main_cat'))
-            ##predlagaem product_type v dannom raione
+            #inache predlagaem product_type
             else:
-                text = 'Выберите товар в '+g0.pre_full_name+'.'
-                ##eto 
-                u2 = set()
-                for i in g2:
-                    u2.add(i.type_of_product)
-                ##tut uzhe vibor product_type
-                for j in u2:
-                    l1.append(inline_keyboard(j.name, 'f'+str(j.pk)+'r'+str(g0.pk)))
-                if g0.subcategory_of:
-                    l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+                ##berem spisok tovarov v dannom raione
+                g2 = product.objects.filter(placing = g0, buyer = None)
+                ##chekaem est' li tovar v dannom raione
+                if len(g2)==0:
+                    text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
+                    if g0.subcategory_of:
+                        l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+                    else:
+                        l1.append(inline_keyboard('Назад', 'main_cat'))
+                ##predlagaem product_type v dannom raione
                 else:
-                    l1.append(inline_keyboard('Назад', 'main_cat'))
+                    text = 'Выберите товар в '+g0.pre_full_name+'.'
+                    ##eto 
+                    u2 = set()
+                    for i in g2:
+                        u2.add(i.type_of_product)
+                    ##tut uzhe vibor product_type
+                    for j in u2:
+                        l1.append(inline_keyboard(j.name, 'f'+str(j.pk)+'r'+str(g0.pk)))
+                    if g0.subcategory_of:
+                        l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+                    else:
+                        l1.append(inline_keyboard('Назад', 'main_cat'))
+            ##utils
+
         l1.append(inline_keyboard('На главную', '/privet'))
-    #vibor tovara
+    #vibor tovara posle main raiona
     elif method[0] == 'f':
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
+        ##new
+        #vizvaniy main_raion
+        g0 = raion.objects.get(pk=method[1])
+        #podkategorii main raiona
+        g1 = raion.objects.filter(subcategory_of = g0)
+        #vid producta
+        g2 = product_type.objects.get(pk=method[0][1:])
+        set0 = set()
+        #delaem query na vse producti s subcategory == o i vid producta po requestu
+        for o in g1:
+            #esli budet chtoto, to
+            for i in product.objects.filter(buyer= None ,type_of_product = g2, placing = o):
+                set0.add(i.raion)
+        if len(set0) > 0:
+            text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
+            for i in set0:
+                l1.append(inline_keyboard(i.name, 'u'+g2.name+'r'+str(i.pk))) 
+        else:
+            text = 'Увы, товар был только-что продан или зарезервирован.'
+        l1.append(inline_keyboard('Назад', 'r'+method[1]))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #vibor raiona posle vibora raiona
+    elif method[0] == 'u':
+        #delim method na 2 chasti(ispolzuya split(method, 'u')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         #get object from products(raion = r, product_type = f), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
+        method = method.split('r')
         try:
             asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
@@ -333,7 +395,6 @@ def reply(method, q1 = None, q2 = None):
         #да нихуя не снимается, он просто удаляется
         l1.append(inline_keyboard('Назад', 'r'+method[1]))
         l1.append(inline_keyboard('На главную', '/privet'))
-        None
     else:
         None
     if len(l1) > 0:

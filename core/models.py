@@ -12,8 +12,8 @@ class abonent(models.Model):
     #balance(dlya kur'yeznikh sluchaev, kogda zakinul chutka bolshe chem nuzhno или когда закинули недостаточно для оплаты)
     #ego id dlya telegi
     payment_instance = models.IntegerField(default = 0, verbose_name='инстанс платёжки')
-    telega_id = models.IntegerField(blank = False, verbose_name='ID')
-    balance = models.FloatField(default = 0)
+    telega_id = models.IntegerField(blank = False, verbose_name='ID Телеги')
+    balance = models.FloatField(default = 0, verbose_name='Баланс')
     #oborot(dlya skidok mb?)
     name = models.CharField(max_length=128, blank = True, verbose_name='名称为啥，用不用呢？')
     job_seeker = models.BooleanField(default=False, verbose_name='Ищет работу')

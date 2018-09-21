@@ -7,7 +7,7 @@
     <form method="POST" class="post-form">
       
 
-    <h3>{{form.instance}}</h3>
+    {%if object%}<h3>{{form.instance}}</h3>{%endif%}
     {%if object%}{%if delete_button != True%}<button type="submit" name="deleteit" value="true" class="save btn btn-danger">Удалить</button>{%endif%}
     <hr>
     {%endif%}
