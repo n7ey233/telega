@@ -126,7 +126,7 @@ def formpage(request):
             elif request.GET.get('q', '') == 'product':
                 form = productForm(request.POST, instance=object)
             elif request.GET.get('q', '') == 'abonent':
-                form = productForm(request.POST, instance=object)            
+                form = abonentForm(request.POST, instance=object)            
             if form.is_valid():
                 i = form.save()
                 return redirect('/main_page/cp'+ '?q=%s'%(request.GET.get('q'))) 
@@ -372,10 +372,11 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor raiona posle vibora raiona
     elif method[0] == 'u':
-        #delim method na 2 chasti(ispolzuya split(method, 'u')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
-        #get object from products(raion = r, product_type = f), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
+        #delim method na 2 chasti(ispolzuya split(method, 'u')) 'u' i 'r', gde [0](u...) - kategoriya, [1](r...) - raion
+        #get object from products(raion = r, product_type = u), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
         method = method.split('r')
         try:
+            #eshe order by date zakladki
             asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
             l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
