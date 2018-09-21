@@ -160,7 +160,6 @@ def reply(method, q1 = None, q2 = None):
         text = start_msg
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
-        l1.append(inline_keyboard('Подтвердить оплату', 'applypayment'))
         l1.append(inline_keyboard('История', 'history'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
     #istoriya
@@ -277,7 +276,7 @@ def reply(method, q1 = None, q2 = None):
         for i in raion.objects.filter(subcategory_of = None):
             l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
-    #vibor raiona
+    #vibor main raiona
     elif method[0] == 'r':
         ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
         #, то требуется рефакторинг
