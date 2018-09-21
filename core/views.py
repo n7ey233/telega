@@ -520,6 +520,7 @@ def telegram_api(request):
             user_a.payment_instance = 0
             a1, a2 = qiwi_api(recieve_text)
             if a1 == True:
+                #1000 + 1500 = 2500
                 user_a.balance=user_a.balance+ float(a2)
                 finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = a2)
                 #esli deneg hvataet na transakciyu
@@ -530,9 +531,7 @@ def telegram_api(request):
                         return_dict["text"], return_dict["reply_markup"] = reply('transaction_bought', user_a)
                     #esli norm, to:
                     else:
-                        #eshe zakidivay izlishki na balans pol'zovatelya
                         user_a.balance = user_a.balance - user_a.transaction_instance.price
-                        user_a.balance = user_a.balance + (float(a2)-user_a.transaction_instance.price)
                         user_a.transaction_instance.buyer = user_a
                         user_a.transaction_instance.save()
                         return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
