@@ -572,44 +572,46 @@ def telegram_api(request):
 
 #logika dlya raboti s qiwi
 def qiwi_api(a):
-    #uspeshno
-    if a == '123456789':
-        return True, '1500'
-    #payment is real but already used
-    elif a == '987654321':
+    try:
+        finished_transaction.objects.get(txnId=a)
         return False, None
-    #payment does'nt exists ili ne prenadlejit etomu qiwi
-    else:
-        return None, None
-    if False:
+        #transakciya ispol'zovana
+    #proveryaem transakciyu
+    except:
         try:
-            finished_transaction.objects.get(txnId=a)
-            return False, None
-            #transakciya ispol'zovana
-        #proveryaem transakciyu
+            check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
+            r = requests.get(check_transaction_url, headers=qiwi_headers)
+            transaction_json = json.loads(r.text)
+            #nomer poluchatelya
+            print(transaction_json["personId"])
+            #check if num is your's
+            if str(transaction_json["personId"])==qiwi_wallet_num:
+                #check status
+                print(transaction_json["status"])
+                if transaction_json["status"] == 'SUCCESS':
+                    #check total currency
+                    print(transaction_json["total"]["currency"])
+                    #print(type(transaction_json["total"]["currency"]))
+                    if transaction_json["total"]["currency"] == 643:
+                        #get amount
+                        print(transaction_json["total"]["amount"])
+                        print(str(transaction_json["total"]["amount"]))
+                        return True, str(transaction_json["total"]["amount"])
         except:
-            try:
-                check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
-                r = requests.get(check_transaction_url, headers=qiwi_headers)
-                transaction_json = json.loads(r.text)
-                #nomer poluchatelya
-                print(transaction_json["personId"])
-                #check if num is your's
-                if str(transaction_json["personId"])==qiwi_wallet_num:
-                    #check status
-                    print(transaction_json["status"])
-                    if transaction_json["status"] == 'SUCCESS':
-                        #check total currency
-                        print(transaction_json["total"]["currency"])
-                        #print(type(transaction_json["total"]["currency"]))
-                        if transaction_json["total"]["currency"] == 643:
-                            #get amount
-                            print(transaction_json["total"]["amount"])
-                            print(str(transaction_json["total"]["amount"]))
-                            return True, str(transaction_json["total"]["amount"])
-            except:
-            ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
-                return None, None
+        ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
+            return None, None
+
+    #utils
+    if False:
+        #uspeshno
+        if a == '123456789':
+            return True, '1500'
+        #payment is real but already used
+        elif a == '987654321':
+            return False, None
+        #payment does'nt exists ili ne prenadlejit etomu qiwi
+        else:
+            return None, None
 
 
 
