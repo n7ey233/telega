@@ -259,16 +259,11 @@ def reply(method, q1 = None, q2 = None):
         #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan cherez try except
         try:
             qua = product.objects.get(pk=method[1:], buyer = None)
-            print(q1)
-            
-            print(timezone.now())
-            print(timezone.now)
-            print(qua)
             if q1.balance >= qua.price:
                 q1.balance-=qua.price
                 q1.save()
                 qua.buyer = q1
-                qua.sold_date = timezone.now
+                qua.sold_date = timezone.now()
                 qua.save()
                 text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
                 l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
@@ -571,7 +566,7 @@ def telegram_api(request):
                     else:
                         user_a.balance = user_a.balance - user_a.transaction_instance.price
                         user_a.transaction_instance.buyer = user_a
-                        user_a.transaction_instance.sold_date = timezone.now
+                        user_a.transaction_instance.sold_date = timezone.now()
                         user_a.transaction_instance.save()
                         return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
                 #esli deneg ne hvataet, to
