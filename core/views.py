@@ -259,8 +259,10 @@ def reply(method, q1 = None, q2 = None):
         #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan cherez try except
         try:
             qua = product.objects.get(pk=method[1:], buyer = None)
-            print(timezone.now)
             print(q1)
+            
+            print(timezone.now())
+            print(timezone.now)
             print(qua)
             if q1.balance >= qua.price:
                 q1.balance-=qua.price
