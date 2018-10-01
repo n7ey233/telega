@@ -9,7 +9,7 @@ import json
 import requests
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import product_main_spec, start_msg, qiwi_headers
+#from .data_settings import product_main_spec, start_msg, qiwi_headers
 
 #utils
 tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
@@ -17,6 +17,13 @@ qiwi_wallet_num = '79841543923'
 help_msg = 'Добро пожаловать в наш магазин!\nУважаемый клиент, перед оплатой товара, убедитесь в правильности выбранной информации.\nНа данный момент мы работает ТОЛЬКО с платёжной системой Qiwi.\nОбязательно сохраняйте реквизиты оплаты( выданый ботом номер кошелька, кошелёк на который была произведена оплата, номер транзакции).\n\n Процедура получения товара:\n1)Выбор местоположения, товара( бот предложит все имеющиеся варианты наших закладок).\n2)Бот напишет Вам наш номер кошелька и Ваш номер заказа. Если хотите провести оплату с вашего баланса, нажмите "Оплатить с баланса", если на балансе не будет хватать средств, бот предложит вам пополнить баланс.\n3)Производите оплату на указанный ботом счёт.\n4)Если сумма платежа равна или больше суммы заказа, то бот вышлет информацию о вашем товаре(город, район, описание товара, приблизетельный адресс, фото закладки, геолокацию).\n\nЕсли сумма оплаты превышает цену товара, то разница пополнит ваш баланс.Если же сумма оплаты ниже цены товара, то бот напишет сообщение об ошибке и зачислит средства на ваш баланс.\n\n Возврат денежных средств осуществляется исключительно через связь с оператором.'
 replenish_msg = 'Для пополнения баланса отправьте денежные средства на Qiwi кошелёк: '+ qiwi_wallet_num
 support_apply_msg = 'Спасибо за обращение, в близжайшее время с вами свяжется наш оператор.'
+product_main_spec = 'Место'
+shop_name = 'nqieyersansan'
+qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
+qiwi_token = '8d38b50d9a69ca2a2b2dea48ac7d4461'
+start_msg = 'Добро пожаловать в магазин - '+shop_name+'!\n\nНажмите "Выбрать '+ product_main_spec+'" для оформления заказа.\nНажмите "Баланс" для проверки вашего баланса или его дальнейшего пополнения.\nНажмите "История" для просмотра истории ваших покупок.\nНажмите "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором.' 
+
+
 
 #login
 #ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
@@ -164,7 +171,6 @@ def smsg(a):
 def reply_callbackquery(a):
     url = 'https://api.telegram.org/bot'+tele_token+'/answerCallbackQuery?callback_query_id='+a
     requests.get(url)
-
 #eboshim knopki
 def inline_keyboard(a, b):
 
@@ -606,7 +612,6 @@ def telegram_api(request):
         ##po horoshemu, na etot query nado otvechat'
         #query_id = user_info["id"]
     return JsonResponse(return_dict)
-
 #logika dlya raboti s qiwi
 def qiwi_api(a):
     try:
