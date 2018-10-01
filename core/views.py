@@ -198,7 +198,7 @@ def reply(method, q1 = None, q2 = None):
         else:
             for i in asdf:
                 #
-                l1.append(inline_keyboard(i.type_of_product.name+' '+str(i.sold_date), 'j'+str(i.pk)))
+                l1.append(inline_keyboard(i.type_of_product.name+' '+str(i.sold_date.strftime('%x')), 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
     #balance itd
     elif method == 'cashbalance':
