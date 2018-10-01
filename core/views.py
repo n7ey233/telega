@@ -243,6 +243,7 @@ def reply(method, q1 = None, q2 = None):
             if q1.balance >= dsa.price:
                 text+='\nУ вас хватает денежных средств для оплаты, нажмите "Оплатить с баланса" для получения подробной информации о местоположении товара.'
                 l1.append(inline_keyboard('Оплатить с баланса', 'v'+str(dsa.pk)))
+                l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
             #esli net, to predlagaem popolnit; balans
             else:
                 text+='\nНа вашем балансе недостаточно средств для оплаты.\nПополните баланс для дальнейшей оплаты или оплатите используя транзакцию.'
@@ -252,7 +253,7 @@ def reply(method, q1 = None, q2 = None):
                 ###dodelai
                 l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
                 #vverhu broken
-        l1.append(inline_keyboard('Назад', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
+        l1.append(inline_keyboard('Назад', 'u'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
     #oplata s balansa
     elif method[0] == 'v':
