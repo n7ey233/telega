@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse
 from django.contrib.auth import logout, authenticate, login
+from django.utils import timezone
 from .models import *
 from .forms import *
 from django.views.decorators.csrf import csrf_exempt
@@ -8,8 +9,14 @@ import json
 import requests
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg, qiwi_headers, qiwi_wallet_num, tele_token
+from .data_settings import product_main_spec, start_msg, qiwi_headers
 
+#utils
+tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
+qiwi_wallet_num = '79841543923'
+help_msg = 'Добро пожаловать в наш магазин!\nУважаемый клиент, перед оплатой товара, убедитесь в правильности выбранной информации.\nНа данный момент мы работает ТОЛЬКО с платёжной системой Qiwi.\nОбязательно сохраняйте реквизиты оплаты( выданый ботом номер кошелька, кошелёк на который была произведена оплата, номер транзакции).\n\n Процедура получения товара:\n1)Выбор местоположения, товара( бот предложит все имеющиеся варианты наших закладок).\n2)Бот напишет Вам наш номер кошелька и Ваш номер заказа. Если хотите провести оплату с вашего баланса, нажмите "Оплатить с баланса", если на балансе не будет хватать средств, бот предложит вам пополнить баланс.\n3)Производите оплату на указанный ботом счёт.\n4)Если сумма платежа равна или больше суммы заказа, то бот вышлет информацию о вашем товаре(город, район, описание товара, приблизетельный адресс, фото закладки, геолокацию).\n\nЕсли сумма оплаты превышает цену товара, то разница пополнит ваш баланс.Если же сумма оплаты ниже цены товара, то бот напишет сообщение об ошибке и зачислит средства на ваш баланс.\n\n Возврат денежных средств осуществляется исключительно через связь с оператором.'
+replenish_msg = 'Для пополнения баланса отправьте денежные средства на Qiwi кошелёк: '+ qiwi_wallet_num
+support_apply_msg = 'Спасибо за обращение, в близжайшее время с вами свяжется наш оператор.'
 
 #login
 #ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
@@ -70,17 +77,17 @@ def main(request):
         elif request.GET.get('q', '') == 'product':
             obj = 'product'
             page = 'object_list'
-            obj_list = product.objects.all()
+            obj_list = product.objects.all().order_by('type_of_product')
             page_naming = 'Товары'
         elif request.GET.get('q', '') == 'product_sold':
             obj = 'product'
             page = 'object_list'
-            obj_list = product.objects.all().exclude(buyer=None)
+            obj_list = product.objects.all().exclude(buyer=None).order_by('type_of_product')
             page_naming = 'Проданные товары'
         elif request.GET.get('q', '') == 'product_ready':
             obj = 'product'
             page = 'object_list'
-            obj_list = product.objects.filter(buyer=None)
+            obj_list = product.objects.filter(buyer=None).order_by('type_of_product')
             page_naming = 'Товары ожидающие продажи'
         elif request.GET.get('q', '') == 'help':
             return render(request, 'cp/help.html',{})
@@ -255,6 +262,7 @@ def reply(method, q1 = None, q2 = None):
                 q1.balance-=qua.price
                 q1.save()
                 qua.buyer = q1
+                qua.sold_date = timezone.now
                 qua.save()
                 text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
                 l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
@@ -557,6 +565,7 @@ def telegram_api(request):
                     else:
                         user_a.balance = user_a.balance - user_a.transaction_instance.price
                         user_a.transaction_instance.buyer = user_a
+                        user_a.transaction_instance.sold_date = timezone.now
                         user_a.transaction_instance.save()
                         return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
                 #esli deneg ne hvataet, to
@@ -609,26 +618,26 @@ def qiwi_api(a):
             r = requests.get(check_transaction_url, headers=qiwi_headers)
             transaction_json = json.loads(r.text)
             #nomer poluchatelya
-            print(transaction_json["personId"])
+            #print(transaction_json["personId"])
             #check if num is your's
             if str(transaction_json["personId"])==qiwi_wallet_num:
                 #check status
-                print(transaction_json["status"])
+                #print(transaction_json["status"])
                 if transaction_json["status"] == 'SUCCESS':
                     #check total currency
-                    print(transaction_json["total"]["currency"])
+                    #print(transaction_json["total"]["currency"])
                     #print(type(transaction_json["total"]["currency"]))
                     if transaction_json["total"]["currency"] == 643:
                         #get amount
-                        print(transaction_json["total"]["amount"])
-                        print(str(transaction_json["total"]["amount"]))
+                        #print(transaction_json["total"]["amount"])
+                        #print(str(transaction_json["total"]["amount"]))
                         return True, str(transaction_json["total"]["amount"])
         except:
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
             return None, None
     #utils\test
-    if False:
     #uspeshno
+    if False:
         if a == '123456789':
             return True, '1500'
         #payment is real but already used

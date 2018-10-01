@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 ##pokupatel', chtobi smotret' ego balance, 
 #mb delat' skidki 
 #i otslezhivat' sostoyaniye obsheniya s botom
@@ -58,7 +59,11 @@ class product(models.Model):
     #fk na raion(tipo mesto v kakom raione prychetsya)
     placing = models.ForeignKey(raion, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Место хранения')
     #data pukupki
+    created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
+    #data prodaji
+    sold_date = models.DateTimeField(blank=True, null= True, verbose_name='Дата продажи')
     ##kolichestvo
+    #a nado li ono?
     ##cena v chem-to
     price = models.FloatField(blank=True, null = True,verbose_name='Цена, если пусто, то ценник берется с вида продукции')
     #sostoyaniye sdelki(zavershena ili v processe ili pustuyet)
@@ -66,15 +71,13 @@ class product(models.Model):
     commentary = models.TextField(blank = False, null = True, verbose_name='Дополнительное описание')
     #geolokaciya
     #ssilka na foto
-    foto_link = models.URLField(max_length = 256,blank=False, null= True, verbose_name='ссылка на фото' )
+    foto_link = models.URLField(max_length = 256,blank=False, null= True, verbose_name='Ссылка на фото' )
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
     buyer = models.ForeignKey(abonent, blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
     #fk na rabotnika(tipo kto delal zakladku)    
     #placer = models.ForeignKey(abonent, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Покупатель')
-    #utils, delete before deploy
-    #name = models.CharField(max_length=128, blank = True)
     class Meta:
-        ordering = ['type_of_product']
+        ordering = ['created_date']
     def __str__(self):
         return self.type_of_product.name
     def save(self, *args, **kwargs):
