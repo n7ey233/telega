@@ -281,7 +281,7 @@ def reply(method, q1 = None, q2 = None):
         if dsa.buyer:
             text = 'К сожалению, данный товар был только-что куплен или зарезервирован, попробуйте выбрать снова.'
         else:
-            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price)+'\n\nОтправьте платёж на сумму'+str(dsa.price)+' на киви кошелёк: ' +qiwi_wallet_num+', после оплаты нажмите *Продолжить*.'
+            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price)+'\n\nОтправьте платёж на сумму: '+str(dsa.price)+' на киви кошелёк: ' +qiwi_wallet_num+', после оплаты нажмите *Продолжить*.'
             l1.append(inline_keyboard('Продолжить', 'x'+str(dsa.pk)))
             l1.append(inline_keyboard('Обновить', method))
         l1.append(inline_keyboard('Назад', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
