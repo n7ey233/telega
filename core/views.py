@@ -192,7 +192,7 @@ def reply(method, q1 = None, q2 = None):
     #istoriya
     elif method == 'history':
         text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
-        asdf = product.objects.filter(buyer = q1)
+        asdf = product.objects.filter(buyer = q1).order_by('-sold_date')
         if len(asdf) == 0:
             text+='\nУвы, с вашего аккаунта ещё не было покупок'
         else:
