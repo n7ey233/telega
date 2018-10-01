@@ -155,10 +155,8 @@ def smsg(a):
     None
 #reply callbackquery
 def reply_callbackquery(a):
-    url = 'https://api.telegram.org/'+tele_token+'/answerCallbackQuery?callback_query_id='+a
-    r = requests.get(url)
-    print(r)
-    print(url)
+    url = 'https://api.telegram.org/bot'+tele_token+'/answerCallbackQuery?callback_query_id='+a
+    requests.get(url)
 
 #eboshim knopki
 def inline_keyboard(a, b):
