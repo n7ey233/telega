@@ -197,7 +197,7 @@ def reply(method, q1 = None, q2 = None):
             text+='\nУвы, с вашего аккаунта ещё не было покупок'
         else:
             for i in asdf:
-                l1.append(inline_keyboard(i.type_of_product.name, 'j'+str(i.pk)))
+                l1.append(inline_keyboard(i.type_of_product.name+' '+i.sold_date, 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
     #balance itd
     elif method == 'cashbalance':
