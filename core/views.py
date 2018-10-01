@@ -156,7 +156,8 @@ def smsg(a):
 #reply callbackquery
 def reply_callbackquery(a):
     url = 'https://api.telegram.org/'+tele_token+'/answerCallbackQuery?callback_query_id='+a
-    requests.get(url)
+    r = requests.get(url)
+    print(r)
     print(url)
 
 #eboshim knopki
