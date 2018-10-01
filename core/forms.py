@@ -41,7 +41,7 @@ class abonentForm(forms.ModelForm):
     class Meta:
         model = abonent
         fields = '__all__'
-        exclude = ['payment_instance']
+        exclude = ['payment_instance', 'transaction_instance']
         widgets = {}
 
     def __init__(self, *args, **kwargs):

@@ -8,7 +8,7 @@ import json
 import requests
 from django.http import JsonResponse
 #import kakih-to peremennykh
-from .data_settings import help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg, qiwi_headers, qiwi_wallet_num
+from .data_settings import help_msg, support_apply_msg, product_main_spec, start_msg, replenish_msg, qiwi_headers, qiwi_wallet_num, tele_token
 
 
 #login
@@ -48,7 +48,7 @@ def main(request):
             page = 'object_list'
             obj_list = product_type.objects.all()
             page_naming = 'Виды товара'
-        #abonent 
+        #abonent
         elif request.GET.get('q', '') == 'abonent':
             obj = 'abonent'
             page = 'object_list'
@@ -72,6 +72,18 @@ def main(request):
             page = 'object_list'
             obj_list = product.objects.all()
             page_naming = 'Товары'
+        elif request.GET.get('q', '') == 'product_sold':
+            obj = 'product'
+            page = 'object_list'
+            obj_list = product.objects.all().exclude(buyer=None)
+            page_naming = 'Проданные товары'
+        elif request.GET.get('q', '') == 'product_ready':
+            obj = 'product'
+            page = 'object_list'
+            obj_list = product.objects.filter(buyer=None)
+            page_naming = 'Товары ожидающие продажи'
+        elif request.GET.get('q', '') == 'help':
+            return render(request, 'cp/help.html',{})
         return render(request, 'cp/main.html',{
         'page': page,
         'obj': obj,
@@ -126,10 +138,10 @@ def formpage(request):
             elif request.GET.get('q', '') == 'product':
                 form = productForm(request.POST, instance=object)
             elif request.GET.get('q', '') == 'abonent':
-                form = abonentForm(request.POST, instance=object)            
+                form = abonentForm(request.POST, instance=object)
             if form.is_valid():
                 i = form.save()
-                return redirect('/main_page/cp'+ '?q=%s'%(request.GET.get('q'))) 
+                return redirect('/main_page/cp'+ '?q=%s'%(request.GET.get('q')))
         return render(request, 'cp/formpage.html',{
         'delete_button': delete_button,
         'object':object,
@@ -138,6 +150,14 @@ def formpage(request):
 
 
 ####logika dlya raboti s api telegrama
+#on success transaction
+def smsg(a):
+    None
+#reply callbackquery
+def reply_callbackquery(a):
+    url = 'https://api.telegram.org/'+tele_token+'/answerCallbackQuery?callback_query_id='+a
+    requests.get(url)
+
 #eboshim knopki
 def inline_keyboard(a, b):
 
@@ -197,6 +217,12 @@ def reply(method, q1 = None, q2 = None):
     elif method == 'replenish_fail':
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
+        l1.append(inline_keyboard('На главную', '/privet'))
+    #/pomosh
+    elif method == 'helpme':
+        text = help_msg
+        l1.append(inline_keyboard('Связь с оператором', 'support'))
+        l1.append(inline_keyboard('Ищу работу', 'seekjob'))
         l1.append(inline_keyboard('На главную', '/privet'))
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
@@ -295,12 +321,6 @@ def reply(method, q1 = None, q2 = None):
             l1.append(inline_keyboard('Помощь', 'support'))
         l1.append(inline_keyboard('На главную', '/privet'))
         None
-    #/pomosh
-    elif method == 'helpme':
-        text = help_msg
-        l1.append(inline_keyboard('Связь с оператором', 'support'))
-        l1.append(inline_keyboard('Ищу работу', 'seekjob'))
-        l1.append(inline_keyboard('На главную', '/privet'))
     #otpravki obrasheniya
     elif method == 'support':
         text = support_apply_msg
@@ -314,7 +334,7 @@ def reply(method, q1 = None, q2 = None):
         l1.append(inline_keyboard('На главную', '/privet'))
     #vibor glavnoi kategorii
     elif method == 'main_cat':
-        text = 'Выберите '+product_main_spec+':' 
+        text = 'Выберите '+product_main_spec+':'
         for i in raion.objects.filter(subcategory_of = None):
             l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/privet'))
@@ -326,7 +346,7 @@ def reply(method, q1 = None, q2 = None):
         g0 = raion.objects.get(pk=method[1:])
         g1 = raion.objects.filter(subcategory_of = g0)
         #delaem spisok teh vidov tovara dostupnykh v dannom main_raione
-        
+
         ##new
         k1 = set()
         for i in g1:
@@ -373,7 +393,7 @@ def reply(method, q1 = None, q2 = None):
                 ##predlagaem product_type v dannom raione
                 else:
                     text = 'Выберите товар в '+g0.pre_full_name+'.'
-                    ##eto 
+                    ##eto
                     u2 = set()
                     for i in g2:
                         u2.add(i.type_of_product)
@@ -407,7 +427,7 @@ def reply(method, q1 = None, q2 = None):
         if len(set0) > 0:
             text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
             for i in set0:
-                l1.append(inline_keyboard(i.name, 'u'+str(g2.pk)+'r'+str(i.pk))) 
+                l1.append(inline_keyboard(i.name, 'u'+str(g2.pk)+'r'+str(i.pk)))
         else:
             text = 'Увы, товар был только-что продан или зарезервирован.'
         l1.append(inline_keyboard('Назад', 'r'+method[1]))
@@ -422,7 +442,7 @@ def reply(method, q1 = None, q2 = None):
             asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
             text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
             l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
-            l1.append(inline_keyboard('Оплата по транзакции', 'h'+str(asd.pk))) 
+            l1.append(inline_keyboard('Оплата по транзакции', 'h'+str(asd.pk)))
         except:
             text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар.'
         l1.append(inline_keyboard('Назад', 'f'+method[0][1:]+'r'+str(raion.objects.get(pk=method[1]).subcategory_of.pk)))
@@ -432,7 +452,7 @@ def reply(method, q1 = None, q2 = None):
         #product pomechaetsa kak 1(ojidaet oplati)
         #и абоненту предлагается выбор, оплатить с баланса, либо сделать транзакцию напрямую
         #при оплате с баланса (надо писать логику)
-        #при оплате транзакцией, 
+        #при оплате транзакцией,
         #да пробуй заебал, иди покури кофейка налей, глицин сожри и пробуй, нехуй сидеть
         #
         #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
@@ -488,7 +508,10 @@ def telegram_api(request):
     ##redirect on func
     #esli eto soobsheniye
     if reply_type == 'message':
-        recieve_text = fulljson["message"]["text"]
+        try:
+            recieve_text = fulljson["message"]["text"]
+        except:
+            return HttpResponse("")
         #v sluchae esli ojidaet popolneniya balansa
         if user_a.payment_instance == 1:
             #payment is real and not used
@@ -497,10 +520,11 @@ def telegram_api(request):
             #esli uspeh
             if a1 == True:
                 user_a.balance=user_a.balance+ float(a2)
-                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = a2)
+                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = float(a2))
                 #
                 #
                 #TUT
+                smsg(a2)
                 #OTPRAVLYAI OTCHET NA MOE OBLAKO ONO MNE NUZHNO
                 #CHTOBI SCHITAT' PRIBIL', PRIBIL' BUDET SCHTITASYA
                 #от сумм пополнения баланса или выполнения транзакций
@@ -522,7 +546,7 @@ def telegram_api(request):
             if a1 == True:
                 #1000 + 1500 = 2500
                 user_a.balance=user_a.balance+ float(a2)
-                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = a2)
+                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = float(a2))
                 #esli deneg hvataet na transakciyu
                 if user_a.balance >= user_a.transaction_instance.price:
                     #tut chekai est' li u obiekta pokupki pokupatel' dabi ne perepisivat' istoriyu
@@ -542,6 +566,7 @@ def telegram_api(request):
                 #
                 #
                 #TUT
+                smsg(a2)
                 #OTPRAVLYAI OTCHET NA MOE OBLAKO ONO MNE NUZHNO
                 #CHTOBI SCHITAT' PRIBIL', PRIBIL' BUDET SCHTITASYA
                 #от сумм пополнения баланса или выполнения транзакций
@@ -566,6 +591,7 @@ def telegram_api(request):
     elif reply_type == 'callback_query':
         query = user_info["data"]
         return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
+        reply_callbackquery(user_info["id"])
         ##po horoshemu, na etot query nado otvechat'
         #query_id = user_info["id"]
     return JsonResponse(return_dict)
@@ -600,10 +626,9 @@ def qiwi_api(a):
         except:
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
             return None, None
-
-    #utils
+    #utils\test
     if False:
-        #uspeshno
+    #uspeshno
         if a == '123456789':
             return True, '1500'
         #payment is real but already used
@@ -612,8 +637,6 @@ def qiwi_api(a):
         #payment does'nt exists ili ne prenadlejit etomu qiwi
         else:
             return None, None
-
-
 
 
 # Create your views here.

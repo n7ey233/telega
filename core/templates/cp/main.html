@@ -4,18 +4,18 @@
 <a href="{% url 'main'%}">Главная</a>
 <hr>
 {%if page == 'main'%}
-<li><a href="#">История сообщений</a></li>
+<li><a href="#">История сообщений\\-</a></li>
 <li><a href="?q=raion">Районы</a></li>
 <li><a href="?q=product_type">Виды товара</a></li>
 <li><a href="?q=product">Все товары</a></li>
-<li><a href="?q=product">Проданные товары</a></li>
-<li><a href="?q=product">Товары ожидающие продажи</a></li>
+<li><a href="?q=product_sold">Проданные товары</a></li>
+<li><a href="?q=product_ready">Товары ожидающие продажи</a></li>
 <li><a href="?q=abonent">Абоненты</a></li>
 <li><a href="?q=abonentss">Абоненты требующие связи с оператором</a></li>
 <li><a href="?q=abonentsj">Абоненты ищущие работу</a></li>
-<li><a href="?q=user">Работники</a></li>
+<li><a href="?q=user">Работники\\-</a></li>
 <li><a href="{% url 'formpage'%}?q=site_settings">Настройки сайта</a></li>
-<li><a href="#">Помощь</a></li>
+<li><a href="?q=help">Помощь\\dopolni</a></li>
 <hr>
 <a href="/dengji?action=logmeout">Выход</a>
 <hr>
@@ -29,7 +29,7 @@
 </div>
 <hr>
 {%for i in obj_list%}
-<a href="{% url 'formpage'%}?q={{obj}}&que={{i.pk}}">{%if i.pre_full_name%}{{i.pre_full_name}}{%elif i.type_of_product %}{{i.type_of_product}}{%else%}{{i.name}}{%endif%}{{i.telega_id}}</a>
+<a href="{% url 'formpage'%}?q={{obj}}&que={{i.pk}}">{%if i.pre_full_name%}{{i.pre_full_name}}{%elif i.type_of_product %}{{i.type_of_product}} - {{i.placing}}{%else%}{{i.name}}{%endif%}{{i.telega_id}}</a>
 <br>
 {%endfor%}
 {%endif%}
