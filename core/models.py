@@ -93,13 +93,16 @@ class chat_msg(models.Model):
     #datetime
 
 class site_settings(models.Model):
-    product_main_spec = models.TextField(blank = True, verbose_name='Название первой категории')
-    shop_name = models.TextField(blank = True, verbose_name='Название магазина')
+    product_main_spec = models.CharField(max_length=128, blank = True, verbose_name='Название первой категории')
+    shop_name = models.CharField(max_length=128, blank = True, verbose_name='Название магазина')
     #tele_token
+    tele_token =models.CharField(max_length=128, blank = True, verbose_name='токен телеги')
     #telebot_name
     #qiwi_token
+    qiwi_token = models.CharField(max_length=128, blank = True, verbose_name='токен киви') 
     ##used in replenish balance
     #qiwi_wallet_num
+    qiwi_wallet_num =  models.CharField(max_length=128, blank = True, verbose_name='номер киви')
     def __str__(self):
         return ('Настройки сайта')
 
