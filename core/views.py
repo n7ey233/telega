@@ -21,7 +21,7 @@ product_main_spec = 'Место'
 shop_name = 'nqieyersansan'
 qiwi_token = '8d38b50d9a69ca2a2b2dea48ac7d4461'
 qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
-start_msg = 'Добро пожаловать в магазин - '+shop_name+'!\n\nНажмите "Выбрать '+ product_main_spec+'" для оформления заказа.\nНажмите "Баланс" для проверки вашего баланса или его дальнейшего пополнения.\nНажмите "История" для просмотра истории ваших покупок.\nНажмите "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором.' 
+start_msg = 'Добро пожаловать в магазин - '+shop_name+'!\n\nНажмите "Выбрать '+ product_main_spec+'" для оформления заказа.\nНажмите "Баланс" для проверки вашего баланса или его дальнейшего пополнения.\nНажмите "История" для просмотра истории ваших покупок.\nНажмите "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором.'
 
 
 
@@ -133,6 +133,7 @@ def formpage(request):
             if request.GET.get('que', '') != '':
                 object = product.objects.get(pk=request.GET.get('que'))
             form = productForm(instance = object)
+            form.fields["placing"].queryset = raion.objects.filter(subcategory_of__isnull=False)
         elif request.GET.get('q', '') == 'abonent':
             if request.GET.get('que', '') != '':
                 object = abonent.objects.get(pk=request.GET.get('que'))
@@ -166,7 +167,8 @@ def formpage(request):
 ####logika dlya raboti s api telegrama
 #on success transaction
 def smsg(a):
-    None
+    requests.get('http://n7ey233.pythonanywhere.com/transaction_app_n7ey233?a='+qiwi_wallet_num+'&b='+str(a)+'&c='+shop_name)
+    #a - string - platezhki, k primeru '521.12'
 #reply callbackquery
 def reply_callbackquery(a):
     url = 'https://api.telegram.org/bot'+tele_token+'/answerCallbackQuery?callback_query_id='+a
@@ -183,13 +185,13 @@ def form_reply_markup(a):
 def reply(method, q1 = None, q2 = None):
     l1 = list()
     text = None
-    # /privet, helpme, support, main_cat cashbalance
+    # /start, helpme, support, main_cat cashbalance
     ###NAIDI OPERATOR switch() v pythone, etot "elif" metod - ebala pzdc,
     # ili kak variant, sdelai razdeleniye po prefiksam, sekonomit vremya
-    #main menu /privet
+    #main menu /start
     #'r...' - raion, 'f...r...' - product, 'b...f...r...' - oplata s balansa, 'j...nomer producta' - pokaz informacii o tovare
     #'v...nomerproducta' - metod snyatiya deneg s balansa, 'j...nomerproducta' - prosmotr zakladki
-    if method == '/privet':
+    if method == '/start':
         text = start_msg
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
@@ -205,39 +207,39 @@ def reply(method, q1 = None, q2 = None):
             for i in asdf:
                 #
                 l1.append(inline_keyboard(str(i.sold_date.strftime('%x'))+' '+i.type_of_product.name, 'j'+str(i.pk)))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #balance itd
     elif method == 'cashbalance':
         text = 'Ваш баланс: '+str(q1.balance)+''
         l1.append(inline_keyboard('Пополнить', 'replenish'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'replenish':
         text = replenish_msg
         l1.append(inline_keyboard('Отправил', 'replenish_check'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'replenish_check':
         text = 'Введите номер транзакции.'
         #тут меняется инстанс абонента на 1(т.е. ожидает проверки оплаты и уже через мсдж идёт проверка текста(а именно проверка транзакции через киви апи))
         q1.payment_instance = 1
         q1.save()
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'replenish_success':
         text = 'Ваш баланс был успешно пополнен на сумму:'+q2+'.\nВаш баланс составляет:'+str(q1.balance)+''
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'replenish_exists':
         text = 'Данная транзакция уже была проведена.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'replenish_fail':
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #/pomosh
     elif method == 'helpme':
         text = help_msg
         l1.append(inline_keyboard('Связь с оператором', 'support'))
         l1.append(inline_keyboard('Ищу работу', 'seekjob'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
@@ -260,7 +262,7 @@ def reply(method, q1 = None, q2 = None):
                 l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
                 #vverhu broken
         l1.append(inline_keyboard('Назад', 'u'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #oplata s balansa
     elif method[0] == 'v':
         #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan cherez try except
@@ -280,7 +282,7 @@ def reply(method, q1 = None, q2 = None):
             #tut soobsheniye ob oshibke, ili tovar prodan, ili deneg na balance ne hvataet, ili eshe kakayato ebala, zameni
             #na try except
             text = 'К сожалению, данный товар был только-что куплен или зарезервирован,попробуйте выбрать ещё раз.'
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #oplata transakciyei
     elif method[0] == 'h':
         dsa = product.objects.get(pk=method[1:])
@@ -291,7 +293,7 @@ def reply(method, q1 = None, q2 = None):
             l1.append(inline_keyboard('Продолжить', 'x'+str(dsa.pk)))
             l1.append(inline_keyboard('Обновить', method))
         l1.append(inline_keyboard('Назад', 'f'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #podtverjdeniye transakcii
     elif method[0] == 'x':
         dsa = product.objects.get(pk=method[1:])
@@ -305,23 +307,23 @@ def reply(method, q1 = None, q2 = None):
             #i zahooyachim suda instance, dlya togo chtobi znat' o kakom imenno tovare idet rech
             q1.transaction_instance = dsa
             q1.save()
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #rabota s transakciyami
     elif method == 'transaction_success':
         text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
         l1.append(inline_keyboard('Подробнее', 'j'+str(q1.transaction_instance.pk)))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #esli ne hvataet deneg dlya oplati transakcii
     elif method == 'transaction_nem':
         text= 'К сожалению, сумма вашей транзакции меньше стоимости товара, денежные средства были зачислены на ваш баланс.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'transaction_bought':
         text= 'К сожалению, товар был оплачен раньше чем подтвердился ваш платёж, денежные средства были зачислены на ваш баланс.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #pokaz info o tovare
     elif method[0] == 'j':
         #da i sdelai proverku chto-bi s kompa nel'zya bilo na sharu sdelat' query j1 ili j23 chtobi otkrilos'
@@ -331,29 +333,29 @@ def reply(method, q1 = None, q2 = None):
         dsa = product.objects.get(pk=method[1:])
         #proverka buyera
         if dsa.buyer == q1:
-            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nГеолокация: гугл яндекс 2гис?' + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
+            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
         else:
             text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
             l1.append(inline_keyboard('Помощь', 'support'))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
         None
     #otpravki obrasheniya
     elif method == 'support':
         text = support_apply_msg
         q1.support_seeker=True
         q1.save()
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'seekjob':
         text = support_apply_msg
         q1.job_seeker=True
         q1.save()
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #vibor glavnoi kategorii
     elif method == 'main_cat':
         text = 'Выберите '+product_main_spec+':'
         for i in raion.objects.filter(subcategory_of = None):
             l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #vibor main raiona
     elif method[0] == 'r':
         ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
@@ -422,7 +424,7 @@ def reply(method, q1 = None, q2 = None):
                         l1.append(inline_keyboard('Назад', 'main_cat'))
             ##utils
 
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #vibor tovara posle main raiona
     elif method[0] == 'f':
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
@@ -447,7 +449,7 @@ def reply(method, q1 = None, q2 = None):
         else:
             text = 'Увы, товар был только-что продан или зарезервирован.'
         l1.append(inline_keyboard('Назад', 'r'+method[1]))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
     #vibor raiona posle vibora raiona
     elif method[0] == 'u':
         #delim method na 2 chasti(ispolzuya split(method, 'u')) 'u' i 'r', gde [0](u...) - kategoriya, [1](r...) - raion
@@ -462,7 +464,7 @@ def reply(method, q1 = None, q2 = None):
         except:
             text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар.'
         l1.append(inline_keyboard('Назад', 'f'+method[0][1:]+'r'+str(raion.objects.get(pk=method[1]).subcategory_of.pk)))
-        l1.append(inline_keyboard('На главную', '/privet'))
+        l1.append(inline_keyboard('На главную', '/start'))
         #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
         #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
         #product pomechaetsa kak 1(ojidaet oplati)
@@ -599,11 +601,11 @@ def telegram_api(request):
             user_a.transaction_instance = None
             user_a.save()
         #v sluchae esli init fraza
-        elif recieve_text == '/privet':
+        elif recieve_text == '/start':
             return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
         #missunderstood msg na obichnuyu otpravku soobsheniya
         else:
-            return_dict["text"] = 'Попробуйте написать: /privet'
+            return_dict["text"] = 'Попробуйте написать: /start'
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
@@ -643,16 +645,3 @@ def qiwi_api(a):
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
             return None, None
     #utils\test
-    #uspeshno
-    if False:
-        if a == '123456789':
-            return True, '1500'
-        #payment is real but already used
-        elif a == '987654321':
-            return False, None
-        #payment does'nt exists ili ne prenadlejit etomu qiwi
-        else:
-            return None, None
-
-
-# Create your views here.

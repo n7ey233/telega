@@ -70,6 +70,7 @@ class product(models.Model):
     #dop komentariy (hz zachem, vozmozhno opisaniye mesta zakladki?)
     commentary = models.TextField(blank = False, null = True, verbose_name='Дополнительное описание')
     #geolokaciya
+    geolocation = models.URLField(max_length = 256,blank=False, null= True, verbose_name='Ссылка на геолокацию' )
     #ssilka na foto
     foto_link = models.URLField(max_length = 256,blank=False, null= True, verbose_name='Ссылка на фото' )
     #fk na abonent(pokupatelya, pri zavershenii sdelki)
