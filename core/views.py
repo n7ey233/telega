@@ -485,13 +485,13 @@ def telegram_api(request):
     #if tg_project.tg_type == 'tg_dv_fake':
     if True:##redirect on func #refactori
         #esli eto soobsheniye
+        return_dict= dict()
         if reply_type == 'message':
             try:
                 recieve_text = fulljson["message"]["text"]
             except:
                 return HttpResponse("")
             if True: #platejka refactori
-                return_dict = dict()
                 if user_a.payment_instance == 1:#v sluchae esli ojidaet popolneniya balansa
                     #payment is real and not used
                     user_a.payment_instance = 0

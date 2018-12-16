@@ -19,11 +19,12 @@ class telegram_project(models.Model):#proekt telegrama
         return str(self.tg_username)
     def save(self, *args, **kwargs):
         if self.id == None:#1st init
-            if set_webhook(self.tg_token, self.pk) is True: self.web_hook_chained = True
             self.tg_id = str(get_tg(self.tg_token, 'id'))
             self.tg_username = str(get_tg(self.tg_token, 'username'))
             self.tg_first_name = str(get_tg(self.tg_token, 'first_name'))
         super().save()
+        print(self.pk)
+        if set_webhook(self.tg_token, self.pk) is True: self.web_hook_chained = True
 class abonent(models.Model):
     #instance obsheniya (
     #0- default (nikakoi operacii)
