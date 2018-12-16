@@ -627,6 +627,7 @@ def telegram_api(request):
         if not return_dict: return_dict= dict()
         return_dict["chat_id"] = reciever_id
         return_dict["method"] = 'sendmessage'
+        return_dict["parse_mode"] = 'HTML'
     if True:#testting purpose
         try:
             ##dlya raboti s jsonom
