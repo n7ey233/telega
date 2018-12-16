@@ -626,7 +626,7 @@ def telegram_api(request):
     if True:#testting purpose
         try:
             ##dlya raboti s jsonom
-            print(json.loads(request.body))
+            print(user_info["data"])
             #print(request.body)
             #print(return_dict)
             None
