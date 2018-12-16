@@ -178,14 +178,14 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
     #main menu /start
     #'r...' - raion, 'f...r...' - product, 'b...f...r...' - oplata s balansa, 'j...nomer producta' - pokaz informacii o tovare
     #'v...nomerproducta' - metod snyatiya deneg s balansa, 'j...nomerproducta' - prosmotr zakladki
-    if method == '/start':
+    if method == '/start':#main
         text = start_msg
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
+        l1.append(inline_keyboard('Прайс', 'price_list'))
         l1.append(inline_keyboard('История', 'history'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
-    #istoriya
-    elif method == 'history':
+    elif method == 'history':#istoriya
         text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
         if fake_app == 0:
             asdf = product.objects.filter(buyer = q1).order_by('-sold_date')
@@ -201,8 +201,48 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 for i in asdf:
                     l1.append(inline_keyboard(str(i.sold_date.strftime('%x'))+' '+i.type_of_product.name, 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
-    #balance itd
-    elif method == 'cashbalance':
+    elif method == 'price_list':
+        text = """
+Ak-47: 5г-5000р
+OG KUSH: 3г-3900р
+Bluberry: 3г-3600р
+Big But: 5г-4000р
+White Russia: 5г - 4000р
+Pineapple express: 3гр-6000р
+️White Widow:3гр-3500р
+️Hot pepper Skunk:3гр-3600р
+️ Tangerine Kush: 3гр -3300р
+Гаш: 3г-2000р
+План: 3г-2000р
+🏻🏻🏻🏻🏻🏻🏻🏻🏻🏻 
+Амф: 1г-2500(белый) 
+Амф: 1г-2500.(розовый) 
+Соль: 1г-2500р. 
+Мет: 1г-3000р. 
+Меф: 1г-3000р
+MDMA(crystals): 1г-3500р. 
+ 
+Tesla (250mg MDMA) 
+SKYPE (230 mg MDMA) 
+Molly (230mg MDMA) 
+🔻1-5 шт. 1200р/шт 
+🔻5-10 шт. 980р/шт
+🍄🍄🍄🍄🍄🍄🍄🍄🍄🍄
+LSD доты: ЛСД-25(250мг)-2400р/2шт
+️LSD марки: 250мг/3400р/2шт
+Мескалин: 
+🔻Мухоморы: 3000р/10гр/2дозы
+🔻Сульфат: 3000р/1гр/2дозы
+️Псилоцебиновые грибы:
+🔻Golden teacher: 4000р/3гр
+🔻Psilocybe Cubensis:4000р/3гр
+🔻Pink Buffalo: 4000р/3гр
+ГРИБЫ!!!! Рекомендованая дозировка не мение 1г на человека. Для новичков не стоит употреблять больше 2г. Оптимальный вариант разделить 3г с другом, и отправиться в незабываемое путешествие, по глубинам своего сознания!
+Для опытных предлагаю дозировку в 3г. Погружение на 8 часов вам обеспеченно. Хорошо сочитаеться с марихуанной.
+Так же перед употреблением советуем не принимать пищу за 3-5 часов.""".replace('\n',' ')
+        l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
+        l1.append(inline_keyboard('На главную', '/start')) 
+    elif method == 'cashbalance':#balance itd
         text = 'Ваш баланс: '+str(q1.balance)+''
         l1.append(inline_keyboard('Пополнить', 'replenish'))
         l1.append(inline_keyboard('На главную', '/start'))
@@ -594,7 +634,6 @@ def telegram_api(request):
             None
     if return_dict:return JsonResponse(return_dict)
     else:return HttpResponse('')
-    
 
 qiwi_token = '47b27250733beb5c3c153a2a6003e523'
 qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
