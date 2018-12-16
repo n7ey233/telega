@@ -473,7 +473,7 @@ def reply(method, q1 = None, q2 = None):
 @csrf_exempt
 def telegram_api(request):
     #testing purpose
-    if True:#testing purpose
+    if True:#testting purpose
         try:
             ##dlya raboti s jsonom
             #print(json.loads(request.body))
