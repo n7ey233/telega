@@ -23,7 +23,45 @@ shop_name = 'Ušə məəə<3'
 start_msg = 'Привет, умняш!!!Добро пожаловать ко мне в магазин - «Use Me»!!!!! Я очень рада, что ты пришёл именно ко мне, ведь у меня для тебя огромный выбор вкусняшек ️\n\nНажми "Выбрать Место" для оформления заказа.\nНажми "Баланс" для проверки своего баланса или его дальнейшего пополнения.\nНажми "Прайс" чтобы увидеть весь ассортимент и цены.\nНажми "История" для просмотра истории своих покупок.\nНажми "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором, если вдруг произойдёт какая-то нелепая ошибка!\n'
 
 
-
+price_list_all = """
+Прайс:
+Ak-47: 5г-5000р
+OG KUSH: 3г-3900р
+Bluberry: 3г-3600р
+Big But: 5г-4000р
+White Russia: 5г - 4000р
+Pineapple express: 3гр-6000р
+️White Widow:3гр-3500р
+️Hot pepper Skunk:3гр-3600р
+️ Tangerine Kush: 3гр -3300р
+Гаш: 3г-2000р
+План: 3г-2000р
+🏻🏻🏻🏻🏻🏻🏻🏻🏻🏻 
+Амф: 1г-2500(белый) 
+Амф: 1г-2500.(розовый) 
+Соль: 1г-2500р. 
+Мет: 1г-3000р. 
+Меф: 1г-3000р
+MDMA(crystals): 1г-3500р. 
+ 
+Tesla (250mg MDMA) 
+SKYPE (230 mg MDMA) 
+Molly (230mg MDMA) 
+🔻1-5 шт. 1200р/шт 
+🔻5-10 шт. 980р/шт
+🍄🍄🍄🍄🍄🍄🍄🍄🍄🍄
+LSD доты: ЛСД-25(250мг)-2400р/2шт
+️LSD марки: 250мг/3400р/2шт
+Мескалин: 
+🔻Мухоморы: 3000р/10гр/2дозы
+🔻Сульфат: 3000р/1гр/2дозы
+️Псилоцебиновые грибы:
+🔻Golden teacher: 4000р/3гр
+🔻Psilocybe Cubensis:4000р/3гр
+🔻Pink Buffalo: 4000р/3гр
+ГРИБЫ!!!! Рекомендованая дозировка не мение 1г на человека. Для новичков не стоит употреблять больше 2г. Оптимальный вариант разделить 3г с другом, и отправиться в незабываемое путешествие, по глубинам своего сознания!
+Для опытных предлагаю дозировку в 3г. Погружение на 8 часов вам обеспеченно. Хорошо сочитаеться с марихуанной.
+Так же перед употреблением советуем не принимать пищу за 3-5 часов."""
 
 
 def sign(request):#login#ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
@@ -185,6 +223,11 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('Прайс', 'price_list'))
         l1.append(inline_keyboard('История', 'history'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
+    elif method == 'main_cat':#vibor glavnoi kategorii
+        text = 'Выберите '+product_main_spec+':'
+        for i in raion.objects.filter(subcategory_of = None):
+            l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
+        l1.append(inline_keyboard('На главную', '/start')) 
     elif method == 'history':#istoriya
         text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
         if fake_app == 0:
@@ -201,48 +244,11 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 for i in asdf:
                     l1.append(inline_keyboard(str(i.sold_date.strftime('%x'))+' '+i.type_of_product.name, 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
-    elif method == 'price_list':
-        if False:
-            text = """
-Прайс:
-Ak-47: 5г-5000р
-OG KUSH: 3г-3900р
-Bluberry: 3г-3600р
-Big But: 5г-4000р
-White Russia: 5г - 4000р
-Pineapple express: 3гр-6000р
-️White Widow:3гр-3500р
-️Hot pepper Skunk:3гр-3600р
-️ Tangerine Kush: 3гр -3300р
-Гаш: 3г-2000р
-План: 3г-2000р
-🏻🏻🏻🏻🏻🏻🏻🏻🏻🏻 
-Амф: 1г-2500(белый) 
-Амф: 1г-2500.(розовый) 
-Соль: 1г-2500р. 
-Мет: 1г-3000р. 
-Меф: 1г-3000р
-MDMA(crystals): 1г-3500р. 
- 
-Tesla (250mg MDMA) 
-SKYPE (230 mg MDMA) 
-Molly (230mg MDMA) 
-🔻1-5 шт. 1200р/шт 
-🔻5-10 шт. 980р/шт
-🍄🍄🍄🍄🍄🍄🍄🍄🍄🍄
-LSD доты: ЛСД-25(250мг)-2400р/2шт
-️LSD марки: 250мг/3400р/2шт
-Мескалин: 
-🔻Мухоморы: 3000р/10гр/2дозы
-🔻Сульфат: 3000р/1гр/2дозы
-️Псилоцебиновые грибы:
-🔻Golden teacher: 4000р/3гр
-🔻Psilocybe Cubensis:4000р/3гр
-🔻Pink Buffalo: 4000р/3гр
-ГРИБЫ!!!! Рекомендованая дозировка не мение 1г на человека. Для новичков не стоит употреблять больше 2г. Оптимальный вариант разделить 3г с другом, и отправиться в незабываемое путешествие, по глубинам своего сознания!
-Для опытных предлагаю дозировку в 3г. Погружение на 8 часов вам обеспеченно. Хорошо сочитаеться с марихуанной.
-Так же перед употреблением советуем не принимать пищу за 3-5 часов."""
+    elif method == 'price_list':#price_list
         if True:
+            text = price_list_all
+        if False:#popitka otpravki html
+            None
             text = '<span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span> <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Ak-47: 5г-5000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>OG KUSH: 3г-3900р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Bluberry: 3г-3600р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Big But: 5г-4000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>White Russia: 5г - 4000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Pineapple express: 3гр-6000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>White Widow:3гр-3500р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Hot pepper Skunk:3гр-3600р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span> Tangerine Kush: 3гр -3300р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Гаш: 3г-2000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>План: 3г-2000р<br><span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻 <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Амф: 1г-2500(белый) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Амф: 1г-2500.(розовый) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Соль: 1г-2500р. <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Мет: 1г-3000р. <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Меф: 1г-3000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>MDMA(crystals): 1г-3500р. <br><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span> <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Tesla (250mg MDMA) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>SKYPE (230 mg MDMA) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Molly (230mg MDMA) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>1-5 шт. 1200р/шт <br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>5-10 шт. 980р/шт<br><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>LSD доты: ЛСД-25(250мг)-2400р/2шт<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>LSD марки: 250мг/3400р/2шт<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Мескалин: <br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Мухоморы: 3000р/10гр/2дозы<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Сульфат: 3000р/1гр/2дозы<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Псилоцебиновые грибы:<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Golden teacher: 4000р/3гр<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Psilocybe Cubensis:4000р/3гр<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Pink Buffalo: 4000р/3гр<br>ГРИБЫ!!!! Рекомендованая дозировка не мение 1г на человека. Для новичков не стоит употреблять больше 2г. Оптимальный вариант разделить 3г с другом, и отправиться в незабываемое путешествие, по глубинам своего сознания!<br>Для опытных предлагаю дозировку в 3г. Погружение на 8 часов вам обеспеченно. Хорошо сочитаеться с марихуанной.<br>Так же перед употреблением советуем не принимать пищу за 3-5 часов.'
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('На главную', '/start')) 
@@ -271,12 +277,22 @@ LSD доты: ЛСД-25(250мг)-2400р/2шт
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('На главную', '/start'))
-    #/pomosh
-    elif method == 'helpme':
+    elif method == 'helpme':#/pomosh
         text = help_msg
         l1.append(inline_keyboard('Связь с оператором', 'support'))
         l1.append(inline_keyboard('Ищу работу', 'seekjob'))
         l1.append(inline_keyboard('На главную', '/start'))
+    elif method == 'support':#otpravki obrasheniya support
+        text = support_apply_msg
+        q1.support_seeker=True
+        q1.save()
+        l1.append(inline_keyboard('На главную', '/start'))
+    elif method == 'seekjob':#otpravki obrasheniya poisk raboti
+        text = support_apply_msg
+        q1.job_seeker=True
+        q1.save()
+        l1.append(inline_keyboard('На главную', '/start'))
+
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
@@ -391,23 +407,6 @@ LSD доты: ЛСД-25(250мг)-2400р/2шт
             l1.append(inline_keyboard('Помощь', 'support'))
         l1.append(inline_keyboard('На главную', '/start'))
         None
-    #otpravki obrasheniya
-    elif method == 'support':
-        text = support_apply_msg
-        q1.support_seeker=True
-        q1.save()
-        l1.append(inline_keyboard('На главную', '/start'))
-    elif method == 'seekjob':
-        text = support_apply_msg
-        q1.job_seeker=True
-        q1.save()
-        l1.append(inline_keyboard('На главную', '/start'))
-    #vibor glavnoi kategorii
-    elif method == 'main_cat':
-        text = 'Выберите '+product_main_spec+':'
-        for i in raion.objects.filter(subcategory_of = None):
-            l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
-        l1.append(inline_keyboard('На главную', '/start'))
     #vibor tovara posle main raiona
     elif method[0] == 'r':
         ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
@@ -627,7 +626,7 @@ def telegram_api(request):
         if not return_dict: return_dict= dict()
         return_dict["chat_id"] = reciever_id
         return_dict["method"] = 'sendmessage'
-        return_dict["parse_mode"] = 'HTML'
+        #return_dict["parse_mode"] = 'HTML'
     if True:#testting purpose
         try:
             ##dlya raboti s jsonom
