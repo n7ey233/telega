@@ -1,8 +1,34 @@
 from django.db import models
 from django.utils import timezone
-##pokupatel', chtobi smotret' ego balance, 
-#mb delat' skidki 
-#i otslezhivat' sostoyaniye obsheniya s botom
+from .telegram_api import set_webhook
+
+class telegram_project(models.Model):#proekt telegrama
+    tg_types = (
+    ('tg_dv_fake', 'tg_dv_fake'),
+    )
+    finance_types = (
+    ('bai', 'белая'),
+    ('hei', 'черная'),
+    ('hui', 'серая'),
+    )
+    finance_type = models.CharField(max_length=22, blank = False, choices=finance_types, default='hei', verbose_name='Тип кассы')
+    tg_token = models.CharField(max_length=128, blank = False, verbose_name='tg_token')
+    tg_id = models.CharField(max_length=128, blank = False, verbose_name='tg_id, 为了看清楚')
+    tg_type = models.CharField(max_length=22, blank = False, choices=tg_types, default='tg_dv_fake', verbose_name='Тип телеги')
+    web_hook_chained = models.BooleanField(default = False, blank = False, verbose_name='вебхук')
+    start_word = models.CharField(max_length=128, blank = False, verbose_name='стартовая фраза')
+    class Meta:
+        ordering = ['tg_id']
+    def __str__(self):
+        return str(self.tg_id)
+    def tg_webhook(self):
+        if set_webhook(self.tg_token, self.pk) is True:
+            self.web_hook_chained = True
+            super.save()
+    def save(self, *args, **kwargs):
+        if self.id == None:
+            if set_webhook(self.tg_token, self.pk) is True: self.web_hook_chained = True
+        super().save()
 class abonent(models.Model):
     #instance obsheniya (
     #0- default (nikakoi operacii)
@@ -20,20 +46,19 @@ class abonent(models.Model):
     job_seeker = models.BooleanField(default=False, verbose_name='Ищет работу')
     support_seeker = models.BooleanField(default=False, verbose_name='Ждет связи с оператором')
     transaction_instance = models.ForeignKey('product', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='используется для назначения инстанса при оплате транзакцией')
+    fake_purchases =models.ManyToManyField('product' , blank = True,symmetrical=False, verbose_name='Список транзакциий апп', related_name="fake_one")
     class Meta:
         ordering = ['telega_id']
     def __str__(self):
         return str(self.telega_id)
-##produkciya bivaet raznih tipov
-class product_type(models.Model):
+class product_type(models.Model):##produkciya bivaet raznih tipov
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
     price = models.FloatField(blank = False, default = 500, verbose_name='Цена за ед. продукта, если пусто, то дефолту с неё берется ценник на товар')
     class Meta:
         ordering = ['name']
     def __str__(self):
         return self.name
-##ispol'zuyetsa dlya razdeleniya produkcii na raioni
-class raion(models.Model):
+class raion(models.Model):##ispol'zuyetsa dlya razdeleniya produkcii na raioni
     pre_full_name = models.TextField(blank = True, verbose_name='префикс, используется для отображения' )
     name = models.CharField(max_length=128, blank = False, verbose_name='Название' )
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
@@ -51,9 +76,7 @@ class raion(models.Model):
             k = k.subcategory_of
         self.pre_full_name = '/'.join(full_path[::-1])
         super().save()
-##eto instance sdelki, hotyaaa
-#voobshe, ya bi nazval eto product_instance, hotya kto suda polezet?
-class product(models.Model):
+class product(models.Model):##eto instance sdelki, hotyaaa#voobshe, ya bi nazval eto product_instance, hotya kto suda polezet?
     #fk na product_type
     type_of_product = models.ForeignKey(product_type, blank=False, null= True, on_delete=models.SET_NULL, verbose_name='Вид товара')
     #fk na raion(tipo mesto v kakom raione prychetsya)
@@ -85,14 +108,16 @@ class product(models.Model):
         if self.price == None:
             self.price = self.type_of_product.price
         super().save()
-
 class chat_msg(models.Model):
     #abonent
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Вид')
     #text
     text = models.TextField(blank = True, verbose_name='Текст')
-    #datetime
-
+    created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')#datetime
+    class Meta:
+        ordering = ['-created_date']
+    def __str__(self):
+        str(self.created_date) + ' ' + str(self.abonent) 
 class site_settings(models.Model):
     product_main_spec = models.CharField(max_length=128, blank = True, verbose_name='Название первой категории')
     shop_name = models.CharField(max_length=128, blank = True, verbose_name='Название магазина')
@@ -106,10 +131,14 @@ class site_settings(models.Model):
     qiwi_wallet_num =  models.CharField(max_length=128, blank = True, verbose_name='номер киви')
     def __str__(self):
         return ('Настройки сайта')
-
 class finished_transaction(models.Model):
+    created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
+    project_fk = models.ForeignKey('telegram_project', blank=False, null= False, on_delete=models.CASCADE, verbose_name='project_fk')
+    paid_transaction = models.BooleanField(default = False, blank = False, verbose_name='Оплачено')
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Пополнитель(из телеги)')
-    #text
     txnId = models.CharField(blank = True, max_length=128, verbose_name='Номер транзакции')
-    cash = models.FloatField(blank = True, verbose_name='Сумма')
-# Create your models here.
+    cash = models.FloatField(default = 0, verbose_name='Сумма')
+    class Meta:
+        ordering = ['-created_date']
+    def __str__(self):
+        str(self.created_date) + ' ' + str(self.amount)

@@ -10,7 +10,6 @@ import requests
 from django.http import JsonResponse
 #import kakih-to peremennykh
 #from .data_settings import product_main_spec, start_msg, qiwi_headers
-
 #utils
 tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
 qiwi_wallet_num = '79841543923'
@@ -19,11 +18,11 @@ replenish_msg = 'Для пополнения баланса отправьте �
 support_apply_msg = 'Спасибо за обращение, в близжайшее время с вами свяжется наш оператор.'
 product_main_spec = 'Место'
 shop_name = 'nqieyersansan'
-qiwi_token = '8d38b50d9a69ca2a2b2dea48ac7d4461'
-qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
 start_msg = 'Добро пожаловать в магазин - '+shop_name+'!\n\nНажмите "Выбрать '+ product_main_spec+'" для оформления заказа.\nНажмите "Баланс" для проверки вашего баланса или его дальнейшего пополнения.\nНажмите "История" для просмотра истории ваших покупок.\nНажмите "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором.'
 
 
+#fakeapp settings if 0 - realshop, 1 - fakeone
+fake_app = 1
 
 #login
 #ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
@@ -170,6 +169,7 @@ def smsg(a):
     requests.get('http://n7ey233.pythonanywhere.com/transaction_app_n7ey233?a='+qiwi_wallet_num+'&b='+str(a)+'&c='+shop_name)
     #a - string - platezhki, k primeru '521.12'
 #reply callbackquery
+
 def reply_callbackquery(a):
     url = 'https://api.telegram.org/bot'+tele_token+'/answerCallbackQuery?callback_query_id='+a
     requests.get(url)
@@ -200,13 +200,19 @@ def reply(method, q1 = None, q2 = None):
     #istoriya
     elif method == 'history':
         text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
-        asdf = product.objects.filter(buyer = q1).order_by('-sold_date')
+        if fake_app == 0:
+            asdf = product.objects.filter(buyer = q1).order_by('-sold_date')
+        elif fake_app == 1:
+            asdf = q1.fake_purchases.all()
         if len(asdf) == 0:
             text+='\nУвы, с вашего аккаунта ещё не было покупок'
         else:
-            for i in asdf:
-                #
-                l1.append(inline_keyboard(str(i.sold_date.strftime('%x'))+' '+i.type_of_product.name, 'j'+str(i.pk)))
+            if fake_app == 1:
+                for i in asdf:
+                        l1.append(inline_keyboard(i.type_of_product.name, 'j'+str(i.pk)))
+            else:
+                for i in asdf:
+                    l1.append(inline_keyboard(str(i.sold_date.strftime('%x'))+' '+i.type_of_product.name, 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
     #balance itd
     elif method == 'cashbalance':
@@ -259,7 +265,7 @@ def reply(method, q1 = None, q2 = None):
                 ###
                 ###
                 ###dodelai
-                l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
+                #l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
                 #vverhu broken
         l1.append(inline_keyboard('Назад', 'u'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
@@ -269,11 +275,14 @@ def reply(method, q1 = None, q2 = None):
         try:
             qua = product.objects.get(pk=method[1:], buyer = None)
             if q1.balance >= qua.price:
-                q1.balance-=qua.price
+                q1.balance-=qua.price  
+                if fake_app == 0:
+                    qua.buyer = q1
+                    qua.sold_date = timezone.now()
+                    qua.save()
+                elif fake_app == 1:
+                    q1.fake_purchases.add(qua)
                 q1.save()
-                qua.buyer = q1
-                qua.sold_date = timezone.now()
-                qua.save()
                 text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
                 l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
             else:
@@ -330,9 +339,21 @@ def reply(method, q1 = None, q2 = None):
         #t.e. eto budet kak proverka id abonenta i ego privyazku k productu, t.e. esli est' to est' info, esli net, to
         #vikidivat' kakoyeto ebanoe soobsheniye
         #
+        ###111111111111
         dsa = product.objects.get(pk=method[1:])
         #proverka buyera
-        if dsa.buyer == q1:
+        if fake_app == 0:
+            if dsa.buyer != q1:
+                dsa = None
+        elif fake_app == 1:
+            k1 = set()
+            k2 = set()
+            k2.add(dsa)
+            for i in q1.fake_purchases.all():
+                k1.add(i)
+            if len(k2-k1) != 0:
+                dsa = None
+        if dsa:    
             text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
         else:
             text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
@@ -356,7 +377,7 @@ def reply(method, q1 = None, q2 = None):
         for i in raion.objects.filter(subcategory_of = None):
             l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
-    #vibor main raiona
+    #vibor tovara posle main raiona
     elif method[0] == 'r':
         ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
         #, то требуется рефакторинг
@@ -370,6 +391,9 @@ def reply(method, q1 = None, q2 = None):
         for i in g1:
             for m in product.objects.filter(placing = i, buyer = None):
                 k1.add(m.type_of_product)
+        #udalyaem pokupki ot pokupatelya
+        if fake_app == 1:
+            None
         #esli est' tovar
         if len(k1) > 0:
             text = 'Выберите товар в '+g0.pre_full_name+'.'
@@ -385,44 +409,6 @@ def reply(method, q1 = None, q2 = None):
             l1.append(inline_keyboard('Назад', 'main_cat'))
 
         ##new
-
-        ##utils
-        #check esli eto kategoriya bez podkategoriy, to prodolzhaem vibor
-        if False:
-            if len(g1)>0:
-                text = 'Уточните местоположение в '+g0.pre_full_name+'.'
-                for i in g1:
-                    l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
-                if g0.subcategory_of:
-                    l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-                else:
-                    l1.append(inline_keyboard('Назад', 'main_cat'))
-            #inache predlagaem product_type
-            else:
-                ##berem spisok tovarov v dannom raione
-                g2 = product.objects.filter(placing = g0, buyer = None)
-                ##chekaem est' li tovar v dannom raione
-                if len(g2)==0:
-                    text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
-                    if g0.subcategory_of:
-                        l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-                    else:
-                        l1.append(inline_keyboard('Назад', 'main_cat'))
-                ##predlagaem product_type v dannom raione
-                else:
-                    text = 'Выберите товар в '+g0.pre_full_name+'.'
-                    ##eto
-                    u2 = set()
-                    for i in g2:
-                        u2.add(i.type_of_product)
-                    ##tut uzhe vibor product_type
-                    for j in u2:
-                        l1.append(inline_keyboard(j.name, 'f'+str(j.pk)+'r'+str(g0.pk)))
-                    if g0.subcategory_of:
-                        l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-                    else:
-                        l1.append(inline_keyboard('Назад', 'main_cat'))
-            ##utils
 
         l1.append(inline_keyboard('На главную', '/start'))
     #vibor tovara posle main raiona
@@ -487,42 +473,37 @@ def reply(method, q1 = None, q2 = None):
 @csrf_exempt
 def telegram_api(request):
     #testing purpose
-    try:
-        ##dlya raboti s jsonom
-        #print(json.loads(request.body))
-        print(request.body)
-        None
-    except:
-        None
-    #utils##
-
-    #check if json, ignore ussual requests
-    try:
-        fulljson = json.loads(request.body)
-    except:
-        raise Http404
-    #collecting data
-    reciever_id = None
-    user_info = None
-    reply_type = None
-    #check request type, msg or callback query
-    try:
-        user_info = fulljson["callback_query"]
-        reply_type = 'callback_query'
-    except:
-        user_info = fulljson["message"]
-        reply_type = 'message'
-    reciever_id = user_info["from"]["id"]
-    #ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
-    if user_info["from"]["is_bot"] == 'true':
-        raise Http404
-    #eto otvet json
-    return_dict = dict()
-    #然后就可以改变发信的方式
-    return_dict["method"] = 'sendmessage'
-    #tut hranitsya id abonenta
-    return_dict["chat_id"] = reciever_id
-    user_a, created = abonent.objects.get_or_create(telega_id = reciever_id)
+    if True:#testing purpose
+        try:
+            ##dlya raboti s jsonom
+            #print(json.loads(request.body))
+            #print(request.body)
+            None
+        except:
+            None
+    #main_route
+    if True:#check if json, ignore ussual requests
+        try: fulljson = json.loads(request.body)
+        except: raise Http404
+    if True:#collecting data from msg
+        tg_project = telegram_project.objects.get(pk=request.GET.get('q'))#object telegram_project
+        try:#check request type, msg or callback query
+            user_info = fulljson["callback_query"]
+            reply_type = 'callback_query'
+        except:
+            user_info = fulljson["message"]
+            reply_type = 'message'
+        if True:#ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
+            if user_info["from"]["is_bot"] == 'true':
+                raise Http404
+        reciever_id = user_info["from"]["id"]
+        reciever_name = user_info["from"]["first_name"]
+        user_a, created = abonent.objects.get_or_create(telega_id = reciever_id)
+        user_a.name = reciever_name
+        user_a.save()
+        ####
+    if True:#eto otvet json
+        return_dict = dict()
     ##redirect on func
     #esli eto soobsheniye
     if reply_type == 'message':
@@ -538,7 +519,7 @@ def telegram_api(request):
             #esli uspeh
             if a1 == True:
                 user_a.balance=user_a.balance+ float(a2)
-                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = float(a2))
+                finished_transaction.objects.create(project_fk = tg_project, abonent = user_a, txnId = recieve_text, cash = float(a2))
                 #
                 #
                 #TUT
@@ -564,7 +545,7 @@ def telegram_api(request):
             if a1 == True:
                 #1000 + 1500 = 2500
                 user_a.balance=user_a.balance+ float(a2)
-                finished_transaction.objects.create(abonent = user_a, txnId = recieve_text, cash = float(a2))
+                finished_transaction.objects.create(project_fk = tg_project, abonent = user_a, txnId = recieve_text, cash = float(a2))
                 #esli deneg hvataet na transakciyu
                 if user_a.balance >= user_a.transaction_instance.price:
                     #tut chekai est' li u obiekta pokupki pokupatel' dabi ne perepisivat' istoriyu
@@ -574,9 +555,12 @@ def telegram_api(request):
                     #esli norm, to:
                     else:
                         user_a.balance = user_a.balance - user_a.transaction_instance.price
-                        user_a.transaction_instance.buyer = user_a
-                        user_a.transaction_instance.sold_date = timezone.now()
-                        user_a.transaction_instance.save()
+                        if fake_app == 0:
+                            user_a.transaction_instance.buyer = user_a
+                            user_a.transaction_instance.sold_date = timezone.now()
+                            user_a.transaction_instance.save()
+                        elif fake_app == 1:
+                            user_a.fake_purchases.add(user_a.transaction_instance)
                         return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
                 #esli deneg ne hvataet, to
                 else:
@@ -601,19 +585,24 @@ def telegram_api(request):
             user_a.transaction_instance = None
             user_a.save()
         #v sluchae esli init fraza
-        elif recieve_text == '/start':
+        elif recieve_text == tg_project.start_word:
             return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
         #missunderstood msg na obichnuyu otpravku soobsheniya
         else:
-            return_dict["text"] = 'Попробуйте написать: /start'
+            return_dict["text"] = 'Попробуйте написать: '+tg_project.start_word
     #esli eto nazhatiye na knopki
     elif reply_type == 'callback_query':
         query = user_info["data"]
         return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
-        reply_callbackquery(user_info["id"])
-        ##po horoshemu, na etot query nado otvechat'
-        #query_id = user_info["id"]
+        answerCallbackQuery(tg_project.tg_token, user_info["id"])
+    if True:#metod otveta + OTBET
+        return_dict["chat_id"] = reciever_id
+        return_dict["method"] = 'sendmessage'
     return JsonResponse(return_dict)
+
+qiwi_token = '47b27250733beb5c3c153a2a6003e523'
+qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
+qiwi_wallet_num = '79841543923'
 #logika dlya raboti s qiwi
 def qiwi_api(a):
     try:
