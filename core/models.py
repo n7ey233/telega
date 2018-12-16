@@ -1,33 +1,28 @@
 from django.db import models
 from django.utils import timezone
-from .telegram_api import set_webhook
+from .telegram_api import set_webhook, get_tg
 
 class telegram_project(models.Model):#proekt telegrama
     tg_types = (
-    ('tg_dv_fake', 'tg_dv_fake'),
+    ('tg_shop_fake', 'tg_shop_fake'),
     )
-    finance_types = (
-    ('bai', 'белая'),
-    ('hei', 'черная'),
-    ('hui', 'серая'),
-    )
-    finance_type = models.CharField(max_length=22, blank = False, choices=finance_types, default='hei', verbose_name='Тип кассы')
+    tg_type = models.CharField(max_length=22, blank = False, choices=tg_types, default='tg_shop_fake', verbose_name='Тип телеги')
     tg_token = models.CharField(max_length=128, blank = False, verbose_name='tg_token')
-    tg_id = models.CharField(max_length=128, blank = False, verbose_name='tg_id, 为了看清楚')
-    tg_type = models.CharField(max_length=22, blank = False, choices=tg_types, default='tg_dv_fake', verbose_name='Тип телеги')
+    tg_id = models.CharField(max_length=128, blank = True, verbose_name='tg_id, 为了看清楚')
+    tg_username = models.CharField(max_length=128, blank = True, verbose_name='tg_username, 为了看清楚')
+    tg_first_name = models.CharField(max_length=128, blank = True, verbose_name='tg_first_name, 为了看清楚')
     web_hook_chained = models.BooleanField(default = False, blank = False, verbose_name='вебхук')
     start_word = models.CharField(max_length=128, blank = False, verbose_name='стартовая фраза')
     class Meta:
-        ordering = ['tg_id']
+        ordering = ['tg_username']
     def __str__(self):
-        return str(self.tg_id)
-    def tg_webhook(self):
-        if set_webhook(self.tg_token, self.pk) is True:
-            self.web_hook_chained = True
-            super.save()
+        return str(self.tg_username)
     def save(self, *args, **kwargs):
-        if self.id == None:
+        if self.id == None:#1st init
             if set_webhook(self.tg_token, self.pk) is True: self.web_hook_chained = True
+            self.tg_id = str(get_tg(self.tg_token, 'id'))
+            self.tg_username = str(get_tg(self.tg_token, 'username'))
+            self.tg_first_name = str(get_tg(self.tg_token, 'first_name'))
         super().save()
 class abonent(models.Model):
     #instance obsheniya (

@@ -20,9 +20,8 @@ def set_webhook(telegram_token, pk):
 def answerCallbackQuery(telegram_token, callback_query_id):
     requests.get("https://api.telegram.org/bot"+telegram_token+"/answerCallbackQuery?callback_query_id="+str(callback_query_id))
 
-def get_name(telegram_token):
-    return json.loads(requests.get("https://api.telegram.org/bot"+telegram_token+"/getme"))['result']["username"]
-
+def get_tg(telegram_token, method):
+    return json.loads(requests.get("https://api.telegram.org/bot"+telegram_token+"/getme").text)['result'][method]
 def form_inline_button(name, data):
 
     return [{'text': name, 'callback_data': data}]
