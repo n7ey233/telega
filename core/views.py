@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
 from django.http import JsonResponse
+from .telegram_api import answerCallbackQuery
+
 #import kakih-to peremennykh
 #from .data_settings import product_main_spec, start_msg, qiwi_headers
 #utils
@@ -24,9 +26,8 @@ start_msg = 'Добро пожаловать в магазин - '+shop_name+'!\
 #fakeapp settings if 0 - realshop, 1 - fakeone
 fake_app = 1
 
-#login
-#ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
-def sign(request):
+
+def sign(request):#login#ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
     if request.GET.get('action', '') == "logmeout":
         logout(request)
         return redirect('/')
@@ -42,9 +43,7 @@ def sign(request):
     if request.user.is_authenticated == True:
         return redirect('main')
     return render(request, 'cp/login_page.html',{})
-
-#tut vsya logika paneli upravleniya dlya admina, dlya rabotnikov luchshe napisat' otdel'nuyu i dlya rabotyagi
-def main(request):
+def main(request):#tut vsya logika paneli upravleniya dlya admina, dlya rabotnikov luchshe napisat' otdel'nuyu i dlya rabotyagi
     if request.user.is_superuser:
         page = 'main'
         obj_list = None
@@ -105,9 +104,7 @@ def main(request):
         })
     else:
         raise Http404
-
-##formpage(edit\create)
-def formpage(request):
+def formpage(request):##formpage(edit\create)
     if request.user.is_superuser:
         form = None
         object = None
@@ -161,24 +158,14 @@ def formpage(request):
         'object':object,
         'form':form,
         })
-
-
 ####logika dlya raboti s api telegrama
-#on success transaction
-def smsg(a):
+def smsg(a):#on success transaction
     requests.get('http://n7ey233.pythonanywhere.com/transaction_app_n7ey233?a='+qiwi_wallet_num+'&b='+str(a)+'&c='+shop_name)
     #a - string - platezhki, k primeru '521.12'
-#reply callbackquery
-
-def reply_callbackquery(a):
-    url = 'https://api.telegram.org/bot'+tele_token+'/answerCallbackQuery?callback_query_id='+a
-    requests.get(url)
-#eboshim knopki
-def inline_keyboard(a, b):
+def inline_keyboard(a, b):#eboshim knopki
 
     return [{'text': a, 'callback_data': b}]
-#formiruyet dict knopok dlya otveta iz spiska @a
-def form_reply_markup(a):
+def form_reply_markup(a):#formiruyet dict knopok dlya otveta iz spiska @a
 
     return {'inline_keyboard': a}
 #reply func dlya manual'nogo formirovaniya otvetov
