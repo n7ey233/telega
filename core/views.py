@@ -357,6 +357,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
         text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\n'
         x = 0
+        print(cat_and_price_list[int(method[0][1:])]['subcat_list'])
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
             l1.append(inline_keyboard(i[0], 'f'+str(x)+'r'+str(g0.pk)))
