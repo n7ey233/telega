@@ -288,7 +288,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
     elif method == 'history':#istoriya
         sas = bought_products.objects.filter(abonent = q1)
         if len(sas) == 0:
-            text+='Увы, с вашего аккаунта ещё не было покупок'
+            text ='Увы, с вашего аккаунта ещё не было покупок'
         else:
             text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\n\nИстория ваших покупок:'
             for i in sas:
