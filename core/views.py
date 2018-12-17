@@ -352,13 +352,11 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
             l1.append(inline_keyboard('Назад', 'main_cat'))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
-        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
+        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0][1:](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')#f12r23
-        print(method)
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        print(g0)
-        print(cat_and_price_list[int(method[0][1:])]['name'])
         text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните товар.'
+        l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     if False:#2ndinstance#vibor tovara posle main raiona
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
