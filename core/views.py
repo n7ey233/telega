@@ -355,7 +355,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')#f12r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        text = 'Вид товара: '+x[method[0][1:]]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните товар.'
+        text = 'Вид товара: '+x[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните товар.'
     elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
