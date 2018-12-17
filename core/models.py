@@ -141,7 +141,7 @@ class finished_transaction(models.Model):
 
 class bought_products(models.Model):
     name = models.CharField(max_length=128, blank = True, verbose_name='tuple s dannimi o pokupke')
-    display = models.CharField(max_length=128, blank = True, verbose_name='tuple s dannimi o pokupke')
+    display = models.CharField(max_length=128, blank = True, verbose_name='otobrajat danniye v istorii')
     abonent = models.ForeignKey('abonent', blank = False, on_delete=models.CASCADE, verbose_name='Пополнитель(из телеги)')
     created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
     class Meta:
