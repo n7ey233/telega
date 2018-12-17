@@ -378,7 +378,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 cena_gavna = cat_and_price_list[int(method[0].split('|')[0])]['subcat_list'][int(method[0].split('|')[1])][1]
                 g0 = raion.objects.get(pk=method[1])
                 text = 'Товар: '+nazvaniye_gavna +'\nМестоположение: '+g0.pre_full_name +'\nСтоимость: '+str(cena_gavna) +'\nДополнительное описание: -'
-#text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
+        #text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
             else:
                 text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
                 l1.append(inline_keyboard('Помощь', 'support'))
@@ -452,7 +452,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
             print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
             print(cena_gavna)
         l1.append(inline_keyboard('Оплата с баланса', 'b'+_method[1:]))
-        l1.append(inline_keyboard('Оплата по транзакции', 'h'+_method[1:]))
+        #l1.append(inline_keyboard('Оплата по транзакции', 'h'+_method[1:]))
         l1.append(inline_keyboard('Назад', 'y'+str(method[0][1:])+'r'+str(g0.subcategory_of.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'b':#oplata s balansa + redirect na popolneniye
