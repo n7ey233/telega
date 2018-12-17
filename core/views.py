@@ -288,7 +288,8 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
             text = '<span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -144px -36px;" title="four_leaf_clover">:four_leaf_clover:</span> <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Ak-47: 5г-5000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>OG KUSH: 3г-3900р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Bluberry: 3г-3600р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Big But: 5г-4000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>White Russia: 5г - 4000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Pineapple express: 3гр-6000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>White Widow:3гр-3500р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Hot pepper Skunk:3гр-3600р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span> Tangerine Kush: 3гр -3300р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Гаш: 3г-2000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>План: 3г-2000р<br><span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻<span class="emoji  emoji-spritesheet-0" style="background-position: -288px -72px;" title="runner">:runner:</span>🏻 <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Амф: 1г-2500(белый) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Амф: 1г-2500.(розовый) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Соль: 1г-2500р. <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Мет: 1г-3000р. <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Меф: 1г-3000р<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>MDMA(crystals): 1г-3500р. <br><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span><span class="emoji  emoji-spritesheet-2" style="background-position: -450px -0px;" title="cd">:cd:</span> <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Tesla (250mg MDMA) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>SKYPE (230 mg MDMA) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Molly (230mg MDMA) <br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>1-5 шт. 1200р/шт <br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>5-10 шт. 980р/шт<br><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><span class="emoji  emoji-spritesheet-1" style="background-position: -306px -36px;" title="mushroom">:mushroom:</span><br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>LSD доты: ЛСД-25(250мг)-2400р/2шт<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>LSD марки: 250мг/3400р/2шт<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Мескалин: <br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Мухоморы: 3000р/10гр/2дозы<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Сульфат: 3000р/1гр/2дозы<br><span class="emoji  emoji-spritesheet-4" style="background-position: -414px -90px;" title="black_small_square">:black_small_square:</span>Псилоцебиновые грибы:<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Golden teacher: 4000р/3гр<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Psilocybe Cubensis:4000р/3гр<br><span class="emoji  emoji-spritesheet-4" style="background-position: -576px -90px;" title="small_red_triangle_down">:small_red_triangle_down:</span>Pink Buffalo: 4000р/3гр<br>ГРИБЫ!!!! Рекомендованая дозировка не мение 1г на человека. Для новичков не стоит употреблять больше 2г. Оптимальный вариант разделить 3г с другом, и отправиться в незабываемое путешествие, по глубинам своего сознания!<br>Для опытных предлагаю дозировку в 3г. Погружение на 8 часов вам обеспеченно. Хорошо сочитаеться с марихуанной.<br>Так же перед употреблением советуем не принимать пищу за 3-5 часов.'
         l1.append(inline_keyboard('Выбрать '+product_main_spec, 'main_cat'))
         l1.append(inline_keyboard('На главную', '/start')) 
-    elif method == 'cashbalance':#balance itd
+    ##balance itd
+    elif method == 'cashbalance':
         text = 'Ваш баланс: '+str(q1.balance)+''
         l1.append(inline_keyboard('Пополнить', 'replenish'))
         l1.append(inline_keyboard('На главную', '/start'))
@@ -313,6 +314,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         text = 'Данная транзакция отсутствует.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('На главную', '/start'))
+    ##other utils
     elif method == 'helpme':#/pomosh
         text = help_msg
         l1.append(inline_keyboard('Связь с оператором', 'support'))
@@ -337,52 +339,29 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
     elif method[0] == 'r':#1stinstance #vibor tovara posle main raiona
         ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
         #, то требуется рефакторинг
-        #uznaem voobshe chto eto za raion
-        if False:#old one
-            g0 = raion.objects.get(pk=method[1:])
-            g1 = raion.objects.filter(subcategory_of = g0)
-            #delaem spisok teh vidov tovara dostupnykh v dannom main_raione
-            ##new
-            k1 = set()
-            for i in g1:
-                for m in product.objects.filter(placing = i, buyer = None):
-                    k1.add(m.type_of_product)
-            #udalyaem pokupki ot pokupatelya
-            if fake_app == 1:
-                None
-            #esli est' tovar
-            if len(k1) > 0:
-                text = 'Выберите товар в '+g0.pre_full_name+'.'
-                for i in k1:
-                    l1.append(inline_keyboard(i.name, 'f'+str(i.pk)+'r'+str(g0.pk)))
-            #esli netu, to
-            else:
-                text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
-            #add back button
-            if g0.subcategory_of:
-                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-            else:
-                l1.append(inline_keyboard('Назад', 'main_cat'))
-            l1.append(inline_keyboard('На главную', '/start'))
-        if True:#new one
-            g0 = raion.objects.get(pk=method[1:])
-            text = 'Выберите вид товара в '+g0.pre_full_name+'.'
-            x = 0
-            for i in cat_and_price_list:
-                l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
-                x += 1
-            if g0.subcategory_of:
-                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-            else:
-                l1.append(inline_keyboard('Назад', 'main_cat'))
-            l1.append(inline_keyboard('На главную', '/start'))#maincat_page
-    
+        #method = 'r1'
+        g0 = raion.objects.get(pk=method[1:])#uznaem voobshe chto eto za raion
+        text = 'Выберите вид товара в '+g0.pre_full_name+'.'
+        x = 0
+        for i in cat_and_price_list:
+            l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
+            x += 1
+        if g0.subcategory_of:
+            l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+        else:
+            l1.append(inline_keyboard('Назад', 'main_cat'))
+        l1.append(inline_keyboard('На главную', '/start'))#maincat_page
+    elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
+        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
+        method = method.split('r')#f12r23
+        g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
+        text = 'Вид товара: '+x[method[0][1:]]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните товар.'
     elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')
         ##new
-        #vizvaniy main_raion
-        g0 = raion.objects.get(pk=method[1])
+        
+        g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
         #podkategorii main raiona
         g1 = raion.objects.filter(subcategory_of = g0)
         #vid producta
@@ -477,8 +456,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
         l1.append(inline_keyboard('Подробнее', 'j'+str(q1.transaction_instance.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
-    #esli ne hvataet deneg dlya oplati transakcii
-    elif method == 'transaction_nem':
+    elif method == 'transaction_nem':#esli ne hvataet deneg dlya oplati transakcii
         text= 'К сожалению, сумма вашей транзакции меньше стоимости товара, денежные средства были зачислены на ваш баланс.'
         l1.append(inline_keyboard('Помощь', 'helpme'))
         l1.append(inline_keyboard('Баланс', 'cashbalance'))
