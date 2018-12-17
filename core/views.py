@@ -357,7 +357,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         x = 0
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
-            l1.append(inline_keyboard(i[0], 'y'+str(x)+'|'+method[0][1:]+'r'+str(g0.pk)))
+            l1.append(inline_keyboard(i[0], 'y'+method[0][1:]+'|'+str(x)+'r'+str(g0.pk)))
             x += 1
         text += '\nВыберите товар.'
         l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))#back button
@@ -367,7 +367,8 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         method = method.split('r')#y12|23r23
         print(method)
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        text = 'Товар: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\n'
+        cat_and_price_list[int(method[0][1:][0])]
+        text = 'Товар: '+cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1][0])]+ '\nВ городе: '+g0.pre_full_name+'\n\n'
         text += '\nУточните район в '+g0.pre_full_name+'.'
         for i in raion.objects.filter(subcategory_of=g0):
             l1.append(inline_keyboard(i.name, 'y'+str(x)+'r'+str(g0.pk)))
