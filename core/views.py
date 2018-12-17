@@ -529,6 +529,16 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
 #reply
 @csrf_exempt
 def telegram_api(request):
+    if True:#testting purpose
+        try:
+            ##dlya raboti s jsonom
+            print(json.loads(request.body))
+            print(user_info["data"])
+            #print(request.body)
+            #print(return_dict)
+            None
+        except:
+            None
     #main_route
     if True:#check if json, ignore ussual requests
         try: fulljson = json.loads(request.body)
