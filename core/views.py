@@ -292,7 +292,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         else:
             text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\n\nИстория ваших покупок:'
             for i in sas:
-                l1.append(inline_keyboard(str(i.created_date.strftime('%x'))+' '+i.display, 'j'+str(i.pk)))
+                l1.append(inline_keyboard(str(i.created_date.strftime('%x'))+': '+i.display, 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'price_list':#price_list
         if True:
@@ -369,7 +369,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         try:#esli est' transakciya
             dsa = bought_products.objects.get(pk=method[1:])
             if q1 == dsa.abonent:
-                method = dsa
+                method = dsa.name.split('r')
                 nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
                 vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
                 cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
