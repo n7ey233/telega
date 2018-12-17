@@ -33,6 +33,7 @@ def get_qiwi_balance(qiwi_num, qiwi_token, currency='qw_wallet_rub'):
             iter_x+=1
         else:
             #if everything is success then return float сумму на балансе
+            print(transaction_json['accounts'][iter_x]['balance']['amount'])
             return transaction_json['accounts'][iter_x]['balance']['amount']
 #get+ check if transaction exists, if exists, return True, float(num)
 def check_qiwi_transaction(qiwi_num, qiwi_token, transaction_id):
