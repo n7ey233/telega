@@ -97,4 +97,4 @@ def run_tests():
     test_get_qiwi_balance()
     test_send_qiwi_transaction()
 
-test_send_qiwi_transaction()
+#test_send_qiwi_transaction()
