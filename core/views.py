@@ -387,7 +387,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
         cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
         g0 = raion.objects.get(pk=method[1])
-        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'.\nВыберите метод оплаты.'
+        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'.\n\nВыберите метод оплаты.'
         if True:#test purposes
             print(nazvaniye_gavna)
             print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
