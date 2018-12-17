@@ -346,10 +346,8 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         for i in cat_and_price_list:
             l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
             x += 1
-        if g0.subcategory_of:
-            l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-        else:
-            l1.append(inline_keyboard('Назад', 'main_cat'))
+        if g0.subcategory_of:l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+        else:l1.append(inline_keyboard('Назад', 'main_cat'))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0][1:](f...) - kategoriya, [1](r...) - raion
@@ -357,12 +355,22 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
         text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\n'
         x = 0
-        print(cat_and_price_list[int(method[0][1:])]['subcat_list'])
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
-            l1.append(inline_keyboard(i[0], 'f'+str(x)+'r'+str(g0.pk)))
+            l1.append(inline_keyboard(i[0], 'y'+str(x)+'|'+method[0][1:]+'r'+str(g0.pk)))
             x += 1
-        text += '\nУточните товар.'
+        text += '\nВыберите товар.'
+        l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))#back button
+        l1.append(inline_keyboard('На главную', '/start'))#maincat_page
+    elif method[0] == 'y':#3rdinstance #vibor tovara posle vida tovara
+        #delim method na 3 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
+        method = method.split('r')#y12|23r23
+        print(method)
+        g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
+        text = 'Товар: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\n'
+        text += '\nУточните район в '+g0.pre_full_name+'.'
+        for i in raion.objects.filter(subcategory_of=g0):
+            l1.append(inline_keyboard(i.name, 'y'+str(x)+'r'+str(g0.pk)))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
