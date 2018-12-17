@@ -111,7 +111,7 @@ cat_and_price_list = [
         'subcat_list':[
             ['Tesla (250mg MDMA): 1шт', 1200 ],
             ['Tesla (250mg MDMA): 5шт', 4900 ],
-            ['SKYPE (230 mg MDMA): 5шт', 1200 ],
+            ['SKYPE (230 mg MDMA): 1шт', 1200 ],
             ['SKYPE (230 mg MDMA): 5шт', 4900 ],
             ['Molly (230mg MDMA): 1шт', 1200 ],
             ['Molly (230mg MDMA): 5шт', 4900 ],]},
@@ -286,20 +286,13 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('История', 'history'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
     elif method == 'history':#istoriya
-        text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
-        if fake_app == 0:
-            asdf = product.objects.filter(buyer = q1).order_by('-sold_date')
-        elif fake_app == 1:
-            asdf = q1.fake_purchases.all()
-        if len(asdf) == 0:
-            text+='\nУвы, с вашего аккаунта ещё не было покупок'
+        sas = bought_products.objects.filter(abonent = q1)
+        if len(sas) == 0:
+            text+='Увы, с вашего аккаунта ещё не было покупок'
         else:
-            if fake_app == 1:
-                for i in asdf:
-                        l1.append(inline_keyboard(i.type_of_product.name, 'j'+str(i.pk)))
-            else:
-                for i in asdf:
-                    l1.append(inline_keyboard(str(i.sold_date.strftime('%x'))+' '+i.type_of_product.name, 'j'+str(i.pk)))
+            text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\n\nИстория ваших покупок:'
+            for i in sas:
+                l1.append(inline_keyboard(str(i.created_date.strftime('%x'))+' '+i.display, 'j'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method == 'price_list':#price_list
         if True:
@@ -353,26 +346,42 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         q1.save()
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'j':#pokaz info o tovare
-        dsa = product.objects.get(pk=method[1:])
-        #proverka buyera
-        if fake_app == 0:
-            if dsa.buyer != q1:
-                dsa = None
-        elif fake_app == 1:
-            k1 = set()
-            k2 = set()
-            k2.add(dsa)
-            for i in q1.fake_purchases.all():
-                k1.add(i)
-            if len(k2-k1) != 0:
-                dsa = None
-        if dsa:    
-            text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
-        else:
-            text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
-            l1.append(inline_keyboard('Помощь', 'support'))
-        l1.append(inline_keyboard('На главную', '/start'))
-        None
+        if False:
+            dsa = product.objects.get(pk=method[1:])
+            #proverka buyera
+            if fake_app == 0:
+                if dsa.buyer != q1:
+                    dsa = None
+            elif fake_app == 1:
+                k1 = set()
+                k2 = set()
+                k2.add(dsa)
+                for i in q1.fake_purchases.all():
+                    k1.add(i)
+                if len(k2-k1) != 0:
+                    dsa = None
+            if dsa:    
+                text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
+            else:
+                text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
+                l1.append(inline_keyboard('Помощь', 'support'))
+            dsa = bought_products.objects.get(pk=method[1:])
+        try:#esli est' transakciya
+            dsa = bought_products.objects.get(pk=method[1:])
+            if q1 == dsa.abonent:
+                nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
+                vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
+                cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
+                g0 = raion.objects.get(pk=method[1])
+                text = 'Товар: '+nazvaniye_gavna
+            else:
+                text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
+                l1.append(inline_keyboard('Помощь', 'support'))
+            l1.append(inline_keyboard('На главную', '/start'))
+        except:#esli transakcii net
+            text = 'Покупка отсутствует'
+            l1 = list()
+            l1.append(inline_keyboard('На главную', '/start'))
     ##logika pokupki tovara
     elif method == 'main_cat':#vibor glavnoi kategorii
         text = 'Выберите '+product_main_spec+'.'
@@ -469,19 +478,18 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
         g0 = raion.objects.get(pk=method[1])
         #text = 'Стоимость '+dsa.type_of_product.name+' в '+ dsa.placing.pre_full_name+': '+str(dsa.price)
-        text = 'Ваш баланс: '+str(q1.balance)+'.\nВид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'\n'
+        text = 'Ваш баланс: '+str(q1.balance)+'\nВид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'\n'
         if q1.balance >= float(cena_gavna):#proveryaem est' li vozmozhnost' oplatit'
             text+='\nУ вас хватает денежных средств для оплаты, нажмите "Оплатить с баланса" для получения подробной информации о местоположении товара.'
-            l1.append(inline_keyboard('Оплатить с баланса', 'v'))
+            l1.append(inline_keyboard('Оплатить с баланса', 'v'+_method[1:]))
         else:
             text+='\nНа вашем балансе недостаточно средств для оплаты.\nПополните баланс для дальнейшей оплаты или оплатите используя транзакцию.'
             l1.append(inline_keyboard('Пополнить баланс', 'replenish'))
-
         l1.append(inline_keyboard('Назад', 'u'+_method[1:]))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'v':#oplata s balansa
         #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan cherez try except
-        try:
+        if False:
             qua = product.objects.get(pk=method[1:], buyer = None)
             if q1.balance >= qua.price:
                 q1.balance-=qua.price  
@@ -496,10 +504,22 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
             else:
                 text = 'К сожалению, на вашем балансе недостаточно средств для оплаты.'
-        except:
-            #tut soobsheniye ob oshibke, ili tovar prodan, ili deneg na balance ne hvataet, ili eshe kakayato ebala, zameni
-            #na try except
-            text = 'К сожалению, данный товар был только-что куплен или зарезервирован,попробуйте выбрать ещё раз.'
+                l1.append(inline_keyboard('Пополнить', 'replenish'))
+        _method = method
+        method = method.split('r')#b1|3r5|7
+        nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
+        vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
+        cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
+        g0 = raion.objects.get(pk=method[1])
+        if q1.balance >= float(cena_gavna):
+            q1.balance-=float(cena_gavna)
+            q1.save()
+            created_product = bought_products.objects.create(abonent = q1, name = _method[1:])
+            text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
+            l1.append(inline_keyboard('Подробнее', 'j'+str(created_product.pk)))
+        else:
+            text = 'К сожалению, на вашем балансе недостаточно средств для оплаты.'
+
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'h':#oplata transakciyei
         dsa = product.objects.get(pk=method[1:])
