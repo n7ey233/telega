@@ -355,32 +355,14 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0][1:](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')#f12r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните товар.'
+        text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\n'
+        x = 0
+        for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
+            text+= i[0] +' '+ str(i[1])+'р\n'
+            l1.append(inline_keyboard(i[0], 'f'+str(x)+'r'+str(g0.pk)))
+            x += 1
+        text += '\nУточните товар.'
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
-    if False:#2ndinstance#vibor tovara posle main raiona
-        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
-        method = method.split('r')
-        ##new
-        
-        g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        #podkategorii main raiona
-        g1 = raion.objects.filter(subcategory_of = g0)
-        #vid producta
-        g2 = product_type.objects.get(pk=method[0][1:])
-        set0 = set()
-        #delaem query na vse producti s subcategory == o i vid producta po requestu
-        for o in g1:
-            #esli budet chtoto, to
-            for i in product.objects.filter(buyer= None ,type_of_product = g2, placing = o):
-                set0.add(i.placing)
-        if len(set0) > 0:
-            text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
-            for i in set0:
-                l1.append(inline_keyboard(i.name, 'u'+str(g2.pk)+'r'+str(i.pk)))
-        else:
-            text = 'Увы, товар был только-что продан или зарезервирован.'
-        l1.append(inline_keyboard('Назад', 'r'+method[1]))
-        l1.append(inline_keyboard('На главную', '/start'))
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
