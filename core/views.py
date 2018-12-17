@@ -369,6 +369,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         try:#esli est' transakciya
             dsa = bought_products.objects.get(pk=method[1:])
             if q1 == dsa.abonent:
+                method = dsa
                 nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
                 vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
                 cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
@@ -489,22 +490,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'v':#oplata s balansa
         #tut sdelai proverku na nalichiye tovara, chtobi klient vdrug ne oplatil tovar kotoriy uzhe prodan cherez try except
-        if False:
-            qua = product.objects.get(pk=method[1:], buyer = None)
-            if q1.balance >= qua.price:
-                q1.balance-=qua.price  
-                if fake_app == 0:
-                    qua.buyer = q1
-                    qua.sold_date = timezone.now()
-                    qua.save()
-                elif fake_app == 1:
-                    q1.fake_purchases.add(qua)
-                q1.save()
-                text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
-                l1.append(inline_keyboard('Подробнее', 'j'+str(qua.pk)))
-            else:
-                text = 'К сожалению, на вашем балансе недостаточно средств для оплаты.'
-                l1.append(inline_keyboard('Пополнить', 'replenish'))
         _method = method
         method = method.split('r')#b1|3r5|7
         nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
@@ -514,12 +499,12 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         if q1.balance >= float(cena_gavna):
             q1.balance-=float(cena_gavna)
             q1.save()
-            created_product = bought_products.objects.create(abonent = q1, name = _method[1:])
+            created_product = bought_products.objects.create(abonent = q1, name = _method[1:], display = nazvaniye_gavna)
             text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
             l1.append(inline_keyboard('Подробнее', 'j'+str(created_product.pk)))
         else:
             text = 'К сожалению, на вашем балансе недостаточно средств для оплаты.'
-
+            l1.append(inline_keyboard('Пополнить', 'replenish'))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'h':#oplata transakciyei
         dsa = product.objects.get(pk=method[1:])
