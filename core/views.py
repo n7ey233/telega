@@ -357,7 +357,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         x = 0
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
-            l1.append(inline_keyboard(i[0], 'y'+method[0][1:]+'|'+str(x)+'r'+str(g0.pk)))
+            l1.append(inline_keyboard(i[0], 'y'+method[0][1:]+'|'+str(x)+'r'+str(g0.pk)))##y12|23r23
             x += 1
         text += '\nВыберите товар.'
         l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))#back button
@@ -365,13 +365,18 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
     elif method[0] == 'y':#3rdinstance #vibor tovara posle vida tovara
         #delim method na 3 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
         method = method.split('r')#y12|23r23
-        print(method)
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        cat_and_price_list[int(method[0][1:][0])]
-        text = 'Товар: '+cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1][0])]+ '\nВ городе: '+g0.pre_full_name+'\n\n'
-        text += '\nУточните район в '+g0.pre_full_name+'.'
+        nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
+        vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
+        cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
+        if False:
+            print(nazvaniye_gavna)
+            print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
+            print(cena_gavna)
+        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nВ городе: '+g0.pre_full_name+'\n\n'
+        #text += '\nУточните район в '+g0.pre_full_name+'.'
         for i in raion.objects.filter(subcategory_of=g0):
-            l1.append(inline_keyboard(i.name, 'y'+str(x)+'r'+str(g0.pk)))
+            l1.append(inline_keyboard(i.name, 'y'+'r'+str(g0.pk)))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
@@ -646,7 +651,7 @@ def telegram_api(request):
         elif reply_type == 'callback_query':
             query = user_info["data"]
             return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
-            answerCallbackQuery(tg_project.tg_token, user_info["id"])
+            #answerCallbackQuery(tg_project.tg_token, user_info["id"])
     if True:#refactored logic    #danniye o dvuh kommunikatorah, tg_project i user
         tg_project#object telegram_project
         user_a#danniye o otpravitele soobsheniya
@@ -661,7 +666,7 @@ def telegram_api(request):
         try:
             ##dlya raboti s jsonom
             #print(json.loads(request.body))
-            print(user_info["data"])
+            #print(user_info["data"])
             #print(request.body)
             #print(return_dict)
             None
