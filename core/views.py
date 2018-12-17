@@ -64,6 +64,47 @@ LSD доты: ЛСД-25(250мг)-2400р/2шт
 Так же перед употреблением советуем не принимать пищу за 3-5 часов."""
 
 
+cat_and_price_list = [
+    {'name':'Трава',
+        'subcat_list':[
+            ['Ak-47: 5г', 5000],
+            ['OG KUSH: 3г', 3900],
+            ['Bluberry: 3г', 3600],
+            ['Big But: 5г', 4000],
+            ['White Russia: 5г', 4000],
+            ['Pineapple express: 3гр', 6000],
+            ['White Widow:3гр', 3500],
+            ['Hot pepper Skunk:3гр', 3600],
+            ['Tangerine Kush: 3гр', 3300],
+            ['Гаш: 3г', 2000],
+            ['План: 3г', 2000],]},
+    {'name':'Скорость',
+        'subcat_list':[
+            ['Амф(белый): 1г', 2500 ],
+            ['Амф: 1г', 2500 ],
+            ['Соль: 1г', 2500 ],
+            ['Мет: 1г', 3000 ],
+            ['Меф: 1г', 3000 ],
+            ['MDMA(crystals): 1г', 3500 ],]},
+    {'name':'Таблы',
+        'subcat_list':[
+            ['Tesla (250mg MDMA): 1шт', 1200 ],
+            ['Tesla (250mg MDMA): 5шт', 4900 ],
+            ['SKYPE (230 mg MDMA): 5шт', 1200 ],
+            ['SKYPE (230 mg MDMA): 5шт', 4900 ],
+            ['Molly (230mg MDMA): 1шт', 1200 ],
+            ['Molly (230mg MDMA): 5шт', 4900 ],]},
+    {'name':'Грибы',
+        'subcat_list':[
+            ['ЛСД-25(250мг): 2шт', 2400],
+            ['LSD марки(250мг): 2шт', 3400],
+            ['Мухоморы: 10гр/2дозы', 3000],
+            ['Сульфат: 1гр/2дозы:', 3000],
+            ['Golden teacher: 3гр', 4000],
+            ['Psilocybe Cubensis:3гр', 4000],
+            ['Pink Buffalo: 3гр', 4000],]},
+]
+
 def sign(request):#login#ispol'zueyetsya iskluchitel'no dlya auntifikacii, s posleduyushim razdeleniem na staff(rabotyagi) i na admina(vladelca)
     if request.GET.get('action', '') == "logmeout":
         logout(request)
@@ -223,11 +264,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('Прайс', 'price_list'))
         l1.append(inline_keyboard('История', 'history'))
         l1.append(inline_keyboard('Помощь', 'helpme'))
-    elif method == 'main_cat':#vibor glavnoi kategorii
-        text = 'Выберите '+product_main_spec+':'
-        for i in raion.objects.filter(subcategory_of = None):
-            l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
-        l1.append(inline_keyboard('На главную', '/start')) 
     elif method == 'history':#istoriya
         text = 'Нажмите на кнопку для получения подробной информации о ваших покупках.\nИстория ваших покупок:'
         if fake_app == 0:
@@ -292,7 +328,79 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         q1.job_seeker=True
         q1.save()
         l1.append(inline_keyboard('На главную', '/start'))
-
+    ##logika pokupki tovara
+    elif method == 'main_cat':#vibor glavnoi kategorii
+        text = 'Выберите '+product_main_spec+':'
+        for i in raion.objects.filter(subcategory_of = None):
+            l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
+        l1.append(inline_keyboard('На главную', '/start')) 
+    elif method[0] == 'r':#1stinstance #vibor tovara posle main raiona
+        ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
+        #, то требуется рефакторинг
+        #uznaem voobshe chto eto za raion
+        if False:#old one
+            g0 = raion.objects.get(pk=method[1:])
+            g1 = raion.objects.filter(subcategory_of = g0)
+            #delaem spisok teh vidov tovara dostupnykh v dannom main_raione
+            ##new
+            k1 = set()
+            for i in g1:
+                for m in product.objects.filter(placing = i, buyer = None):
+                    k1.add(m.type_of_product)
+            #udalyaem pokupki ot pokupatelya
+            if fake_app == 1:
+                None
+            #esli est' tovar
+            if len(k1) > 0:
+                text = 'Выберите товар в '+g0.pre_full_name+'.'
+                for i in k1:
+                    l1.append(inline_keyboard(i.name, 'f'+str(i.pk)+'r'+str(g0.pk)))
+            #esli netu, to
+            else:
+                text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
+            #add back button
+            if g0.subcategory_of:
+                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+            else:
+                l1.append(inline_keyboard('Назад', 'main_cat'))
+            l1.append(inline_keyboard('На главную', '/start'))
+        if True:#new one
+            g0 = raion.objects.get(pk=method[1:])
+            text = 'Выберите вид товара в '+g0.pre_full_name+'.'
+            x = 0
+            for i in cat_and_price_list:
+                l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
+                x += 1
+            if g0.subcategory_of:
+                l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
+            else:
+                l1.append(inline_keyboard('Назад', 'main_cat'))
+            l1.append(inline_keyboard('На главную', '/start'))#maincat_page
+    
+    elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
+        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
+        method = method.split('r')
+        ##new
+        #vizvaniy main_raion
+        g0 = raion.objects.get(pk=method[1])
+        #podkategorii main raiona
+        g1 = raion.objects.filter(subcategory_of = g0)
+        #vid producta
+        g2 = product_type.objects.get(pk=method[0][1:])
+        set0 = set()
+        #delaem query na vse producti s subcategory == o i vid producta po requestu
+        for o in g1:
+            #esli budet chtoto, to
+            for i in product.objects.filter(buyer= None ,type_of_product = g2, placing = o):
+                set0.add(i.placing)
+        if len(set0) > 0:
+            text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
+            for i in set0:
+                l1.append(inline_keyboard(i.name, 'u'+str(g2.pk)+'r'+str(i.pk)))
+        else:
+            text = 'Увы, товар был только-что продан или зарезервирован.'
+        l1.append(inline_keyboard('Назад', 'r'+method[1]))
+        l1.append(inline_keyboard('На главную', '/start'))
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
@@ -407,65 +515,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
             l1.append(inline_keyboard('Помощь', 'support'))
         l1.append(inline_keyboard('На главную', '/start'))
         None
-    #vibor tovara posle main raiona
-    elif method[0] == 'r':
-        ##вообще, тут может возникнуть дохуя ошибок, И если планируется нечто потипу мирового с разделениями на страны
-        #, то требуется рефакторинг
-        #uznaem voobshe chto eto za raion
-        g0 = raion.objects.get(pk=method[1:])
-        g1 = raion.objects.filter(subcategory_of = g0)
-        #delaem spisok teh vidov tovara dostupnykh v dannom main_raione
-
-        ##new
-        k1 = set()
-        for i in g1:
-            for m in product.objects.filter(placing = i, buyer = None):
-                k1.add(m.type_of_product)
-        #udalyaem pokupki ot pokupatelya
-        if fake_app == 1:
-            None
-        #esli est' tovar
-        if len(k1) > 0:
-            text = 'Выберите товар в '+g0.pre_full_name+'.'
-            for i in k1:
-                l1.append(inline_keyboard(i.name, 'f'+str(i.pk)+'r'+str(g0.pk)))
-        #esli netu, to
-        else:
-            text = 'К сожалению,на данный момент нет товаров в '+g0.pre_full_name+', попробуйте выбрать другое место.'
-        #add back button
-        if g0.subcategory_of:
-            l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-        else:
-            l1.append(inline_keyboard('Назад', 'main_cat'))
-
-        ##new
-
-        l1.append(inline_keyboard('На главную', '/start'))
-    #vibor tovara posle main raiona
-    elif method[0] == 'f':
-        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0](f...) - kategoriya, [1](r...) - raion
-        method = method.split('r')
-        ##new
-        #vizvaniy main_raion
-        g0 = raion.objects.get(pk=method[1])
-        #podkategorii main raiona
-        g1 = raion.objects.filter(subcategory_of = g0)
-        #vid producta
-        g2 = product_type.objects.get(pk=method[0][1:])
-        set0 = set()
-        #delaem query na vse producti s subcategory == o i vid producta po requestu
-        for o in g1:
-            #esli budet chtoto, to
-            for i in product.objects.filter(buyer= None ,type_of_product = g2, placing = o):
-                set0.add(i.placing)
-        if len(set0) > 0:
-            text = 'Товар: '+g2.name+ '\nВ городе: '+g0.pre_full_name+'\n\nУточните район.'
-            for i in set0:
-                l1.append(inline_keyboard(i.name, 'u'+str(g2.pk)+'r'+str(i.pk)))
-        else:
-            text = 'Увы, товар был только-что продан или зарезервирован.'
-        l1.append(inline_keyboard('Назад', 'r'+method[1]))
-        l1.append(inline_keyboard('На главную', '/start'))
     #vibor raiona posle vibora raiona
     elif method[0] == 'u':
         #delim method na 2 chasti(ispolzuya split(method, 'u')) 'u' i 'r', gde [0](u...) - kategoriya, [1](r...) - raion

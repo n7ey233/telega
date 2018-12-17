@@ -48,6 +48,13 @@ class abonent(models.Model):
     def __str__(self):
         return str(self.telega_id)
 class product_type(models.Model):##produkciya bivaet raznih tipov
+    product_list = (
+    ('bai', 'Трава'),
+    ('hei', 'Скорость'),
+    ('hei', 'Колеса'),
+    ('hei', 'Грибы'),
+    )
+    tg_type = models.CharField(max_length=22, blank = False, choices=product_list, default='tg_shop_fake', verbose_name='Тип телеги')
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
     price = models.FloatField(blank = False, default = 500, verbose_name='Цена за ед. продукта, если пусто, то дефолту с неё берется ценник на товар')
     class Meta:
