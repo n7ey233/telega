@@ -75,8 +75,8 @@ def get_qiwi_rates(qiwi_num, qiwi_token, currency):
     r = requests.get(url, headers=qiwi_headers)
     transaction_json = json.loads(r.text)
 #test
-qiwi_token = '47b27250733beb5c3c153a2a6003e523'
-qiwi_wallet_num = '79841543923'
+qiwi_token = 'd40d1855b9ea2d1699b018d943455e65'
+qiwi_wallet_num = '79242542786'
 def test_check_qiwi_block():
     a = check_qiwi_blocked(qiwi_token)
     return a

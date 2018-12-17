@@ -12,7 +12,19 @@ from .telegram_api import answerCallbackQuery
 
 #'##add' eto to chto nuzhno dodelat'
 
-
+"""
+#chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
+#datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
+#product pomechaetsa kak 1(ojidaet oplati)
+#и абоненту предлагается выбор, оплатить с баланса, либо сделать транзакцию напрямую
+#при оплате с баланса (надо писать логику)
+#при оплате транзакцией,
+#да пробуй заебал, иди покури кофейка налей, глицин сожри и пробуй, нехуй сидеть
+#
+#posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
+#3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
+#да нихуя не снимается, он просто удаляется
+"""
 #import kakih-to peremennykh
 #from .data_settings import product_main_spec, start_msg, qiwi_headers
 #utils
@@ -384,7 +396,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0][1:](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')#f12r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nВ городе: '+g0.pre_full_name+'\n\n'
+        text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nГород: '+g0.pre_full_name+'\n\n'
         x = 0
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
@@ -428,19 +440,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('Оплата по транзакции', 'h'+_method[1:]))
         l1.append(inline_keyboard('Назад', 'y'+str(method[0][1:])+'r'+str(g0.subcategory_of.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
-        """
-        #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
-        #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
-        #product pomechaetsa kak 1(ojidaet oplati)
-        #и абоненту предлагается выбор, оплатить с баланса, либо сделать транзакцию напрямую
-        #при оплате с баланса (надо писать логику)
-        #при оплате транзакцией,
-        #да пробуй заебал, иди покури кофейка налей, глицин сожри и пробуй, нехуй сидеть
-        #
-        #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
-        #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
-        #да нихуя не снимается, он просто удаляется
-        """
     elif method[0] == 'b':#oplata s balansa + redirect na popolneniye
         if False:
             dsa = product.objects.get(pk=method[1:])
@@ -448,8 +447,8 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 text = 'К сожалению, данный товар был только-что куплен или зарезервирован, попробуйте выбрать снова.'
             else:
                 text = 'Ваш баланс: '+str(q1.balance)+'.\nСтоимость '+dsa.type_of_product.name+' в '+ dsa.placing.pre_full_name+': '+str(dsa.price)
-                #proveryaem est' li vozmozhnost' oplatit'
-                if q1.balance >= dsa.price:
+                
+                if q1.balance >= dsa.price:#proveryaem est' li vozmozhnost' oplatit'
                     text+='\nУ вас хватает денежных средств для оплаты, нажмите "Оплатить с баланса" для получения подробной информации о местоположении товара.'
                     l1.append(inline_keyboard('Оплатить с баланса', 'v'+str(dsa.pk)))
                     l1.append(inline_keyboard('Оплатить транзакцией', '#broken'))
@@ -464,7 +463,20 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                     #vverhu broken
             l1.append(inline_keyboard('Назад', 'u'+str(dsa.type_of_product.pk)+'r'+str(dsa.placing.pk)))
         _method = method
-        text = '2333'
+        method = method.split('r')#b1|3r5|7
+        nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
+        vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
+        cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
+        g0 = raion.objects.get(pk=method[1])
+        #text = 'Стоимость '+dsa.type_of_product.name+' в '+ dsa.placing.pre_full_name+': '+str(dsa.price)
+        text = 'Ваш баланс: '+str(q1.balance)+'.\nВид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'\n'
+        if q1.balance >= float(cena_gavna):#proveryaem est' li vozmozhnost' oplatit'
+            text+='\nУ вас хватает денежных средств для оплаты, нажмите "Оплатить с баланса" для получения подробной информации о местоположении товара.'
+            l1.append(inline_keyboard('Оплатить с баланса', 'v'))
+        else:
+            text+='\nНа вашем балансе недостаточно средств для оплаты.\nПополните баланс для дальнейшей оплаты или оплатите используя транзакцию.'
+            l1.append(inline_keyboard('Пополнить баланс', 'replenish'))
+
         l1.append(inline_keyboard('Назад', 'u'+_method[1:]))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'v':#oplata s balansa
