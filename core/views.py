@@ -527,7 +527,7 @@ def telegram_api(request):
             ##dlya raboti s jsonom
             #print(json.loads(request.body))
             #print(user_info["data"])
-            #print(request.body)
+            print(request.body)
             #print(return_dict)
             None
         except:
