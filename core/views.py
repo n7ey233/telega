@@ -18,9 +18,9 @@ qiwi_wallet_num = '79841543923'
 help_msg = 'Добро пожаловать в наш магазин!\nУважаемый клиент, перед оплатой товара, убедитесь в правильности выбранной информации.\nНа данный момент мы работает ТОЛЬКО с платёжной системой Qiwi.\nОбязательно сохраняйте реквизиты оплаты( выданый ботом номер кошелька, кошелёк на который была произведена оплата, номер транзакции).\n\n Процедура получения товара:\n1)Выбор местоположения, товара( бот предложит все имеющиеся варианты наших закладок).\n2)Бот напишет Вам наш номер кошелька и Ваш номер заказа. Если хотите провести оплату с вашего баланса, нажмите "Оплатить с баланса", если на балансе не будет хватать средств, бот предложит вам пополнить баланс.\n3)Производите оплату на указанный ботом счёт.\n4)Если сумма платежа равна или больше суммы заказа, то бот вышлет информацию о вашем товаре(город, район, описание товара, приблизетельный адресс, фото закладки, геолокацию).\n\nЕсли сумма оплаты превышает цену товара, то разница пополнит ваш баланс.Если же сумма оплаты ниже цены товара, то бот напишет сообщение об ошибке и зачислит средства на ваш баланс.\n\n Возврат денежных средств осуществляется исключительно через связь с оператором.'
 replenish_msg = 'Для пополнения баланса отправьте денежные средства на Qiwi кошелёк: '+ qiwi_wallet_num
 support_apply_msg = 'Спасибо за обращение, в близжайшее время с вами свяжется наш оператор.'
-product_main_spec = 'Место'
+product_main_spec = 'Город'
 shop_name = 'Ušə məəə<3'
-start_msg = 'Привет, умняш!!!Добро пожаловать ко мне в магазин - «Use Me»!!!!! Я очень рада, что ты пришёл именно ко мне, ведь у меня для тебя огромный выбор вкусняшек ️\n\nНажми "Выбрать Место" для оформления заказа.\nНажми "Баланс" для проверки своего баланса или его дальнейшего пополнения.\nНажми "Прайс" чтобы увидеть весь ассортимент и цены.\nНажми "История" для просмотра истории своих покупок.\nНажми "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором, если вдруг произойдёт какая-то нелепая ошибка!\n'
+start_msg = 'Привет, умняш!!!Добро пожаловать ко мне в магазин - «Use Me»!!!!! Я очень рада, что ты пришёл именно ко мне, ведь у меня для тебя огромный выбор вкусняшек ️\n\nНажми "Выбрать Город" для оформления заказа.\nНажми "Баланс" для проверки своего баланса или его дальнейшего пополнения.\nНажми "Прайс" чтобы увидеть весь ассортимент и цены.\nНажми "История" для просмотра истории своих покупок.\nНажми "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором, если вдруг произойдёт какая-то нелепая ошибка!\n'
 
 
 price_list_all = """
@@ -332,7 +332,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('На главную', '/start'))
     ##logika pokupki tovara
     elif method == 'main_cat':#vibor glavnoi kategorii
-        text = 'Выберите '+product_main_spec+':'
+        text = 'Выберите '+product_main_spec+'.'
         for i in raion.objects.filter(subcategory_of = None):
             l1.append(inline_keyboard(i.name, 'r'+str(i.pk)))
         l1.append(inline_keyboard('На главную', '/start')) 
@@ -341,7 +341,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         #, то требуется рефакторинг
         #method = 'r1'
         g0 = raion.objects.get(pk=method[1:])#uznaem voobshe chto eto za raion
-        text = 'Выберите вид товара в '+g0.pre_full_name+'.'
+        text = 'Город: '+g0.pre_full_name+'\nВыберите вид товара.'
         x = 0
         for i in cat_and_price_list:
             l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
@@ -349,7 +349,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         if g0.subcategory_of:l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
         else:l1.append(inline_keyboard('Назад', 'main_cat'))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
-    elif method[0] == 'f':#2ndinstance#vibor tovara posle main raiona
+    elif method[0] == 'f':#2ndinstance #vibor vida tovara posle main raiona
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0][1:](f...) - kategoriya, [1](r...) - raion
         method = method.split('r')#f12r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
@@ -363,21 +363,50 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))#back button
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     elif method[0] == 'y':#3rdinstance #vibor tovara posle vida tovara
-        #delim method na 3 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
+        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
         method = method.split('r')#y12|23r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
         nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
         vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
         cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
-        if False:
+        if False:#test purposes
             print(nazvaniye_gavna)
             print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
             print(cena_gavna)
-        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nВ городе: '+g0.pre_full_name+'\n\n'
+        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.pre_full_name+'\n\nВыберите район.'
         #text += '\nУточните район в '+g0.pre_full_name+'.'
         for i in raion.objects.filter(subcategory_of=g0):
-            l1.append(inline_keyboard(i.name, 'y'+'r'+str(g0.pk)))
+            l1.append(inline_keyboard(i.name, 'u'+str(method[0].split('|')[0][1:])+'|'+str(method[0].split('|')[1])+'r'+str(i.pk)))
+        l1.append(inline_keyboard('Назад', 'f'+str(method[0].split('|')[0][1:])+'r'+str(g0.pk)))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
+    elif method[0] == 'u':#4thinstance #vibor vibor raiona posle vibora tovara
+         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r5) - info o raione
+        #get object from products(raion = r, product_type = u), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
+        method = method.split('r')#u1|3r5|7
+        nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
+        vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
+        cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
+        g0 = raion.objects.get(pk=method[1])
+        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'.\nВыберите метод оплаты.'
+        if True:#test purposes
+            print(nazvaniye_gavna)
+            print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
+            print(cena_gavna)
+        l1.append(inline_keyboard('Оплата с баланса', 'b'))
+        l1.append(inline_keyboard('Оплата по транзакции', 'h'))
+        l1.append(inline_keyboard('Назад', 'f'))
+        l1.append(inline_keyboard('На главную', '/start'))
+        #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
+        #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
+        #product pomechaetsa kak 1(ojidaet oplati)
+        #и абоненту предлагается выбор, оплатить с баланса, либо сделать транзакцию напрямую
+        #при оплате с баланса (надо писать логику)
+        #при оплате транзакцией,
+        #да пробуй заебал, иди покури кофейка налей, глицин сожри и пробуй, нехуй сидеть
+        #
+        #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
+        #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
+        #да нихуя не снимается, он просто удаляется
     #oplata s balansa + redirect na popolneniye
     elif method[0] == 'b':
         dsa = product.objects.get(pk=method[1:])
@@ -466,11 +495,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('На главную', '/start'))
     #pokaz info o tovare
     elif method[0] == 'j':
-        #da i sdelai proverku chto-bi s kompa nel'zya bilo na sharu sdelat' query j1 ili j23 chtobi otkrilos'
-        #t.e. eto budet kak proverka id abonenta i ego privyazku k productu, t.e. esli est' to est' info, esli net, to
-        #vikidivat' kakoyeto ebanoe soobsheniye
-        #
-        ###111111111111
         dsa = product.objects.get(pk=method[1:])
         #proverka buyera
         if fake_app == 0:
@@ -492,31 +516,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         l1.append(inline_keyboard('На главную', '/start'))
         None
     #vibor raiona posle vibora raiona
-    elif method[0] == 'u':
-        #delim method na 2 chasti(ispolzuya split(method, 'u')) 'u' i 'r', gde [0](u...) - kategoriya, [1](r...) - raion
-        #get object from products(raion = r, product_type = u), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
-        method = method.split('r')
-        try:
-            #eshe order by date zakladki
-            asd = product.objects.filter(buyer= None ,type_of_product = product_type.objects.get(pk=method[0][1:]), placing = raion.objects.get(pk=method[1]))[0]
-            text = str(asd.type_of_product.name)+' в '+str(asd.placing.pre_full_name)+'\nПо цене: '+str(asd.price)
-            l1.append(inline_keyboard('Оплата с баланса', 'b'+str(asd.pk)))
-            l1.append(inline_keyboard('Оплата по транзакции', 'h'+str(asd.pk)))
-        except:
-            text = 'Увы, товар был только что зарезервирован или продан, попробуйте выбрать другой товар.'
-        l1.append(inline_keyboard('Назад', 'f'+method[0][1:]+'r'+str(raion.objects.get(pk=method[1]).subcategory_of.pk)))
-        l1.append(inline_keyboard('На главную', '/start'))
-        #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
-        #datoi sozdaniya, fk abonenta, fk product, sostoyaniye sdelki(0-sozdana, no ne zavershena, 1 - provedena uspeshno)
-        #product pomechaetsa kak 1(ojidaet oplati)
-        #и абоненту предлагается выбор, оплатить с баланса, либо сделать транзакцию напрямую
-        #при оплате с баланса (надо писать логику)
-        #при оплате транзакцией,
-        #да пробуй заебал, иди покури кофейка налей, глицин сожри и пробуй, нехуй сидеть
-        #
-        #posle worker raz v 3(5,10,30,60) minuti delaet filter instancov zakaza produkta gde sostoyanie sdelki == 0, i sveryaet vremya po
-        #3(5,10,30,60) minut, esli sdelka dlinnoi menshe 3(5,10,30,60) minut, to s producta instance snimaetsa, и с инстанса заказа снимается
-        #да нихуя не снимается, он просто удаляется
     else:
         None
     if len(l1) > 0:
