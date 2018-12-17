@@ -366,20 +366,25 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
                 l1.append(inline_keyboard('Помощь', 'support'))
             dsa = bought_products.objects.get(pk=method[1:])
-        try:#esli est' transakciya
+        #try:#esli est' transakciya
+        if True:
             dsa = bought_products.objects.get(pk=method[1:])
             if q1 == dsa.abonent:
                 method = dsa.name.split('r')
-                nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
-                vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
-                cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
+                print('here')
+                print(method[0].split('|')[0])
+                nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0])]['subcat_list'][int(method[0].split('|')[1])][0]
+                vid_gavna = cat_and_price_list[int(method[0].split('|')[0])]['name']
+                cena_gavna = cat_and_price_list[int(method[0].split('|')[0])]['subcat_list'][int(method[0].split('|')[1])][1]
                 g0 = raion.objects.get(pk=method[1])
-                text = 'Товар: '+nazvaniye_gavna
+                text = 'Товар: '+nazvaniye_gavna +'\nМестоположение: '+g0.pre_full_name +'\nСтоимость: '+str(cena_gavna) +'\nДополнительное описание: -'
+#text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
             else:
                 text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
                 l1.append(inline_keyboard('Помощь', 'support'))
             l1.append(inline_keyboard('На главную', '/start'))
-        except:#esli transakcii net
+        #except:#esli transakcii net
+        if False:
             text = 'Покупка отсутствует'
             l1 = list()
             l1.append(inline_keyboard('На главную', '/start'))
