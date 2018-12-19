@@ -13,6 +13,23 @@ import math
 from time import time as seedfortime
 
 #'##add' eto to chto nuzhno dodelat'
+'''
+qiwi api = https://developer.qiwi.com/ru/qiwi-wallet-personal/?shell#hook_remove
+
+https://core.telegram.org/api
+tg:
+https://core.telegram.org/bots
+https://core.telegram.org/methods
+
+https://core.telegram.org/bots/api#file
+https://core.telegram.org/bots/faq#how-do-i-get-updates
+
+https://www.pythonanywhere.com/user/telegan7e/files/var/log/telegan7e.pythonanywhere.com.server.log
+https://telegan7e.pythonanywhere.com
+
+'''
+
+
 
 """
 #chelovek vibiraet k primeru *shariki*,№#КАПТЧААААААААААА, пздц, каптча,!!!!№ sozdaetsa instance zakaza producta s:
