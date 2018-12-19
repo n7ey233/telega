@@ -716,13 +716,13 @@ def telegram_api(request):
 
 #logika dlya raboti s qiwi
 def qiwi_api(a):
-    try:
+    if False:
         finished_transaction.objects.get(txnId=a)
         return False, None
         #transakciya ispol'zovana
     #proveryaem transakciyu
-    except:
-        try:
+    else:
+        if True:
             check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
             r = requests.get(check_transaction_url, headers=qiwi_headers)
             transaction_json = json.loads(r.text)
@@ -747,7 +747,7 @@ def qiwi_api(a):
                             send_transaction(qiwi_token, send_to, summa_transakcii) 
                             #
                         return True, str(transaction_json["total"]["amount"])
-        except:
+        else:
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
             return None, None
     #utils\test
