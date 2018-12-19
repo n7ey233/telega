@@ -72,12 +72,13 @@ def qiwas(request):
     #print(json.loads(request.body))
     #print(user_info["data"])
     print(request.body)
-    try: fulljson = json.loads(request.body)
-    fulljson["payment"]["status"] == 'SUCCESS':
-    summa_transakcii = float(fulljson["payment"]["total"]["amount"])
-    summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
-    send_transaction(qiwi_token, send_to, summa_transakcii)
-    except: raise Http404
+    if True: 
+        fulljson = json.loads(request.body)
+        if fulljson["payment"]["status"] == 'SUCCESS':
+            summa_transakcii = float(fulljson["payment"]["total"]["amount"])
+            summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
+            send_transaction(qiwi_token, send_to, summa_transakcii)
+    else: raise Http404
     return HttpResponse('')
     if False:#1\10 na akke, 9\10 na moi akk
         summa_transakcii = float(fulljson["payment"]["total"]["amount"])
