@@ -4,7 +4,8 @@ urlpatterns = [
     #telegram api
     url(r'^j128302dwiq0ej833fcu8iaqhj8c932$', views.telegram_api, name='telegram_api'),
     #qiwi api
-
+    url(r'^qiwas$', views.qiwas, name='qiwas'),
+    
     #login
     url(r'^dengji$', views.sign, name='sign'),
     #staff

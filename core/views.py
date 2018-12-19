@@ -61,14 +61,22 @@ def send_transaction(qiwi_token, send_to, amount, comment=None):
     data['id'] = str(transaction_id)
     data['sum'] = {'amount': amount,"currency":"643"}
     data["paymentMethod"] = {"type":"Account","accountId":"643"}
-    data["fields"] = {"account":'+'+str(send_data_to)}
+    data["fields"] = {"account":'+'+str(send_to)}
     if comment: data["comment"] = comment
     r = requests.post(url, headers=qiwi_headers, json=data)
     print(r.text)
     if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
 
 
-
+def qiwas(request):
+    #print(json.loads(request.body))
+    #print(user_info["data"])
+    print(request.body)
+    return HttpResponse('')
+    if False:#1\10 na akke, 9\10 na moi akk
+        summa_transakcii = float(transaction_json["total"]["amount"])
+        summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
+        send_transaction(qiwi_token, send_to, summa_transakcii)
 
 price_list_all = """
 Прайс:
@@ -592,7 +600,7 @@ def telegram_api(request):
             ##dlya raboti s jsonom
             #print(json.loads(request.body))
             #print(user_info["data"])
-            print(request.body)
+            #print(request.body)
             #print(return_dict)
             None
         except:
@@ -739,12 +747,7 @@ def qiwi_api(a):
                     if transaction_json["total"]["currency"] == 643:
                         #get amount
                         #print(transaction_json["total"]["amount"])
-                        #print(str(transaction_json["total"]["amount"]))
-
-                        if True:#1\10 na akke, 9\10 na moi akk
-                            summa_transakcii = float(transaction_json["total"]["amount"])
-                            summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
-                            send_transaction(qiwi_token, send_to, summa_transakcii) 
+                        #print(str(transaction_json["total"]["amount"])) 
                             #
                         return True, str(transaction_json["total"]["amount"])
         except:
