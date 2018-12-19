@@ -37,7 +37,7 @@ tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
 #guziy
 #79242542786
 #d40d1855b9ea2d1699b018d943455e65
-if False:
+if True:
     qiwi_wallet_num = '79242542786'
     qiwi_token = 'd40d1855b9ea2d1699b018d943455e65'
 else:
