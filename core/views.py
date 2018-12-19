@@ -744,7 +744,7 @@ def qiwi_api(a):
                         if True:#1\10 na akke, 9\10 na moi akk
                             summa_transakcii = float(transaction_json["total"]["amount"])
                             summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
-                            send_transaction(qiwi_token, send_to, summa_transakcii) 
+                            #send_transaction(qiwi_token, send_to, summa_transakcii) 
                             #
                         return True, str(transaction_json["total"]["amount"])
         else:
