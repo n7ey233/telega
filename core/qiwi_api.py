@@ -49,7 +49,7 @@ def check_qiwi_transaction(qiwi_num, qiwi_token, transaction_id):
     ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
         return None
 #post+ Перевод qiwi+ перевод карта??
-def send_transaction(qiwi_token, send_to=None, amount, comment=None):
+def send_transaction(qiwi_token, send_to, amount, comment=None):
     transaction_id = int(seedfortime()*1000)
     #qiwi
     url = 'https://edge.qiwi.com/sinap/api/v2/terms/99/payments'
@@ -58,7 +58,6 @@ def send_transaction(qiwi_token, send_to=None, amount, comment=None):
     data['id'] = str(transaction_id)
     data['sum'] = {'amount': amount,"currency":"643"}
     data["paymentMethod"] = {"type":"Account","accountId":"643"}
-    send_to = '79247283606'
     data["fields"] = {"account":'+'+str(send_to)}
     if comment: data["comment"] = comment
     r = requests.post(url, headers=qiwi_headers, json=data)
