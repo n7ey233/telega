@@ -138,7 +138,6 @@ class finished_transaction(models.Model):
         ordering = ['-created_date']
     def __str__(self):
         str(self.created_date) + ' ' + str(self.amount)
-
 class bought_products(models.Model):
     name = models.CharField(max_length=128, blank = True, verbose_name='tuple s dannimi o pokupke')
     display = models.CharField(max_length=128, blank = True, verbose_name='otobrajat danniye v istorii')
