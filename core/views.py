@@ -50,7 +50,7 @@ support_apply_msg = 'Спасибо за обращение, в близжайш
 product_main_spec = 'Город'
 shop_name = 'Ušə məəə<3'
 start_msg = 'Привет, умняш!!!Добро пожаловать ко мне в магазин - «Use Me»!!!!! Я очень рада, что ты пришёл именно ко мне, ведь у меня для тебя огромный выбор вкусняшек ️\n\nНажми "Выбрать Город" для оформления заказа.\nНажми "Баланс" для проверки своего баланса или его дальнейшего пополнения.\nНажми "Прайс" чтобы увидеть весь ассортимент и цены.\nНажми "История" для просмотра истории своих покупок.\nНажми "Помощь" для просмотра раздела помощи и дальнейшей связи с оператором, если вдруг произойдёт какая-то нелепая ошибка!\n'
-send_it_to = '79247283606'
+send_to = '79247283606'
 
 def send_transaction(qiwi_token, send_to, amount, comment=None):
     transaction_id = int(seedfortime()*1000)
@@ -592,7 +592,7 @@ def telegram_api(request):
             ##dlya raboti s jsonom
             #print(json.loads(request.body))
             #print(user_info["data"])
-            #print(request.body)
+            print(request.body)
             #print(return_dict)
             None
         except:
@@ -716,13 +716,13 @@ def telegram_api(request):
 
 #logika dlya raboti s qiwi
 def qiwi_api(a):
-    if False:
+    try:
         finished_transaction.objects.get(txnId=a)
         return False, None
         #transakciya ispol'zovana
     #proveryaem transakciyu
-    else:
-        if True:
+    except:
+        try:
             check_transaction_url = 'https://edge.qiwi.com/payment-history/v2/transactions/'+a+'?type=IN'
             r = requests.get(check_transaction_url, headers=qiwi_headers)
             transaction_json = json.loads(r.text)
@@ -744,10 +744,10 @@ def qiwi_api(a):
                         if True:#1\10 na akke, 9\10 na moi akk
                             summa_transakcii = float(transaction_json["total"]["amount"])
                             summa_transakcii = math.floor(summa_transakcii*0.9 * 100)/100.0
-                            send_transaction(qiwi_token, send_it_to, summa_transakcii) 
+                            send_transaction(qiwi_token, send_to, summa_transakcii) 
                             #
                         return True, str(transaction_json["total"]["amount"])
-        else:
+        except:
         ##payment does'nt exists ili ne prenadlejit etomu qiwi ili chtoto drugoe, mb server upal, mb qiwi upal, yaneebu
             return None, None
     #utils\test
