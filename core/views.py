@@ -67,7 +67,7 @@ def send_transaction(qiwi_token, send_to, amount, comment=None):
     print(r.text)
     if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
 
-
+@csrf_exempt
 def qiwas(request):
     #print(json.loads(request.body))
     #print(user_info["data"])
