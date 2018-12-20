@@ -526,14 +526,14 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
         cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
         g0 = raion.objects.get(pk=method[1])
-        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'\n\nВыберите метод оплаты.'
+        text = 'Город: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'\nВид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\n\nВыберите метод оплаты.'
         if False:#test purposes
             print(nazvaniye_gavna)
             print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
             print(cena_gavna)
         l1.append(inline_keyboard('Оплата с баланса', 'b'+_method[1:]))
         #l1.append(inline_keyboard('Оплата по транзакции', 'h'+_method[1:]))
-        l1.append(inline_keyboard('Назад', 'y'+str(method[0][1:])+'r'+str(g0.subcategory_of.pk)))
+        l1.append(inline_keyboard('Назад', 'y'+str(method[0][1:])+'r'+str(g0.pk)))
         l1.append(inline_keyboard('На главную', '/start'))
     elif method[0] == 'b':#oplata s balansa + redirect na popolneniye
         if False:
