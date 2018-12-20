@@ -504,7 +504,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
         method = method.split('r')#f12r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nГород: '+g0.pre_full_name+'\n\n'
+        text = 'Город: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+'\n\n'
         x = 0
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
