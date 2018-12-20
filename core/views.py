@@ -582,7 +582,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
 
 
 
-            send_notification('сделана покупка в '+str(g0.pre_full_name)+' '+str(q1.name)+' '+str(q1.telega_id))
+            send_notification('сделана покупка'+str(vid_gavna)+ ' '+str(nazvaniye_gavna) +' в '+str(g0.pre_full_name)+' '+str(q1.name)+' '+str(q1.telega_id))
             
 
 
