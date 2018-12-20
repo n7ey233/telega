@@ -29,6 +29,8 @@ https://telegan7e.pythonanywhere.com
 
 postman: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop/related
 
+
+limit history to 5 objects + pagination
 '''
 
 
@@ -472,49 +474,54 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
         #, то требуется рефакторинг
         #method = 'r1'
         g0 = raion.objects.get(pk=method[1:])#uznaem voobshe chto eto za raion
-        text = 'Город: '+g0.pre_full_name+'\n\nВыберите вид товара.'
-        x = 0
-        for i in cat_and_price_list:
-            l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
-            x += 1
-        if g0.subcategory_of:l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))
-        else:l1.append(inline_keyboard('Назад', 'main_cat'))
+        text = 'Город: '+g0.pre_full_name+'\n\nВыберите район.'
+        #here
+        if False:
+            x = 0
+            for i in cat_and_price_list:#
+                l1.append(inline_keyboard(i['name'], 'f'+str(x)+'r'+str(g0.pk)))
+                x += 1
+        else:
+            for i in raion.objects.filter(subcategory_of=g0):
+                l1.append(inline_keyboard(i.name, 'f'+str(i.pk)))
+        #dao zher
+
+        #xinde
+        l1.append(inline_keyboard('Назад', 'main_cat'))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     elif method[0] == 'f':#2ndinstance #vibor tovara posle vida tovara
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'f' i 'r', gde [0][1:](f...) - kategoriya, [1](r...) - raion
+        if True:
+            g0 = raion.objects.get(pk=method[1:])#uznaem voobshe chto eto za raion
+            text = 'Город: '+g0.subcategory_of.name+'\nРайон: '+g0.name+'\n\nВыберите вид товара.' 
+            x = 0
+            for i in cat_and_price_list:#
+                l1.append(inline_keyboard(i['name'], 'y'+str(x)+'r'+str(g0.pk)))
+                x += 1
+        l1.append(inline_keyboard('Назад', 'r'+str(g0.subcategory_of.pk)))#back button
+        l1.append(inline_keyboard('На главную', '/start'))#maincat_page
+    elif method[0] == 'y':#3rdinstance #vibor raiona posle vida tovara
+        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
         method = method.split('r')#f12r23
         g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
         text = 'Вид товара: '+cat_and_price_list[int(method[0][1:])]['name']+ '\nГород: '+g0.pre_full_name+'\n\n'
         x = 0
         for i in cat_and_price_list[int(method[0][1:])]['subcat_list']:
             text+= i[0] +' '+ str(i[1])+'р\n'
-            l1.append(inline_keyboard(i[0], 'y'+method[0][1:]+'|'+str(x)+'r'+str(g0.pk)))##y12|23r23
+            l1.append(inline_keyboard(i[0], 'u'+method[0][1:]+'|'+str(x)+'r'+str(g0.pk)))##y12|23r23
             x += 1
         text += '\nВыберите товар.'
-        l1.append(inline_keyboard('Назад', 'r'+str(g0.pk)))#back button
+        l1.append(inline_keyboard('Назад', 'f'+str(g0.pk)))
         l1.append(inline_keyboard('На главную', '/start'))#maincat_page
-    elif method[0] == 'y':#3rdinstance #vibor raiona posle vida tovara
-        #delim method na 2 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r...) - info o raione
-        method = method.split('r')#y12|23r23
-        g0 = raion.objects.get(pk=method[1])#vizvaniy main_raion
-        nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
-        vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
-        cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
         if False:#test purposes
             print(nazvaniye_gavna)
             print(cat_and_price_list[int(method[0].split('|')[0][1:])]['name'])
             print(cena_gavna)
-        text = 'Вид товара: '+vid_gavna+ '\nТовар: '+nazvaniye_gavna+ '\nЦена: '+str(cena_gavna)+ '\nГород: '+g0.pre_full_name+'\n\nВыберите район.'
-        #text += '\nУточните район в '+g0.pre_full_name+'.'
-        for i in raion.objects.filter(subcategory_of=g0):
-            l1.append(inline_keyboard(i.name, 'u'+str(method[0].split('|')[0][1:])+'|'+str(method[0].split('|')[1])+'r'+str(i.pk)))
-        l1.append(inline_keyboard('Назад', 'f'+str(method[0].split('|')[0][1:])+'r'+str(g0.pk)))
-        l1.append(inline_keyboard('На главную', '/start'))#maincat_page
     elif method[0] == 'u':#4thinstance #vibor metoda oplati posle vibora raiona
         #delim method na 2 chasti(ispolzuya split(method, 'r')) 'y' i 'r', gde [0][1:]\\(y12|23) - info o tovare, [1](r5) - info o raione
         #get object from products(raion = r, product_type = u), order_by date i vibor u kotorogo data sozdaniya samaya poslednyaya
         _method = method
-        method = method.split('r')#u1|3r5|7
+        method = method.split('r')#u1|3r7
         nazvaniye_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][0]
         vid_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['name']
         cena_gavna = cat_and_price_list[int(method[0].split('|')[0][1:])]['subcat_list'][int(method[0].split('|')[1])][1]
@@ -582,7 +589,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
 
 
 
-            send_notification('сделана покупка'+str(vid_gavna)+ ' '+str(nazvaniye_gavna) +' в '+str(g0.pre_full_name)+' '+str(q1.name)+' '+str(q1.telega_id))
+            send_notification('сделана покупка '+str(vid_gavna)+ ' '+str(nazvaniye_gavna) +' в '+str(g0.pre_full_name)+' '+str(q1.name)+' '+str(q1.telega_id))
             
 
 
