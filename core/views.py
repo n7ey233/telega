@@ -750,7 +750,7 @@ def telegram_api(request):
                 user_a.save()
             query = user_info["data"]
             return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
-            #answerCallbackQuery(tg_project.tg_token, user_info["id"])
+            answerCallbackQuery(tg_project.tg_token, user_info["id"])
     if True:#refactored logic    #danniye o dvuh kommunikatorah, tg_project i user
         tg_project#object telegram_project
         user_a#danniye o otpravitele soobsheniya
