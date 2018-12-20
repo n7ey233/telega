@@ -27,6 +27,8 @@ https://core.telegram.org/bots/faq#how-do-i-get-updates
 https://www.pythonanywhere.com/user/telegan7e/files/var/log/telegan7e.pythonanywhere.com.server.log
 https://telegan7e.pythonanywhere.com
 
+postman: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop/related
+
 '''
 
 
@@ -83,6 +85,18 @@ def send_transaction(qiwi_token, send_to, amount, comment=None):
     r = requests.post(url, headers=qiwi_headers, json=data)
     print(r.text)
     if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
+
+def send_notification(text):
+    telega_token = '700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg' #token telegi
+    id_telegi = '405347178' #id v telege dlya otpravki
+    case = 1
+    if case == 1:
+        url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
+        #r = requests.get('https://api.telegram.org/bot700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg/getUpdates')
+        #obrazec
+        requests.get(url)
+    else:
+        None
 
 @csrf_exempt
 def qiwas(request):
@@ -565,6 +579,13 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
             q1.save()
             created_product = bought_products.objects.create(abonent = q1, name = _method[1:], display = nazvaniye_gavna)
             text = 'Оплата прошла успешно.\nВаш баланс: '+str(q1.balance)+'\nДля получения информации о товаре нажмите "Подробнее"'
+
+
+
+            send_notification('сделана покупка в '+str(g0.pre_full_name))
+            
+
+
             l1.append(inline_keyboard('Подробнее', 'j'+str(created_product.pk)))
         else:
             text = 'К сожалению, на вашем балансе недостаточно средств для оплаты.'
