@@ -102,7 +102,6 @@ def send_notification(text):
         requests.get(url)
         id_telegi = '389094365'
         url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
-        id_telegi = '389094365'
         requests.get(url)
         #r = requests.get('https://api.telegram.org/bot700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg/getUpdates')
         #obrazec
