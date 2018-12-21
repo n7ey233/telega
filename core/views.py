@@ -112,6 +112,10 @@ def send_tg_geolocation(user_id, latitude, longtitude):
     #after pokupki
     #after show info
     tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
+    print(tele_token)
+    print(user_id)
+    print(latitude)
+    print(longtitude)
     url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+user_id+'&latitude='+str(latitude)+'&longitude='+str(longtitude)+''
     print(url)
     requests.get(url)
