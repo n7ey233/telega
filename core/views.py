@@ -29,6 +29,7 @@ https://telegan7e.pythonanywhere.com
 
 postman: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop/related
 
+@RawDataBot govorit id gruppi
 
 limit history to 5 objects + pagination
 '''
@@ -98,9 +99,12 @@ def send_notification(text):
     case = 1
     if case == 1:
         url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
+        requests.get(url)
+        id_telegi = '389094365'
+        requests.get(url)
         #r = requests.get('https://api.telegram.org/bot700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg/getUpdates')
         #obrazec
-        requests.get(url)
+        
     else:
         None
 
@@ -661,7 +665,7 @@ def telegram_api(request):
             ##dlya raboti s jsonom
             #print(json.loads(request.body))
             #print(user_info["data"])
-            #print(request.body)
+            print(request.body)
             #print(return_dict)
             None
         except:
