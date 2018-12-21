@@ -675,6 +675,9 @@ def telegram_api(request):
     if True:#check if json, ignore ussual requests
         try: fulljson = json.loads(request.body)
         except: raise Http404
+    if True:#check if project exists
+        try: tg_project = telegram_project.objects.get(pk=request.GET.get('q'))
+        except: raise Http404
     if True:#collecting data from msg
         try:#check request type, msg or callback query
             user_info = fulljson["callback_query"]
