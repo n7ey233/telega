@@ -114,6 +114,7 @@ def send_tg_geolocation(user_id, latitude, longtitude):
     tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
     url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+user_id+'&latitude='+str(latitude)+'&longitude='+str(longtitude)+''
     requests.get(url)
+    print(url)
 @csrf_exempt
 def qiwas(request):
     #print(json.loads(request.body))
