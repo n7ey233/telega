@@ -107,14 +107,14 @@ def send_notification(text):
         #obrazec
     else:
         None
-def send_tg_geolocation(user_id, latitude, longtitude, notif_1st=None):
+def send_tg_geolocation(user_id, latitude, longitude, notif_1st=None):
     #after pokupki
     #after show info
-    tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
+    tele_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM'
     if notif_1st:
         user_id = '389094365'
         tele_token = '700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg'
-    url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+user_id+'&latitude='+str(latitude)+'&longitude='+str(longtitude)+''
+    url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+str(user_id)+'&latitude='+str(latitude)+'&longitude='+str(longitude)+''
     print(url)
     requests.get(url)
 @csrf_exempt
@@ -459,7 +459,6 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                     dsa = None
             if dsa:    
                 text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
-                #send_tg_geolocation(q1.telega_id, latitude, longtitude)
             else:
                 text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
                 l1.append(inline_keyboard('Помощь', 'support'))
@@ -476,7 +475,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 cena_gavna = cat_and_price_list[int(method[0].split('|')[0])]['subcat_list'][int(method[0].split('|')[1])][1]
                 g0 = raion.objects.get(pk=method[1])
                 text = 'Товар: '+nazvaniye_gavna +'\nМестоположение: '+g0.pre_full_name +'\nСтоимость: '+str(cena_gavna) +'\nДополнительное описание: -'
-                send_tg_geolocation(str(q1.telega_id), g0.latitude, g0.longitude)
+                send_tg_geolocation(str(q1.telega_id), str(g0.latitude), str(g0.longitude))
                 #text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
             else:
                 text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
@@ -614,7 +613,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
 
 
             send_notification('сделана покупка '+str(vid_gavna)+ ' '+str(nazvaniye_gavna) +' в '+str(g0.pre_full_name)+' '+str(q1.name)+' '+str(q1.telega_id))
-            send_tg_geolocation(str(q1.telega_id), g0.latitude, g0.longitude,2)
+            send_tg_geolocation(str(q1.telega_id), str(g0.latitude), str(g0.longitude), 2)
 
 
             l1.append(inline_keyboard('Подробнее', 'j'+str(created_product.pk)))
