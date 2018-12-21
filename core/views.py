@@ -29,7 +29,7 @@ https://telegan7e.pythonanywhere.com
 
 postman: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop/related
 
-@RawDataBot govorit id gruppi
+@getidsbot govorit id gruppi
 
 limit history to 5 objects + pagination
 '''
