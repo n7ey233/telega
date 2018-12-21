@@ -113,6 +113,7 @@ def send_tg_geolocation(user_id, latitude, longtitude):
     #after show info
     tele_token = '603323645:AAGdcg1XEs4G_-qq08CBxwAxuO-E9FGJNPc'
     url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+user_id+'&latitude='+str(latitude)+'&longitude='+str(longtitude)+''
+    requests.get(url)
 @csrf_exempt
 def qiwas(request):
     #print(json.loads(request.body))
@@ -472,8 +473,7 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
                 cena_gavna = cat_and_price_list[int(method[0].split('|')[0])]['subcat_list'][int(method[0].split('|')[1])][1]
                 g0 = raion.objects.get(pk=method[1])
                 text = 'Товар: '+nazvaniye_gavna +'\nМестоположение: '+g0.pre_full_name +'\nСтоимость: '+str(cena_gavna) +'\nДополнительное описание: -'
-                try:send_tg_geolocation(q1.telega_id, g0.latitude, g0.longtitude)
-                except:None
+                send_tg_geolocation(q1.telega_id, g0.latitude, g0.longtitude)
                 #text = 'Товар: '+dsa.type_of_product.name+'\n\nМестоположение:'+dsa.placing.pre_full_name+'\n\nСтоимость: '+str(dsa.price) +'\n\nСсылка на геолокацию: '+dsa.geolocation + '\n\nДополнительное описание: '+dsa.commentary +'.\n\n Ссылка на фото: '+ dsa.foto_link+''
             else:
                 text= 'К сожалению, данные об этом товаре принадлежат другому пользователю.'
