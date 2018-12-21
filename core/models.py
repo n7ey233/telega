@@ -58,8 +58,8 @@ class raion(models.Model):##ispol'zuyetsa dlya razdeleniya produkcii na raioni
     pre_full_name = models.TextField(blank = True, verbose_name='префикс, используется для отображения' )
     name = models.CharField(max_length=128, blank = False, verbose_name='Название' )
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
-    latitude = models.CharField(max_length=128, blank = True, verbose_name='latitude')
-    longitude = models.CharField(max_length=128, blank = True, verbose_name='longitude')
+    #latitude = models.CharField(max_length=128, blank = True, verbose_name='latitude')
+    #longitude = models.CharField(max_length=128, blank = True, verbose_name='longitude')
     class Meta:
         ordering = ['pre_full_name']
     def __str__(self):
