@@ -670,132 +670,134 @@ def reply(method, q1 = None, q2 = None):#reply func dlya manual'nogo formirovani
 #reply
 @csrf_exempt
 def telegram_api(request):
-    if True:#testting purpose
-        try:
-            ##dlya raboti s jsonom
-            #print(json.loads(request.body))
-            #print(user_info["data"])
-            print(request.body)
-            #print(return_dict)
-            None
-        except:
-            None
-    #main_route
-    if True:#check if json, ignore ussual requests
-        try: fulljson = json.loads(request.body)
-        except: raise Http404
-    if True:#check if project exists
-        try: tg_project = telegram_project.objects.get(pk=request.GET.get('q'))
-        except: raise Http404
-    if True:#collecting data from msg
-        try:#check request type, msg or callback query
-            user_info = fulljson["callback_query"]
-            reply_type = 'callback_query'
-        except:
-            user_info = fulljson["message"]
-            reply_type = 'message'
-        if True:#ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
-            if user_info["from"]["is_bot"] == 'true':
-                raise Http404
-        reciever_id = user_info["from"]["id"]
-        reciever_name = user_info["from"]["first_name"]
-        user_a, created = abonent.objects.get_or_create(telega_id = reciever_id)
-        user_a.name = reciever_name
-        user_a.save()
-        ####
-    #if tg_project.tg_type == 'tg_dv_fake':
-    if True:##redirect on func #refactori
-        #esli eto soobsheniye
-        return_dict= dict()
-        if reply_type == 'message':
+    try:
+        if True:#testting purpose
             try:
-                recieve_text = fulljson["message"]["text"]
+                ##dlya raboti s jsonom
+                #print(json.loads(request.body))
+                #print(user_info["data"])
+                print(request.body)
+                #print(return_dict)
+                None
             except:
-                return HttpResponse("")
-            if True: #platejka refactori
-                if user_a.payment_instance == 1:#v sluchae esli ojidaet popolneniya balansa
-                    user_a.payment_instance = 0
-                    a1, a2 = qiwi_api(recieve_text)
-                    if a1 == True:#esli oplata proshla uspeshno
-                        user_a.balance=user_a.balance+ float(a2)
-                        finished_transaction.objects.create(project_fk = tg_project, abonent = user_a, txnId = recieve_text, cash = float(a2))
-                        return_dict["text"], return_dict["reply_markup"] = reply('replenish_success', user_a, a2)
-                    elif a1 == False:#payment is real but already used
-                        return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
-                    #tipo void? ili kak v pythone eto der'mo?
-                    else:#payment doesn't exists
-                        return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
-                    user_a.save()
-                elif user_a.payment_instance == 2:#v sluchae podtverjdeniya oplati za zakaz(т.е. проведения транзакции)
-                    user_a.payment_instance = 0
-                    a1, a2 = qiwi_api(recieve_text)
-                    if a1 == True:
-                        user_a.balance=user_a.balance+ float(a2)
-                        finished_transaction.objects.create(project_fk = tg_project, abonent = user_a, txnId = recieve_text, cash = float(a2))
-                        if user_a.balance >= user_a.transaction_instance.price:#esli deneg на балансе hvataet na transakciyu
-                            ##addtut chekai est' li u obiekta pokupki pokupatel' dabi ne perepisivat' istoriyu
-                            if user_a.transaction_instance.buyer:#esli ne norm, to:
-                                return_dict["text"], return_dict["reply_markup"] = reply('transaction_bought', user_a)
-                            #esli norm, to:
+                None
+        #main_route
+        if True:#check if json, ignore ussual requests
+            try: fulljson = json.loads(request.body)
+            except: raise Http404
+        if True:#check if project exists
+            try: tg_project = telegram_project.objects.get(pk=request.GET.get('q'))
+            except: raise Http404
+        if True:#collecting data from msg
+            try:#check request type, msg or callback query
+                user_info = fulljson["callback_query"]
+                reply_type = 'callback_query'
+            except:
+                user_info = fulljson["message"]
+                reply_type = 'message'
+            if True:#ignore bots, eto dlya togo, chtobi ignorit' soobsheniya ot botov
+                if user_info["from"]["is_bot"] == 'true':
+                    raise Http404
+            reciever_id = user_info["from"]["id"]
+            reciever_name = user_info["from"]["first_name"]
+            user_a, created = abonent.objects.get_or_create(telega_id = reciever_id)
+            user_a.name = reciever_name
+            user_a.save()
+            ####
+        #if tg_project.tg_type == 'tg_dv_fake':
+        if True:##redirect on func #refactori
+            #esli eto soobsheniye
+            return_dict= dict()
+            if reply_type == 'message':
+                try:
+                    recieve_text = fulljson["message"]["text"]
+                except:
+                    return HttpResponse("")
+                if True: #platejka refactori
+                    if user_a.payment_instance == 1:#v sluchae esli ojidaet popolneniya balansa
+                        user_a.payment_instance = 0
+                        a1, a2 = qiwi_api(recieve_text)
+                        if a1 == True:#esli oplata proshla uspeshno
+                            user_a.balance=user_a.balance+ float(a2)
+                            finished_transaction.objects.create(project_fk = tg_project, abonent = user_a, txnId = recieve_text, cash = float(a2))
+                            return_dict["text"], return_dict["reply_markup"] = reply('replenish_success', user_a, a2)
+                        elif a1 == False:#payment is real but already used
+                            return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
+                        #tipo void? ili kak v pythone eto der'mo?
+                        else:#payment doesn't exists
+                            return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
+                        user_a.save()
+                    elif user_a.payment_instance == 2:#v sluchae podtverjdeniya oplati za zakaz(т.е. проведения транзакции)
+                        user_a.payment_instance = 0
+                        a1, a2 = qiwi_api(recieve_text)
+                        if a1 == True:
+                            user_a.balance=user_a.balance+ float(a2)
+                            finished_transaction.objects.create(project_fk = tg_project, abonent = user_a, txnId = recieve_text, cash = float(a2))
+                            if user_a.balance >= user_a.transaction_instance.price:#esli deneg на балансе hvataet na transakciyu
+                                ##addtut chekai est' li u obiekta pokupki pokupatel' dabi ne perepisivat' istoriyu
+                                if user_a.transaction_instance.buyer:#esli ne norm, to:
+                                    return_dict["text"], return_dict["reply_markup"] = reply('transaction_bought', user_a)
+                                #esli norm, to:
+                                else:
+                                    user_a.balance = user_a.balance - user_a.transaction_instance.price
+                                    if fake_app == 0:
+                                        user_a.transaction_instance.buyer = user_a
+                                        user_a.transaction_instance.sold_date = timezone.now()
+                                        user_a.transaction_instance.save()
+                                    elif fake_app == 1:
+                                        user_a.fake_purchases.add(user_a.transaction_instance)
+                                    return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
+                            #esli deneg ne hvataet, to
                             else:
-                                user_a.balance = user_a.balance - user_a.transaction_instance.price
-                                if fake_app == 0:
-                                    user_a.transaction_instance.buyer = user_a
-                                    user_a.transaction_instance.sold_date = timezone.now()
-                                    user_a.transaction_instance.save()
-                                elif fake_app == 1:
-                                    user_a.fake_purchases.add(user_a.transaction_instance)
-                                return_dict["text"], return_dict["reply_markup"] = reply('transaction_success', user_a)
-                        #esli deneg ne hvataet, to
-                        else:
-                            return_dict["text"], return_dict["reply_markup"] = reply('transaction_nem', user_a)
-                        user_a.transaction_instance = None
-                        smsg(a2)
-                    elif a1 == False:#payment is real but already used
+                                return_dict["text"], return_dict["reply_markup"] = reply('transaction_nem', user_a)
+                            user_a.transaction_instance = None
+                            smsg(a2)
+                        elif a1 == False:#payment is real but already used
 
-                        return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
-                    #tipo void? ili kak v pythone eto der'mo?
-                    else:#payment does'nt exists
+                            return_dict["text"], return_dict["reply_markup"] = reply('replenish_exists', user_a)
+                        #tipo void? ili kak v pythone eto der'mo?
+                        else:#payment does'nt exists
 
-                        return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
-                    user_a.transaction_instance = 0
+                            return_dict["text"], return_dict["reply_markup"] = reply('replenish_fail', user_a)
+                        user_a.transaction_instance = 0
+                        user_a.save()
+                    #v sluchae esli init fraza
+                    elif recieve_text == tg_project.start_word:
+                        return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
+                    #missunderstood msg na obichnuyu otpravku soobsheniya
+                    else:
+                        return_dict["text"] = 'Попробуйте написать: '+tg_project.start_word
+            #esli eto nazhatiye na knopki
+            elif reply_type == 'callback_query':
+                if user_a.payment_instance != 0:#esli user ozhidaet oplati, no nazhal na knopku
+                    user_a.payment_instance = 0
                     user_a.save()
-                #v sluchae esli init fraza
-                elif recieve_text == tg_project.start_word:
-                    return_dict["text"], return_dict["reply_markup"] = reply(recieve_text)
-                #missunderstood msg na obichnuyu otpravku soobsheniya
-                else:
-                    return_dict["text"] = 'Попробуйте написать: '+tg_project.start_word
-        #esli eto nazhatiye na knopki
-        elif reply_type == 'callback_query':
-            if user_a.payment_instance != 0:#esli user ozhidaet oplati, no nazhal na knopku
-                user_a.payment_instance = 0
-                user_a.save()
-            query = user_info["data"]
-            return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
-            answerCallbackQuery(tg_project.tg_token, user_info["id"])
-    if True:#refactored logic    #danniye o dvuh kommunikatorah, tg_project i user
-        tg_project#object telegram_project
-        user_a#danniye o otpravitele soobsheniya
-        if tg_project.tg_type == 'tg_shop_fake':#logica fake magaza v tg
-            None
-    if True:#metod otveta + OTBET
-        if not return_dict: return_dict= dict()
-        return_dict["chat_id"] = reciever_id
-        return_dict["method"] = 'sendmessage'
-        #return_dict["parse_mode"] = 'HTML'
-    if True:#testting purpose
-        try:
-            ##dlya raboti s jsonom
-            #print(json.loads(request.body))
-            #print(user_info["data"])
-            #print(request.body)
-            #print(return_dict)
-            None
-        except:
-            None
-    if return_dict:return JsonResponse(return_dict)
-    else:return HttpResponse('')
+                query = user_info["data"]
+                return_dict["text"], return_dict["reply_markup"] = reply(query, user_a)
+                answerCallbackQuery(tg_project.tg_token, user_info["id"])
+        if True:#refactored logic    #danniye o dvuh kommunikatorah, tg_project i user
+            tg_project#object telegram_project
+            user_a#danniye o otpravitele soobsheniya
+            if tg_project.tg_type == 'tg_shop_fake':#logica fake magaza v tg
+                None
+        if True:#metod otveta + OTBET
+            if not return_dict: return_dict= dict()
+            return_dict["chat_id"] = reciever_id
+            return_dict["method"] = 'sendmessage'
+            #return_dict["parse_mode"] = 'HTML'
+        if True:#testting purpose
+            try:
+                ##dlya raboti s jsonom
+                #print(json.loads(request.body))
+                #print(user_info["data"])
+                #print(request.body)
+                #print(return_dict)
+                None
+            except:
+                None
+        if return_dict:return JsonResponse(return_dict)
+        else:return HttpResponse('')
+    except:return HttpResponse('')
 
 #logika dlya raboti s qiwi
 def qiwi_api(a):
