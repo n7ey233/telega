@@ -94,10 +94,11 @@ def send_transaction(qiwi_token, send_to, amount, comment=None):
     if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
 
 def send_notification(text):
-    telega_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM' #token telegi use_mebot
+    telega_token = '786088675:AAHJl7-u6-PeujvDPw11OGYgkMMtdrJfBkc' #token telegi use_mebot
     id_telegi = '405347178' #id v telege dlya otpravki
     case = 1
     if case == 1:
+        telega_token = 
         id_telegi = '-389094365'
         url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
         requests.get(url)
@@ -111,7 +112,7 @@ def send_tg_geolocation(user_id, latitude, longitude, notif_1st=None):
     tele_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM'
     if notif_1st:
         user_id = '-389094365'
-        tele_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM'
+        tele_token = '786088675:AAHJl7-u6-PeujvDPw11OGYgkMMtdrJfBkc'
     url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+str(user_id)+'&latitude='+str(latitude)+'&longitude='+str(longitude)+''
     print(url)
     requests.get(url)
