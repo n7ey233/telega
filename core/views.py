@@ -94,7 +94,7 @@ def send_transaction(qiwi_token, send_to, amount, comment=None):
     if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
 
 def send_notification(text):
-    telega_token = '700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg' #token telegi use_mebot
+    telega_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM' #token telegi use_mebot
     id_telegi = '405347178' #id v telege dlya otpravki
     case = 1
     if case == 1:
