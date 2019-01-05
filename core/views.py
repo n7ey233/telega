@@ -111,7 +111,7 @@ def send_tg_geolocation(user_id, latitude, longitude, notif_1st=None):
     tele_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM'
     if notif_1st:
         user_id = '-389094365'
-        tele_token = '700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg'
+        tele_token = '571432396:AAEDgR-eAxfqnuNw6_aSDtEhcJGImxnzXwM'
     url = 'https://api.telegram.org/bot'+tele_token+'/sendlocation?chat_id='+str(user_id)+'&latitude='+str(latitude)+'&longitude='+str(longitude)+''
     print(url)
     requests.get(url)
