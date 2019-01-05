@@ -98,8 +98,6 @@ def send_notification(text):
     id_telegi = '405347178' #id v telege dlya otpravki
     case = 1
     if case == 1:
-        url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
-        requests.get(url)
         id_telegi = '-389094365'
         url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
         requests.get(url)
