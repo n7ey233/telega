@@ -94,13 +94,13 @@ def send_transaction(qiwi_token, send_to, amount, comment=None):
     if int(json.loads(r.text)['id']) != int(transaction_id): send_transaction(qiwi_token, send_to, amount, 'recursion')
 
 def send_notification(text):
-    telega_token = '700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg' #token telegi
+    telega_token = '700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg' #token telegi use_mebot
     id_telegi = '405347178' #id v telege dlya otpravki
     case = 1
     if case == 1:
         url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
         requests.get(url)
-        id_telegi = '389094365'
+        id_telegi = '-389094365'
         url = "https://api.telegram.org/bot"+telega_token+"/sendMessage?chat_id="+id_telegi+"&text="+text
         requests.get(url)
         #r = requests.get('https://api.telegram.org/bot700264978:AAG6PdQSBamU5nREeT8c07fUzoz5EzNp6Pg/getUpdates')
