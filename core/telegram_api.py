@@ -1,10 +1,23 @@
 import requests
 import json
 #отправка сообщения
+#import requests
 def sendMessage(telegram_token, chat_id, content):
     url = "https://api.telegram.org/bot"+telegram_token+"/sendMessage"
     data = {'chat_id': chat_id, 'text': content}
     requests.get(url,headers={'Content-Type': 'application/json' }, json=data)
+    
+    """
+tokens:
+{
+    
+    use_mebot - '786088675:AAHJl7-u6-PeujvDPw11OGYgkMMtdrJfBkc'}
+ids:
+{
+    
+    '405347178' - moy ID}
+
+    """
 #set webhook
 def set_webhook(telegram_token, pk):
     url = 'https://api.telegram.org/bot'+telegram_token+'/setWebhook?url=https://telegan7e.pythonanywhere.com/j128302dwiq0ej833fcu8iaqhj8c932?q='+str(pk)
